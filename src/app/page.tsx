@@ -10,8 +10,8 @@ import { useState } from 'react';
 // If the room is created successfully, we will redirect the user to the room page.
 
 export default function Home() {
-  const [hasError, setHasError] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
+  const [hasError] = useState(true);
+  const [isLoading] = useState(true);
 
   function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();

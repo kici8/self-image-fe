@@ -1,7 +1,9 @@
 'use client';
 
 import Alert from '@/components/Alert';
-import { ArrowRightIcon } from '@heroicons/react/24/solid';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ArrowRightIcon, LoaderCircleIcon } from 'lucide-react';
 import { useState } from 'react';
 
 // TODO: In this page, we will create a form to create a new room.
@@ -46,12 +48,12 @@ export default function Home() {
   }
 
   return (
-    <div className='min-h-svh bg-black py-16 sm:py-24'>
+    <div className='background min-h-svh py-16 sm:py-24'>
       <div className='mx-auto max-w-7xl sm:px-6 lg:px-8'>
-        <h2 className='mx-auto max-w-3xl text-center text-4xl font-semibold tracking-tight text-white sm:text-5xl'>
+        <h2 className='mx-auto max-w-3xl text-center text-4xl font-semibold tracking-tight sm:text-5xl'>
           Crea una nuova stanza
         </h2>
-        <p className='mx-auto mt-6 max-w-lg text-center text-lg text-gray-300'>
+        <p className='mx-auto mt-6 max-w-lg text-center text-lg'>
           Inserisci il tuo Codice Host per creare una nuova stanza e iniziare
           l&apos;esperienza.
         </p>
@@ -62,28 +64,28 @@ export default function Home() {
           <label htmlFor='hostCode' className='sr-only'>
             Codice Host
           </label>
-          <input
+          <Input
             id='hostCode'
             name='hostCode'
             type='password'
+            disabled={isLoading}
             autoComplete='password'
             required
-            className='min-w-0 flex-auto rounded-md bg-white/10 px-3.5 py-2 text-base text-white outline outline-1 -outline-offset-1 outline-white/40 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-white sm:text-sm/6'
             placeholder='Codice Host'
           />
-          <button
-            type='button'
-            disabled={isLoading}
-            className='inline-flex items-center gap-x-2 rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-black shadow-sm hover:bg-gray-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600'
-          >
-            Button text
-            <ArrowRightIcon aria-hidden='true' className='-mr-0.5 size-5' />
-          </button>
+          <Button disabled={isLoading} type='submit'>
+            Crea Stanza
+            {isLoading ? (
+              <LoaderCircleIcon className='animate-spin' />
+            ) : (
+              <ArrowRightIcon />
+            )}
+          </Button>
         </form>
         {hasError && (
           <div className='mx-auto mt-4 max-w-md'>
             <Alert
-              type='warning'
+              type='error'
               title='Errore: impossibile creare la stanza'
               messages={[
                 'Il Codice Host potrebbe essere non valido',

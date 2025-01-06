@@ -1,6 +1,11 @@
-import { XCircleIcon } from '@heroicons/react/20/solid';
-import { ExclamationTriangleIcon } from '@heroicons/react/20/solid';
-import { cva, cx } from 'class-variance-authority';
+import { cn } from '@/lib/utils';
+import { cva } from 'class-variance-authority';
+import {
+  CircleCheckIcon,
+  CircleXIcon,
+  InfoIcon,
+  TriangleAlertIcon,
+} from 'lucide-react';
 import { JSX } from 'react';
 
 type AlertType = 'info' | 'warning' | 'error' | 'success';
@@ -16,13 +21,13 @@ export default function Alert({
   title,
   messages,
 }: AlertProps) {
-  const containerVariants = cva('rounded-md p-4', {
+  const containerVariants = cva('rounded-md bg-opacity-10 p-4', {
     variants: {
       type: {
-        info: 'bg-blue-50',
-        warning: 'bg-yellow-50',
-        error: 'bg-red-50',
-        success: 'bg-green-50',
+        info: 'bg-blue-500',
+        warning: 'bg-yellow-500',
+        error: 'bg-red-500',
+        success: 'bg-green-500',
       },
     },
   });
@@ -30,10 +35,10 @@ export default function Alert({
   const iconVariants = cva('size-5', {
     variants: {
       type: {
-        info: 'text-blue-400',
-        warning: 'text-yellow-400',
-        error: 'text-red-400',
-        success: 'text-green-400',
+        info: 'text-blue-700 dark:text-blue-300',
+        warning: 'text-yellow-700 dark:text-yellow-300',
+        error: 'text-red-700 dark:text-red-300',
+        success: 'text-green-700 dark:text-green-300',
       },
     },
   });
@@ -41,10 +46,10 @@ export default function Alert({
   const titleVariants = cva('font-semibold', {
     variants: {
       type: {
-        info: 'text-blue-800',
-        warning: 'text-yellow-800',
-        error: 'text-red-800',
-        success: 'text-green-800',
+        info: 'text-blue-900 dark:text-blue-100',
+        warning: 'text-yellow-900 dark:text-yellow-100',
+        error: 'text-red-900 dark:text-red-100',
+        success: 'text-green-900 dark:text-green-100',
       },
     },
   });
@@ -52,41 +57,44 @@ export default function Alert({
   const messageVariants = cva('mt-2 text-sm', {
     variants: {
       type: {
-        info: 'text-blue-700',
-        warning: 'text-yellow-700',
-        error: 'text-red-700',
-        success: 'text-green-700',
+        info: 'text-blue-700 dark:text-blue-300',
+        warning: 'text-yellow-700 dark:text-yellow-300',
+        error: 'text-red-700 dark:text-red-300',
+        success: 'text-green-700 dark:text-green-300',
       },
     },
   });
 
   const ICON_MAP: Record<AlertType, JSX.Element> = {
     info: (
-      <XCircleIcon aria-hidden='true' className={cx(iconVariants({ type }))} />
+      <InfoIcon aria-hidden='true' className={cn(iconVariants({ type }))} />
     ),
     warning: (
-      <ExclamationTriangleIcon
+      <TriangleAlertIcon
         aria-hidden='true'
-        className={cx(iconVariants({ type }))}
+        className={cn(iconVariants({ type }))}
       />
     ),
     error: (
-      <XCircleIcon aria-hidden='true' className={cx(iconVariants({ type }))} />
+      <CircleXIcon aria-hidden='true' className={cn(iconVariants({ type }))} />
     ),
     success: (
-      <XCircleIcon aria-hidden='true' className={cx(iconVariants({ type }))} />
+      <CircleCheckIcon
+        aria-hidden='true'
+        className={cn(iconVariants({ type }))}
+      />
     ),
   };
 
   return (
-    <div className={cx(containerVariants({ type }))}>
+    <div className={cn(containerVariants({ type }))}>
       <div className='flex'>
         <div className='shrink-0'>{ICON_MAP[type]}</div>
         <div className='ml-3'>
-          <h3 className={cx(titleVariants({ type }))}>{title}</h3>
+          <h3 className={cn(titleVariants({ type }))}>{title}</h3>
 
           {messages.length ? (
-            <div className={cx(messageVariants({ type }))}>
+            <div className={cn(messageVariants({ type }))}>
               {messages.length > 1 ? (
                 <ul role='list' className='list-disc space-y-1 pl-5'>
                   {messages.map((message) => (

@@ -83,7 +83,7 @@ export default function Home() {
         {hasError && (
           <div className='mx-auto mt-4 max-w-md'>
             <Alert
-              type='error'
+              type='warning'
               title='Errore: impossibile creare la stanza'
               messages={[
                 'Il Codice Host potrebbe essere non valido',

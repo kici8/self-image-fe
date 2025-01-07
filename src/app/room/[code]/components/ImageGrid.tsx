@@ -31,7 +31,12 @@ export default function ImageGrid() {
           <div key={id} style={{ aspectRatio: `${format}` }} className="p-1">
             <div className="relative h-full w-full overflow-hidden rounded-lg">
               {unlocked ? (
-                <img src={src} className={cn(imageVariants({ unlocked }))} />
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={src}
+                  className={cn(imageVariants({ unlocked }))}
+                  alt=""
+                />
               ) : (
                 <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-card-foreground/20 text-primary/20">
                   <svg

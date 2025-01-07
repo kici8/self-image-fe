@@ -88,6 +88,7 @@ export default async function Page({
         <div className="flex flex-grow-0 flex-col gap-6 rounded-xl bg-card p-3">
           <div className="flex">
             <div className="flex h-24 w-24 items-center justify-center rounded-sm bg-white p-1">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={`https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=${code}`}
                 alt={`QR code for room ${code}`}

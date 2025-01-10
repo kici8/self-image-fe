@@ -3,7 +3,9 @@
 import Alert from "@/components/Alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { createStrapiRoom } from "@/lib/api";
 import { ArrowRightIcon, LoaderCircleIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 // TODO: In this page, we will create a form to create a new room.
@@ -12,40 +14,45 @@ import { useState } from "react";
 // If the room is created successfully, we will redirect the user to the room page.
 
 export default function Home() {
-  const [hasError] = useState(true);
-  const [isLoading] = useState(true);
+  const router = useRouter();
 
-  function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const form = event.currentTarget;
-    const hostCode = form.get("hostCode") as string;
+    setIsLoading(true);
 
-    console.log("send ", hostCode);
+    // const form = event.currentTarget;
+    // const hostCode = form.get("hostCode") as string;
+    // console.log("TODO: add an hardcoded code?", hostCode);
 
-    // TODO: Send a request to the server to create a new room.
-    // TODO: handle the response and redirect the user to the room page.
-    // TODO: If there is an error, show an error message to the user.
-    // fetch("/api/rooms", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ hostCode }),
-    // })
-    //   .then((response) => {
-    //     if (response.ok) {
-    //       return response.json();
-    //     } else {
-    //       throw new Error("Failed to create room");
-    //     }
-    //   })
-    //   .then((data) => {
-    //     window.location.href = `/room/${data.id}`;
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //   });
-  }
+    try {
+      // TODO: change with right one
+      const newRoom = await createStrapiRoom({
+        data: {
+          stage: "OPEN",
+          host: {
+            id: 1,
+            username: "artusi.daniele@gmail.com",
+            email: "artusi.daniele@gmail.com",
+          },
+        },
+      });
+      router.push(
+        //TODO: change `/room/${newRoom.room_code}?session_id=${newRoom.session_id}`,
+        `/room/${newRoom.data.code}?session_id=${newRoom.data.id}`,
+      );
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(`Failed to create room: ${err.message}`);
+      } else {
+        setError("Failed to create room: Unknown error");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="background min-h-svh py-16 sm:py-24">
@@ -70,7 +77,7 @@ export default function Home() {
             type="password"
             disabled={isLoading}
             autoComplete="password"
-            required
+            // required
             placeholder="Codice Host"
           />
           <Button disabled={isLoading} type="submit">
@@ -82,7 +89,7 @@ export default function Home() {
             )}
           </Button>
         </form>
-        {hasError && (
+        {error && (
           <div className="mx-auto mt-4 max-w-md">
             <Alert
               type="error"

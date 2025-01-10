@@ -33,6 +33,13 @@ export default function Room({ code }: { code: string }) {
     }
   }, [updatedMessage]);
 
+  // TODO: Handle new session
+  // Next.js allows you to use the native window.history.pushState and
+  // window.history.replaceState methods to
+  // update the browser's history stack without reloading the page.
+  // pushState and replaceState calls integrate into the Next.js Router,
+  // allowing you to sync with usePathname and useSearchParams.
+
   return (
     <div className="flex h-svh">
       <div className="flex-1">

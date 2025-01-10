@@ -3,9 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
-const SOCKET_SERVER_URL =
-  "https://railwayapp-strapi-production-873a.up.railway.app"; // TODO: change with socket.io server and make it an env variable
-
 type RoomStage = "OPEN" | "IN_PROGRESS" | "CLOSED";
 
 export type RoomUpdatedResponse = {
@@ -81,7 +78,7 @@ export const useSocket = () => {
     useState<RoomUpdatedResponse | null>(null);
 
   useEffect(() => {
-    socketRef.current = io(SOCKET_SERVER_URL);
+    socketRef.current = io(process.env.NEXT_PUBLIC_SOCKET_URL);
 
     socketRef.current.on("connect", () => {
       setIsConnected(true);

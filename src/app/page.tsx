@@ -3,7 +3,7 @@
 import Alert from "@/components/Alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { createStrapiRoom } from "@/lib/api";
+import { createRoom } from "@/lib/api";
 import { ArrowRightIcon, LoaderCircleIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -29,19 +29,20 @@ export default function Home() {
 
     try {
       // TODO: change with right one
-      const newRoom = await createStrapiRoom({
-        data: {
-          stage: "OPEN",
-          host: {
-            id: 1,
-            username: "artusi.daniele@gmail.com",
-            email: "artusi.daniele@gmail.com",
-          },
-        },
-      });
+      // const newRoom = await createStrapiRoom({
+      //   data: {
+      //     stage: "OPEN",
+      //     host: {
+      //       id: 1,
+      //       username: "artusi.daniele@gmail.com",
+      //       email: "artusi.daniele@gmail.com",
+      //     },
+      //   },
+      // });
+      const newRoom = await createRoom();
       router.push(
         //TODO: change `/room/${newRoom.room_code}?session_id=${newRoom.session_id}`,
-        `/room/${newRoom.data.code}?session_id=${newRoom.data.id}`,
+        `/room/${newRoom.room_code}?session_id=${newRoom.session_id}`,
       );
     } catch (err) {
       if (err instanceof Error) {

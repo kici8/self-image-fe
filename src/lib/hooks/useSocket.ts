@@ -3,13 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
-type RoomStage = "OPEN" | "IN_PROGRESS" | "CLOSED";
+type StrapiRoomStage = "OPEN" | "IN_PROGRESS" | "CLOSED";
 
-export type RoomUpdatedResponse = {
+export type StrapiRoomUpdatedResponse = {
   id: number;
   documentId: string;
   code: string;
-  stage: RoomStage;
+  stage: StrapiRoomStage;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date;
@@ -59,23 +59,50 @@ export type RoomUpdatedResponse = {
   localizations: [];
 };
 
-// TODO:
+type playerConnectedResponse = {
+  player_id: string;
+  nickname: string;
+};
+
+type roomProgressResponse = {
+  scores: {
+    cluster_id: string;
+    value: number;
+  }[];
+  unlocked_filters: string[];
+  unlocked_images: string[];
+};
+
+type roomSelfieResponse = {
+  image_base64: string;
+  applied_filters: string[];
+};
+
+// TODO: forse bisogna approfondire il discorso della room in socket
 interface ServerToClientEvents {
-  "room.updated": (data: RoomUpdatedResponse) => void;
+  "room.updated": (data: StrapiRoomUpdatedResponse) => void;
+  player_connected: (data: playerConnectedResponse) => void;
+  room_progress: (data: roomProgressResponse) => void;
+  room_selfie: (data: roomSelfieResponse) => void;
 }
 
 interface ClientToServerEvents {
-  "room.updated": (data: RoomUpdatedResponse) => void;
+  "room.updated": (data: StrapiRoomUpdatedResponse) => void;
 }
 
-export const useSocket = () => {
+type UseSocketProperties = {
+  room_code?: string;
+};
+
+export const useSocket = ({ room_code }: UseSocketProperties) => {
   const socketRef = useRef<Socket<
     ServerToClientEvents,
     ClientToServerEvents
   > | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  // const [isRoomJoined, setIsRoomJoined] = useState(false);
   const [updatedMessage, setUpdatedMessage] =
-    useState<RoomUpdatedResponse | null>(null);
+    useState<StrapiRoomUpdatedResponse | null>(null);
 
   useEffect(() => {
     socketRef.current = io(process.env.NEXT_PUBLIC_SOCKET_URL);
@@ -85,11 +112,15 @@ export const useSocket = () => {
       console.log("Connesso al server Socket.IO");
     });
 
+    // TODO: remove strapi
     socketRef.current.on("room.updated", (data) => {
       console.log("Messaggio ricevuto:", data);
       setUpdatedMessage(data);
     });
 
+    console.log("room_code", room_code);
+
+    //
     socketRef.current.on("disconnect", () => {
       setIsConnected(false);
       console.log("Disconnesso dal server Socket.IO");
@@ -100,7 +131,7 @@ export const useSocket = () => {
     };
   }, []);
 
-  const sendMessage = (msg: RoomUpdatedResponse) => {
+  const sendMessage = (msg: StrapiRoomUpdatedResponse) => {
     socketRef.current?.emit("room.updated", msg);
   };
 

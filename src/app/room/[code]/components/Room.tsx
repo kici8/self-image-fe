@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { DownloadIcon, FileX2Icon, RefreshCwIcon } from "lucide-react";
 import ImageGrid from "./ImageGrid";
 import CategoryList from "./CategoryList";
-import { RoomUpdatedResponse, useSocket } from "@/lib/hooks/useSocket";
+import { StrapiRoomUpdatedResponse, useSocket } from "@/lib/hooks/useSocket";
 import { useEffect, useState } from "react";
 
 export default function Room({ code }: { code: string }) {
@@ -23,8 +23,8 @@ export default function Room({ code }: { code: string }) {
   // // Download results button ✅
   // // Close room button ✅
 
-  const { isConnected, updatedMessage } = useSocket();
-  const [roomData, setRoomData] = useState<RoomUpdatedResponse>();
+  const { isConnected, updatedMessage } = useSocket({ room_code: code });
+  const [roomData, setRoomData] = useState<StrapiRoomUpdatedResponse>();
 
   useEffect(() => {
     if (updatedMessage) {

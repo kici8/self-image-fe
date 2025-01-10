@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { DownloadIcon, FileX2Icon, RefreshCwIcon } from "lucide-react";
 import ImageGrid from "./ImageGrid";
 import CategoryList from "./CategoryList";
-import { RoomUpdatedResponse, useSocket } from "@/app/hooks/useSocket";
+import { RoomUpdatedResponse, useSocket } from "@/lib/hooks/useSocket";
 import { useEffect, useState } from "react";
 
 export default function Room({ code }: { code: string }) {

@@ -3,10 +3,14 @@
 import { Button } from "@/components/ui/button";
 import { useSocket } from "@/lib/hooks/useSocket";
 import { mockImages, staticClusters, TypeImage } from "@/lib/mockdata";
-import { DownloadIcon, FileX2Icon, RefreshCwIcon } from "lucide-react";
+import { DownloadIcon, RefreshCwIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import ClusterList, { Cluster } from "./ClusterList";
 import ImageGrid from "./ImageGrid";
+import CloseRoomDialog from "./CloseRoomDialog";
+import { closeRoom } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
 
 export default function Room({ code }: { code: string }) {
   // TODO: listen for changes in the room and update the UI accordingly
@@ -24,12 +28,15 @@ export default function Room({ code }: { code: string }) {
   // // Close room button
 
   // Hooks
+  const router = useRouter();
   const { isConnected, joinRoom, roomConnectedPlayer, roomProgress } =
     useSocket();
 
   // States
   const [imagesWithSelfie] = useState<TypeImage[]>([...mockImages]);
   const [clusters, setClusters] = useState<Cluster[]>(staticClusters);
+  const [isCloseRoomDialogOpen, setIsCloseRoomDialogOpen] = useState(false);
+  const [isClosingRoomLoading, setIsClosingRoomLoading] = useState(false);
 
   // Effects
   // Join the room when the code is available
@@ -45,7 +52,7 @@ export default function Room({ code }: { code: string }) {
     const scoreMap = new Map(
       roomProgress?.scores?.map(({ cluster_id, value }) => [
         cluster_id,
-        value,
+        value * 100, // Convert the flat value to percentage
       ]) || [],
     );
 
@@ -55,8 +62,46 @@ export default function Room({ code }: { code: string }) {
       percentage: scoreMap.get(staticCluster.id) || 0,
     }));
 
+    console.log("updatedClusters", updatedClusters);
+
     setClusters(updatedClusters);
   }, [roomProgress]);
+
+  // Callbacks
+  const onCloseRoom = async () => {
+    setIsClosingRoomLoading(true);
+    setIsCloseRoomDialogOpen(false);
+
+    try {
+      const result = await closeRoom({ room_code: code });
+      if (result.status === "success") {
+        toast({
+          title: "Stanza chiusa",
+          description: "La stanza è stata chiusa correttamente.",
+          variant: "default",
+        });
+        router.push("/");
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        toast({
+          title: "Errore, non è stato possibile chiudere la stanza",
+          description: err.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Errore",
+          description: "non è stato possibile chiudere la stanza",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsClosingRoomLoading(false);
+    }
+  };
+
+  const onResultsDownload = () => {};
 
   // TODO: Handle new session
   // Next.js allows you to use the native window.history.pushState and
@@ -108,14 +153,20 @@ export default function Room({ code }: { code: string }) {
         </div>
 
         <div className="flex gap-2 rounded-lg bg-card px-4 py-4">
-          <Button variant="outline" className="flex-1">
+          <Button
+            variant="outline"
+            className="flex-1"
+            onClick={onResultsDownload}
+          >
             Scarica risultati
             <DownloadIcon />
           </Button>
-          <Button variant="destructive" className="flex-1">
-            Chiudi stanza
-            <FileX2Icon />
-          </Button>
+          <CloseRoomDialog
+            isOpen={isCloseRoomDialogOpen}
+            setIsOpen={setIsCloseRoomDialogOpen}
+            onCloseRoom={onCloseRoom}
+            isLoading={isClosingRoomLoading}
+          />
         </div>
       </div>
     </div>

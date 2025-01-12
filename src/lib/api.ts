@@ -1,37 +1,5 @@
 import AxiosInstance from "./axios";
 
-type CreateStrapiRoomResponse = {
-  data: {
-    id: number;
-    documentId: string;
-    code: string;
-    stage: "OPEN" | "CLOSED" | "IN_PROGRESS";
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-  };
-  meta: unknown;
-};
-
-type CreateStrapiRoomPayload = {
-  data: {
-    stage: "OPEN" | "CLOSED" | "IN_PROGRESS";
-    host: {
-      id: number;
-      username: string;
-      email: string;
-    };
-  };
-};
-
-export const createStrapiRoom = async (
-  payload: CreateStrapiRoomPayload,
-): Promise<CreateStrapiRoomResponse> => {
-  //   const response = await AxiosInstance.post("/api/room/create");
-  const response = await AxiosInstance.post("/api/rooms", payload);
-  return response.data;
-};
-
 type CreateRoomResponse = {
   room_code: string;
   session_id: string;
@@ -89,7 +57,7 @@ type closeRoomPayload = {
 export const closeRoom = async (
   payload: closeRoomPayload,
 ): Promise<closeRoomResponse> => {
-  const response = await AxiosInstance.delete("/api/room/export", {
+  const response = await AxiosInstance.delete("/api/room/close", {
     data: payload,
   });
   return response.data;

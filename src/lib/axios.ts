@@ -1,3 +1,4 @@
+import { toast } from "@/hooks/use-toast";
 import axios from "axios";
 
 // Config axios
@@ -36,6 +37,11 @@ AxiosInstance.interceptors.response.use(
   },
   (error) => {
     // Handle response errors here
+    toast({
+      title: "Errore",
+      description: "Si è verificato un errore durante la richiesta.",
+      variant: "destructive",
+    });
     return Promise.reject(error);
   },
 );

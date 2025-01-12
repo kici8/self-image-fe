@@ -28,20 +28,8 @@ export default function Home() {
     // console.log("TODO: add an hardcoded code?", hostCode);
 
     try {
-      // TODO: change with right one
-      // const newRoom = await createStrapiRoom({
-      //   data: {
-      //     stage: "OPEN",
-      //     host: {
-      //       id: 1,
-      //       username: "artusi.daniele@gmail.com",
-      //       email: "artusi.daniele@gmail.com",
-      //     },
-      //   },
-      // });
       const newRoom = await createRoom();
       router.push(
-        //TODO: change `/room/${newRoom.room_code}?session_id=${newRoom.session_id}`,
         `/room/${newRoom.room_code}?session_id=${newRoom.session_id}`,
       );
     } catch (err) {

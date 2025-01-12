@@ -4,10 +4,9 @@ import { cn } from "@/lib/utils";
 import { cva } from "class-variance-authority";
 import { ZoomInIcon, ZoomOutIcon } from "lucide-react";
 import { useState } from "react";
-import { mockImages, TypeImage } from "./mockdata";
+import { TypeImage } from "../../../../lib/mockdata";
 
-export default function ImageGrid() {
-  const [images] = useState<TypeImage[]>(mockImages);
+export default function ImageGrid({ images }: { images: TypeImage[] }) {
   const [numberOfColumns, setNumberOfColumns] = useState(5);
 
   // TODO:

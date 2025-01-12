@@ -1,11 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useSocket } from "@/lib/hooks/useSocket";
+import { mockImages, staticClusters, TypeImage } from "@/lib/mockdata";
 import { DownloadIcon, FileX2Icon, RefreshCwIcon } from "lucide-react";
-import ImageGrid from "./ImageGrid";
-import CategoryList from "./CategoryList";
-import { StrapiRoomUpdatedResponse, useSocket } from "@/lib/hooks/useSocket";
 import { useEffect, useState } from "react";
+import ClusterList, { Cluster } from "./ClusterList";
+import ImageGrid from "./ImageGrid";
 
 export default function Room({ code }: { code: string }) {
   // TODO: listen for changes in the room and update the UI accordingly
@@ -14,24 +15,48 @@ export default function Room({ code }: { code: string }) {
   // On the sidebar show:
 
   // // The room code ✅
-  // // The qr to join the room // TODO: ask what data to put in the qr
+  // // Connection status
   // // The list of users that ask to join the room or just the counter
 
-  // // Results and categories ✅
+  // // Results and categories
+  // // New session button
+  // // Download results button
+  // // Close room button
 
-  // // New session button ✅
-  // // Download results button ✅
-  // // Close room button ✅
+  // Hooks
+  const { isConnected, joinRoom, roomConnectedPlayer, roomProgress } =
+    useSocket();
 
-  const { isConnected, updatedMessage } = useSocket({ room_code: code });
-  const [roomData, setRoomData] = useState<StrapiRoomUpdatedResponse>();
+  // States
+  const [imagesWithSelfie] = useState<TypeImage[]>([...mockImages]);
+  const [clusters, setClusters] = useState<Cluster[]>(staticClusters);
 
+  // Effects
+  // Join the room when the code is available
   useEffect(() => {
-    if (updatedMessage) {
-      console.log("Nuovo messaggio ricevuto:", updatedMessage);
-      setRoomData(updatedMessage);
+    if (code) {
+      joinRoom(code);
     }
-  }, [updatedMessage]);
+  }, [code, joinRoom]);
+
+  // Update the clusters with the progress
+  useEffect(() => {
+    // Create a map of the scores
+    const scoreMap = new Map(
+      roomProgress?.scores?.map(({ cluster_id, value }) => [
+        cluster_id,
+        value,
+      ]) || [],
+    );
+
+    // Update the clusters with the progress map
+    const updatedClusters = staticClusters.map((staticCluster) => ({
+      ...staticCluster,
+      percentage: scoreMap.get(staticCluster.id) || 0,
+    }));
+
+    setClusters(updatedClusters);
+  }, [roomProgress]);
 
   // TODO: Handle new session
   // Next.js allows you to use the native window.history.pushState and
@@ -43,20 +68,12 @@ export default function Room({ code }: { code: string }) {
   return (
     <div className="flex h-svh">
       <div className="flex-1">
-        <ImageGrid />
+        <ImageGrid images={imagesWithSelfie} />
       </div>
 
       <div className="flex min-w-96 flex-grow-0 flex-col gap-6 p-3">
         <div className="flex flex-grow-0 flex-col gap-6 rounded-xl bg-card p-3">
           <div className="flex">
-            {/* <div className="flex h-24 w-24 items-center justify-center rounded-sm bg-white p-1">
-              <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=${code}`}
-                alt={`QR code for room ${code}`}
-                className="block flex-1"
-              />
-            </div> */}
-
             <div className="flex flex-1 flex-col justify-center px-6">
               <h2 className="text-4xl font-semibold italic">{code}</h2>
               <p className="text-sm text-muted-foreground">
@@ -65,7 +82,6 @@ export default function Room({ code }: { code: string }) {
               <p className="text-sm text-muted-foreground">
                 {/* TODO: */}
                 {isConnected ? "Stanza collegata" : "STANZA OFFLINE"}
-                Stato stanza: {roomData?.stage}
               </p>
             </div>
           </div>
@@ -73,12 +89,13 @@ export default function Room({ code }: { code: string }) {
           <div className="flex flex-col text-sm">
             <div className="flex gap-1 text-muted-foreground">
               Utenti entrati:
-              <span className="font-bold text-primary">21</span>
+              <span className="font-bold text-primary">
+                {roomConnectedPlayer.length}
+              </span>
             </div>
-            <div className="flex gap-1 text-muted-foreground">
-              Record inviati in questa sessione:
-              <span className="font-bold text-primary">3</span>
-            </div>
+            {roomConnectedPlayer.map((player) => (
+              <span key={player.nickname}>{player.nickname}</span>
+            ))}
           </div>
           <Button>
             Nuova sessione
@@ -87,7 +104,7 @@ export default function Room({ code }: { code: string }) {
         </div>
 
         <div className="flex flex-1 flex-col gap-2">
-          <CategoryList />
+          <ClusterList cluster={clusters} />
         </div>
 
         <div className="flex gap-2 rounded-lg bg-card px-4 py-4">

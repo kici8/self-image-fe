@@ -3,68 +3,19 @@
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
-type StrapiRoomStage = "OPEN" | "IN_PROGRESS" | "CLOSED";
-
-export type StrapiRoomUpdatedResponse = {
-  id: number;
-  documentId: string;
-  code: string;
-  stage: StrapiRoomStage;
-  createdAt: Date;
-  updatedAt: Date;
-  publishedAt: Date;
-  locale: string;
-  host: {
-    count: number;
-  };
-  participants: {
-    count: number;
-  };
-  createdBy: {
-    id: number;
-    documentId: string;
-    firstname: string;
-    lastname: string;
-    username: null;
-    email: string;
-    password: string;
-    resetPasswordToken: null;
-    registrationToken: null;
-    isActive: true;
-    blocked: false;
-    preferedLanguage: null;
-    createdAt: Date;
-    updatedAt: Date;
-    publishedAt: Date;
-    locale: null;
-  };
-  updatedBy: {
-    id: 1;
-    documentId: string;
-    firstname: string;
-    lastname: string;
-    username: null;
-    email: string;
-    password: string;
-    resetPasswordToken: null;
-    registrationToken: null;
-    isActive: true;
-    blocked: false;
-    preferedLanguage: null;
-    createdAt: Date;
-    updatedAt: Date;
-    publishedAt: Date;
-    locale: null;
-  };
-  localizations: [];
-};
-
-type playerConnectedResponse = {
+type Player = {
   player_id: string;
   nickname: string;
 };
 
-type roomProgressResponse = {
+type RoomSelfie = {
+  image_base64: string;
+  applied_filters: string[];
+};
+
+type PlayerConnectedResponse = Player;
+
+type RoomProgressResponse = {
   scores: {
     cluster_id: string;
     value: number;
@@ -73,57 +24,77 @@ type roomProgressResponse = {
   unlocked_images: string[];
 };
 
-type roomSelfieResponse = {
-  image_base64: string;
-  applied_filters: string[];
-};
+type roomSelfieResponse = RoomSelfie;
 
 // TODO: forse bisogna approfondire il discorso della room in socket
 interface ServerToClientEvents {
-  "room.updated": (data: StrapiRoomUpdatedResponse) => void;
-  player_connected: (data: playerConnectedResponse) => void;
-  room_progress: (data: roomProgressResponse) => void;
+  player_connected: (data: PlayerConnectedResponse) => void;
+  room_progress: (data: RoomProgressResponse) => void;
   room_selfie: (data: roomSelfieResponse) => void;
 }
 
-interface ClientToServerEvents {
-  "room.updated": (data: StrapiRoomUpdatedResponse) => void;
-}
-
-type UseSocketProperties = {
-  room_code?: string;
+type JoinRoomPayload = {
+  code: string;
 };
 
-export const useSocket = ({ room_code }: UseSocketProperties) => {
+type JoinRoomResponse = {
+  status: "success"; // TODO: error handling?
+  session_id: string;
+};
+
+type LeaveRoomResponse = {
+  status: "success"; // TODO: error handling?
+};
+
+interface ClientToServerEvents {
+  join_room: (
+    data: JoinRoomPayload,
+    callback: (data: JoinRoomResponse) => void,
+  ) => void;
+  leave_room: (
+    data: JoinRoomPayload,
+    callback: (data: LeaveRoomResponse) => void,
+  ) => void;
+}
+
+export const useSocket = () => {
   const socketRef = useRef<Socket<
     ServerToClientEvents,
     ClientToServerEvents
   > | null>(null);
+
   const [isConnected, setIsConnected] = useState(false);
-  // const [isRoomJoined, setIsRoomJoined] = useState(false);
-  const [updatedMessage, setUpdatedMessage] =
-    useState<StrapiRoomUpdatedResponse | null>(null);
+  const [roomConnectedPlayer, setRoomConnectedPlayer] = useState<Player[]>([]);
+  const [roomProgress, setRoomProgress] = useState<RoomProgressResponse | null>(
+    null,
+  );
+  const [roomSelfie, setRoomSelfie] = useState<RoomSelfie[]>([]);
 
   useEffect(() => {
     socketRef.current = io(process.env.NEXT_PUBLIC_SOCKET_URL);
 
     socketRef.current.on("connect", () => {
       setIsConnected(true);
-      console.log("Connesso al server Socket.IO");
+      console.log("Connected to Socket.IO server");
     });
 
-    // TODO: remove strapi
-    socketRef.current.on("room.updated", (data) => {
-      console.log("Messaggio ricevuto:", data);
-      setUpdatedMessage(data);
+    // TODO: this api may change in favor of a list of players in room progress
+    // So if the dashboard get refreshed, the list of players is still there
+    socketRef.current.on("player_connected", (data) => {
+      setRoomConnectedPlayer((prev) => [...prev, data]);
     });
 
-    console.log("room_code", room_code);
+    socketRef.current.on("room_progress", (data) => {
+      setRoomProgress(data);
+    });
 
-    //
+    socketRef.current.on("room_selfie", (data) => {
+      setRoomSelfie((prev) => [...prev, data]);
+    });
+
     socketRef.current.on("disconnect", () => {
       setIsConnected(false);
-      console.log("Disconnesso dal server Socket.IO");
+      console.log("Disconnected from Socket.IO server");
     });
 
     return () => {
@@ -131,9 +102,51 @@ export const useSocket = ({ room_code }: UseSocketProperties) => {
     };
   }, []);
 
-  const sendMessage = (msg: StrapiRoomUpdatedResponse) => {
-    socketRef.current?.emit("room.updated", msg);
+  const joinRoom = (code: string) => {
+    socketRef.current?.emit("join_room", { code }, (data) =>
+      console.log("Join room", data),
+    );
   };
 
-  return { isConnected, updatedMessage, sendMessage };
+  // TODO: when I have to use this?
+  // On room unmount or close room?
+  const leaveRoom = (code: string) => {
+    socketRef.current?.emit("leave_room", { code }, (data) => {
+      console.log("Leave room", data);
+    });
+  };
+
+  return {
+    isConnected,
+    joinRoom,
+    roomConnectedPlayer,
+    roomProgress,
+    roomSelfie,
+    setRoomProgress,
+    setRoomSelfie,
+    leaveRoom,
+  };
 };
+
+// export const useGetMappedCluster = () => {
+//   const {roomProgress} = useSocket();
+
+//   const [mappedCluster, setMappedCluster] = useState<Cluster[]>([]);
+
+//   useEffect(() => {
+//     if (roomProgress) {
+//       const mappedCluster = roomProgress.scores.map(({ cluster_id, value }) => {
+//         return {
+//           id: cluster_id,
+//           name: cluster_id,
+//           icon: <div />,
+//           percentage: value,
+//         };
+//       });
+//       setMappedCluster(mappedCluster);
+//     }
+
+//   }, []);
+
+//   return mappedCluster;
+// }

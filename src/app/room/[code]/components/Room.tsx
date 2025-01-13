@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useSocket } from "@/lib/hooks/useSocket";
 import { mockImages, staticClusters, TypeImage } from "@/lib/mockdata";
 import { DownloadIcon, LoaderCircleIcon, RefreshCwIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ClusterList, { Cluster } from "./ClusterList";
 import ImageGrid from "./ImageGrid";
 import CloseRoomDialog from "./CloseRoomDialog";
@@ -29,8 +29,7 @@ export default function Room({ code }: { code: string }) {
 
   // Hooks
   const router = useRouter();
-  const { isConnected, joinRoom, roomConnectedPlayer, roomProgress } =
-    useSocket();
+  const { isConnected, joinRoom, roomData } = useSocket();
 
   // States
   const [imagesWithSelfie] = useState<TypeImage[]>([...mockImages]);
@@ -41,19 +40,24 @@ export default function Room({ code }: { code: string }) {
 
   // Effects
   // Join the room when the code is available
-  useEffect(() => {
+
+  const stableJoinRoom = useCallback(() => {
     if (code) {
       joinRoom(code);
     }
   }, [code, joinRoom]);
 
+  useEffect(() => {
+    stableJoinRoom();
+  }, [stableJoinRoom]);
+
   // Update the clusters with the progress
   useEffect(() => {
     // Create a map of the scores
     const scoreMap = new Map(
-      roomProgress?.scores?.map(({ cluster_id, value }) => [
+      roomData?.scores?.map(({ cluster_id, score }) => [
         cluster_id,
-        value * 100, // Convert the flat value to percentage
+        score * 100, // Convert the flat value to percentage
       ]) || [],
     );
 
@@ -66,7 +70,7 @@ export default function Room({ code }: { code: string }) {
     console.log("updatedClusters", updatedClusters);
 
     setClusters(updatedClusters);
-  }, [roomProgress]);
+  }, [roomData]);
 
   // Callbacks
   const onCloseRoom = async () => {
@@ -127,7 +131,6 @@ export default function Room({ code }: { code: string }) {
       setIsResultDownloadLoading(false);
     }
   };
-
   // TODO: Handle new session
   // Next.js allows you to use the native window.history.pushState and
   // window.history.replaceState methods to
@@ -160,11 +163,11 @@ export default function Room({ code }: { code: string }) {
             <div className="flex gap-1 text-muted-foreground">
               Utenti entrati:
               <span className="font-bold text-primary">
-                {roomConnectedPlayer.length}
+                {roomData?.connected_players.length || 0}
               </span>
             </div>
-            {roomConnectedPlayer.map((player) => (
-              <span key={player.nickname}>{player.nickname}</span>
+            {roomData?.connected_players.map((player) => (
+              <span key={player}>{player}</span>
             ))}
           </div>
           <Button>

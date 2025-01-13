@@ -3,26 +3,27 @@
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
-type Player = {
-  player_id: string;
-  nickname: string;
-};
-
 type RoomSelfie = {
   image_base64: string;
   applied_filters: string[];
 };
 
-type PlayerConnectedResponse = Player;
+type PlayerConnectedResponse = string;
 
-type RoomProgressResponse = {
+type RoomData = {
+  code: string;
+  session_id: string;
+  status: number; // 0 open, 1 closed
   scores: {
     cluster_id: string;
-    value: number;
+    score: number;
   }[];
+  connected_players: string[];
   unlocked_filters: string[];
   unlocked_images: string[];
 };
+
+type RoomProgressResponse = RoomData;
 
 type roomSelfieResponse = RoomSelfie;
 
@@ -39,7 +40,7 @@ type JoinRoomPayload = {
 
 type JoinRoomResponse = {
   status: "success"; // TODO: error handling?
-  session_id: string;
+  data: RoomData;
 };
 
 type LeaveRoomResponse = {
@@ -64,10 +65,7 @@ export const useSocket = () => {
   > | null>(null);
 
   const [isConnected, setIsConnected] = useState(false);
-  const [roomConnectedPlayer, setRoomConnectedPlayer] = useState<Player[]>([]);
-  const [roomProgress, setRoomProgress] = useState<RoomProgressResponse | null>(
-    null,
-  );
+  const [roomData, setRoomData] = useState<RoomProgressResponse | null>(null);
   const [roomSelfie, setRoomSelfie] = useState<RoomSelfie[]>([]);
 
   useEffect(() => {
@@ -78,14 +76,22 @@ export const useSocket = () => {
       console.log("Connected to Socket.IO server");
     });
 
-    // TODO: this api may change in favor of a list of players in room progress
-    // So if the dashboard get refreshed, the list of players is still there
     socketRef.current.on("player_connected", (data) => {
-      setRoomConnectedPlayer((prev) => [...prev, data]);
+      const alreadyConnected = roomData?.connected_players.includes(data);
+
+      if (alreadyConnected) return;
+      setRoomData((prev) =>
+        prev
+          ? {
+              ...prev,
+              connected_players: [...prev.connected_players, data],
+            }
+          : null,
+      );
     });
 
     socketRef.current.on("room_progress", (data) => {
-      setRoomProgress(data);
+      setRoomData(data);
     });
 
     socketRef.current.on("room_selfie", (data) => {
@@ -100,12 +106,19 @@ export const useSocket = () => {
     return () => {
       socketRef.current?.disconnect();
     };
-  }, []);
+  }, [roomData?.connected_players]);
 
   const joinRoom = (code: string) => {
-    socketRef.current?.emit("join_room", { code }, (data) =>
-      console.log("Join room", data),
-    );
+    socketRef.current?.emit("join_room", { code }, (data) => {
+      if (data.status === "success") {
+        setRoomData((prev) => {
+          if (JSON.stringify(prev) !== JSON.stringify(data.data)) {
+            return data.data;
+          }
+          return prev;
+        });
+      }
+    });
   };
 
   // TODO: when I have to use this?
@@ -119,34 +132,10 @@ export const useSocket = () => {
   return {
     isConnected,
     joinRoom,
-    roomConnectedPlayer,
-    roomProgress,
+    roomData,
     roomSelfie,
-    setRoomProgress,
+    setRoomData,
     setRoomSelfie,
     leaveRoom,
   };
 };
-
-// export const useGetMappedCluster = () => {
-//   const {roomProgress} = useSocket();
-
-//   const [mappedCluster, setMappedCluster] = useState<Cluster[]>([]);
-
-//   useEffect(() => {
-//     if (roomProgress) {
-//       const mappedCluster = roomProgress.scores.map(({ cluster_id, value }) => {
-//         return {
-//           id: cluster_id,
-//           name: cluster_id,
-//           icon: <div />,
-//           percentage: value,
-//         };
-//       });
-//       setMappedCluster(mappedCluster);
-//     }
-
-//   }, []);
-
-//   return mappedCluster;
-// }

@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 export type TypeImage = {
-  id: number;
+  id: string;
   format: number;
   src: string;
   unlocked: boolean;
@@ -58,93 +58,63 @@ export const staticClusters = [
 
 export const mockImages = [
   {
-    id: 1,
+    id: "d.1",
     format: 1,
-    src: "https://images.unsplash.com/flagged/photo-1572392640988-ba48d1a74457?q=80&w=2160&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    src: "/cluster-images/d.1.jpg",
     unlocked: false,
   },
   {
-    id: 2,
+    id: "d.2",
     format: 1,
-    src: "https://images.unsplash.com/photo-1578926314433-e2789279f4aa?q=80&w=2821&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    unlocked: true,
-  },
-  {
-    id: 4,
-    format: 1,
-    src: "https://images.unsplash.com/flagged/photo-1572392640988-ba48d1a74457?q=80&w=2160&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    src: "/cluster-images/d.2.jpg",
     unlocked: false,
   },
   {
-    id: 5,
+    id: "d.3",
     format: 1,
-    src: "https://images.unsplash.com/photo-1578926314433-e2789279f4aa?q=80&w=2821&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    unlocked: true,
-  },
-  {
-    id: 7,
-    format: 1,
-    src: "https://images.unsplash.com/photo-1578926314433-e2789279f4aa?q=80&w=2821&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    src: "/cluster-images/d.3.jpg",
     unlocked: false,
   },
   {
-    id: 9,
+    id: "d.4",
     format: 1,
-    src: "https://images.unsplash.com/flagged/photo-1572392640988-ba48d1a74457?q=80&w=2160&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    src: "/cluster-images/d.4.jpg",
     unlocked: false,
   },
   {
-    id: 10,
+    id: "d.5",
     format: 1,
-    src: "https://images.unsplash.com/photo-1578926314433-e2789279f4aa?q=80&w=2821&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    unlocked: true,
-  },
-  {
-    id: 12,
-    format: 1,
-    src: "https://images.unsplash.com/flagged/photo-1572392640988-ba48d1a74457?q=80&w=2160&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    src: "/cluster-images/d.5.jpg",
     unlocked: false,
   },
   {
-    id: 13,
+    id: "d.6",
     format: 1,
-    src: "https://images.unsplash.com/photo-1578926314433-e2789279f4aa?q=80&w=2821&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    unlocked: true,
-  },
-  {
-    id: 15,
-    format: 1,
-    src: "https://images.unsplash.com/flagged/photo-1572392640988-ba48d1a74457?q=80&w=2160&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    src: "/cluster-images/d.6.jpg",
     unlocked: false,
   },
   {
-    id: 16,
+    id: "d.7",
     format: 1,
-    src: "https://images.unsplash.com/photo-1578926314433-e2789279f4aa?q=80&w=2821&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    src: "/cluster-images/d.7.jpg",
     unlocked: false,
   },
   {
-    id: 18,
+    id: "d.8",
     format: 1,
-    src: "https://images.unsplash.com/flagged/photo-1572392640988-ba48d1a74457?q=80&w=2160&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    src: "/cluster-images/d.8.jpg",
     unlocked: false,
   },
   {
-    id: 19,
+    id: "d.9",
     format: 1,
-    src: "https://images.unsplash.com/photo-1578926314433-e2789279f4aa?q=80&w=2821&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    src: "/cluster-images/d.9.jpg",
     unlocked: false,
   },
   {
-    id: 21,
+    id: "d.10",
     format: 1,
-    src: "https://images.unsplash.com/flagged/photo-1572392640988-ba48d1a74457?q=80&w=2160&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    unlocked: false,
-  },
-  {
-    id: 22,
-    format: 1,
-    src: "https://images.unsplash.com/photo-1578926314433-e2789279f4aa?q=80&w=2821&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    src: "/cluster-images/d.10.jpg",
     unlocked: false,
   },
 ];

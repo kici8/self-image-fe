@@ -5,6 +5,7 @@ import { cva } from "class-variance-authority";
 import { ZoomInIcon, ZoomOutIcon } from "lucide-react";
 import { useState } from "react";
 import { TypeImage } from "../../../../lib/mockdata";
+import Image from "next/image";
 
 export default function ImageGrid({ images }: { images: TypeImage[] }) {
   const [numberOfColumns, setNumberOfColumns] = useState(5);
@@ -30,9 +31,10 @@ export default function ImageGrid({ images }: { images: TypeImage[] }) {
           <div key={id} style={{ aspectRatio: `${format}` }} className="p-1">
             <div className="relative h-full w-full overflow-hidden rounded-lg">
               {unlocked ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <Image
                   src={src}
+                  width={512}
+                  height={521}
                   className={cn(imageVariants({ unlocked }))}
                   alt=""
                 />

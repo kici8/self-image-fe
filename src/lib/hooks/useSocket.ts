@@ -8,7 +8,10 @@ type RoomSelfie = {
   applied_filters: string[];
 };
 
-type PlayerConnectedResponse = string;
+type PlayerConnectedResponse = {
+  player_id: string;
+  nickname: string;
+};
 
 type RoomData = {
   code: string;
@@ -77,14 +80,17 @@ export const useSocket = () => {
     });
 
     socketRef.current.on("player_connected", (data) => {
-      const alreadyConnected = roomData?.connected_players.includes(data);
+      console.log("player_connected", data);
+      const alreadyConnected = roomData?.connected_players.includes(
+        data.nickname,
+      );
 
       if (alreadyConnected) return;
       setRoomData((prev) =>
         prev
           ? {
               ...prev,
-              connected_players: [...prev.connected_players, data],
+              connected_players: [...prev.connected_players, data.nickname],
             }
           : null,
       );

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useSocket } from "@/lib/hooks/useSocket";
 import { mockImages, staticClusters, TypeImage } from "@/lib/mockdata";
-import { DownloadIcon, RefreshCwIcon } from "lucide-react";
+import { DownloadIcon, LoaderCircleIcon, RefreshCwIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import ClusterList, { Cluster } from "./ClusterList";
 import ImageGrid from "./ImageGrid";
@@ -37,6 +37,7 @@ export default function Room({ code }: { code: string }) {
   const [clusters, setClusters] = useState<Cluster[]>(staticClusters);
   const [isCloseRoomDialogOpen, setIsCloseRoomDialogOpen] = useState(false);
   const [isClosingRoomLoading, setIsClosingRoomLoading] = useState(false);
+  const [isResultDownloadLoading, setIsResultDownloadLoading] = useState(false);
 
   // Effects
   // Join the room when the code is available
@@ -101,7 +102,31 @@ export default function Room({ code }: { code: string }) {
     }
   };
 
-  const onResultsDownload = () => {};
+  const onResultsDownload = async () => {
+    setIsResultDownloadLoading(true);
+    try {
+      const response = await fetch("/api/generate-results-pdf");
+
+      if (!response.ok)
+        throw new Error("Errore durante la generazione del PDF");
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "report.pdf";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Errore durante il download del PDF:", error);
+      alert("Errore durante il download del PDF.");
+    } finally {
+      setIsResultDownloadLoading(false);
+    }
+  };
 
   // TODO: Handle new session
   // Next.js allows you to use the native window.history.pushState and
@@ -157,9 +182,14 @@ export default function Room({ code }: { code: string }) {
             variant="outline"
             className="flex-1"
             onClick={onResultsDownload}
+            disabled={isResultDownloadLoading}
           >
             Scarica risultati
-            <DownloadIcon />
+            {isResultDownloadLoading ? (
+              <LoaderCircleIcon className="animate-spin" />
+            ) : (
+              <DownloadIcon />
+            )}
           </Button>
           <CloseRoomDialog
             isOpen={isCloseRoomDialogOpen}

@@ -24,7 +24,7 @@ export default function ClusterList({ cluster }: ClusterListProps) {
         <Progress value={percentage} className="mt-2 h-2" />
       </div>
       <div className="flex-shrink-0 text-sm text-muted-foreground">
-        {percentage}%
+        {Math.round(percentage)}%
       </div>
     </div>
   ));

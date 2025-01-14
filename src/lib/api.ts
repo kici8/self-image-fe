@@ -13,6 +13,9 @@ export const createRoom = async (): Promise<CreateRoomResponse> => {
 type createNewRoomSessionResponse = {
   // TODO: check if this is an ENUM or just a 200
   status: string;
+  data: {
+    session_id: string;
+  };
 };
 
 type createNewRoomSessionPayload = {
@@ -22,7 +25,7 @@ type createNewRoomSessionPayload = {
 export const createNewRoomSession = async (
   payload: createNewRoomSessionPayload,
 ): Promise<createNewRoomSessionResponse> => {
-  const response = await AxiosInstance.post("/api/room/session/new", payload);
+  const response = await AxiosInstance.post("/api/room/new-session", payload);
   return response.data;
 };
 

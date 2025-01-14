@@ -30,7 +30,6 @@ type RoomProgressResponse = RoomData;
 
 type roomSelfieResponse = RoomSelfie;
 
-// TODO: forse bisogna approfondire il discorso della room in socket
 interface ServerToClientEvents {
   player_connected: (data: PlayerConnectedResponse) => void;
   room_progress: (data: RoomProgressResponse) => void;
@@ -102,6 +101,7 @@ export const useSocket = () => {
     });
 
     socketRef.current.on("room_selfie", (data) => {
+      console.log("room_selfie receiving", data);
       setRoomSelfie((prev) => [...prev, data]);
     });
 
@@ -120,6 +120,8 @@ export const useSocket = () => {
       if (data.status === "success") {
         setRoomData((prev) => {
           if (JSON.stringify(prev) !== JSON.stringify(data.data)) {
+            console.log("Join room", data);
+
             return data.data;
           }
           return prev;
@@ -128,8 +130,7 @@ export const useSocket = () => {
     });
   };
 
-  // TODO: when I have to use this?
-  // On room unmount or close room?
+  // TODO: Do I need this?
   const leaveRoom = (code: string) => {
     socketRef.current?.emit("leave_room", { code }, (data) => {
       console.log("Leave room", data);

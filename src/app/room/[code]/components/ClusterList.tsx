@@ -14,10 +14,7 @@ type ClusterListProps = {
 
 export default function ClusterList({ cluster }: ClusterListProps) {
   return cluster.map(({ icon, id, name, percentage }) => (
-    <div
-      key={id}
-      className="flex items-center space-x-4 rounded-lg bg-card px-4 py-3"
-    >
+    <div key={id} className="flex items-center space-x-4 rounded-lg px-4 py-3">
       <div className="flex-shrink-0">{icon}</div>
       <div className="flex-grow">
         <h3 className="text-sm font-medium text-card-foreground">{name}</h3>

@@ -18,6 +18,7 @@ import CloseRoomDialog from "./CloseRoomDialog";
 import ClusterList, { Cluster } from "./ClusterList";
 import ImageGrid from "./ImageGrid";
 import CodeAnimation from "./CodeAnimation";
+import Marquee from "react-fast-marquee";
 
 export default function Room({ code }: { code: string }) {
   // TODO: listen for changes in the room and update the UI accordingly
@@ -191,40 +192,52 @@ export default function Room({ code }: { code: string }) {
         <ImageGrid images={imagesWithSelfie} />
       </div>
 
-      <div className="flex h-svh w-96 flex-col gap-6 overflow-hidden border-l border-foreground">
-        <div className="flex-0 flex items-center bg-foreground p-3">
-          <h2 className="flex-1 font-mono text-6xl font-bold text-primary-foreground">
-            <CodeAnimation targetCode={code} />
-          </h2>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-primary-foreground">
-            {isConnected ? (
-              <ZapIcon className="h-6 w-6 text-primary-foreground" />
-            ) : (
-              <ZapOffIcon className="h-6 w-6 text-destructive" />
-            )}
+      <div className="flex h-svh w-96 flex-col gap-8 overflow-hidden">
+        <div className="flex flex-col gap-6 rounded-bl-[32px] bg-stone-500/30 p-3 text-foreground">
+          <div className="flex-0 flex items-center">
+            <h2 className="flex-1 font-mono text-6xl font-bold">
+              <CodeAnimation targetCode={code} />
+            </h2>
+            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-primary">
+              {isConnected ? (
+                <ZapIcon className="h-5 w-5" />
+              ) : (
+                <ZapOffIcon className="h-5 w-5 text-destructive" />
+              )}
+            </div>
           </div>
-        </div>
-
-        <div className="flex flex-grow-0 flex-col gap-6 rounded-xl bg-card p-3">
-          <div className="flex flex-col text-sm">
-            {/* <div className="flex gap-1 text-muted-foreground">
-              Utenti entrati:
-              <span className="font-bold text-primary">
+          <Marquee className="">
+            {(roomData?.connected_players ?? []).length > 0
+              ? (roomData?.connected_players ?? []).map((player) => (
+                  <span key={player} className="text-md mr-4 font-semibold">
+                    {player}{" "}
+                  </span>
+                ))
+              : null}
+            <span className="text-md mr-8 italic">
+              Per partecipare alla stanza inserisci il codice in alto...
+            </span>
+          </Marquee>
+          <div className="flex gap-2">
+            <div className="flex h-16 items-center justify-center rounded-[20px] border border-primary px-4 py-1 font-mono text-sm font-[500]">
+              Partecipanti:
+              <span className="px-1 font-bold">
                 {roomData?.connected_players.length || 0}
               </span>
-            </div> */}
-            {/* {roomData?.connected_players.map((player) => (
-              <span key={player}>{player}</span>
-            ))} */}
+            </div>
+            <Button
+              onClick={onNewSession}
+              disabled={isNewSessionLoading}
+              className="h-16 flex-1 rounded-[20px]"
+            >
+              Nuova sessione
+              {isNewSessionLoading ? (
+                <LoaderCircleIcon className="animate-spin" />
+              ) : (
+                <RefreshCwIcon />
+              )}
+            </Button>
           </div>
-          <Button onClick={onNewSession}>
-            Nuova sessione
-            {isNewSessionLoading ? (
-              <LoaderCircleIcon className="animate-spin" />
-            ) : (
-              <RefreshCwIcon />
-            )}
-          </Button>
         </div>
 
         <div className="flex flex-1 flex-col gap-2">

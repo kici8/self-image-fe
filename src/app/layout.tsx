@@ -1,10 +1,10 @@
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans_Condensed } from "next/font/google";
+import { Inconsolata, IBM_Plex_Sans_Condensed } from "next/font/google";
 import "./globals.css";
 
-const ibmPlexMono = IBM_Plex_Mono({
+const ibmPlexMono = Inconsolata({
   weight: ["400", "500", "700"],
   subsets: ["latin"],
   variable: "--font-ibm-plex-mono",
@@ -34,7 +34,7 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="dark"
           // enableSystem
           // disableTransitionOnChange
         >

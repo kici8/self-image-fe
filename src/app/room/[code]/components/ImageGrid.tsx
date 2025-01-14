@@ -14,6 +14,8 @@ export default function ImageGrid({ images }: { images: TypeImage[] }) {
   // randomize the order of the images
   // probably the images will be placed in order, than the selfies are pushed in a random position in the array
   // Locked images appear blurred and grayed out
+  // When an image is clicked show a modal with the image in full size and the description
+  // Check which data is needed for the modal
 
   const imageVariants = cva("h-full w-full object-cover", {
     variants: {
@@ -39,7 +41,7 @@ export default function ImageGrid({ images }: { images: TypeImage[] }) {
                   alt=""
                 />
               ) : (
-                <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-card-foreground/20 text-primary/20">
+                <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-stone-500/30 text-stone-500/30">
                   <svg
                     viewBox="0 0 24 24"
                     fillRule="evenodd"

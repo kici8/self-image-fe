@@ -32,7 +32,9 @@ export default function Room({ code }: { code: string }) {
   const { isConnected, joinRoom, roomData } = useSocket();
 
   // States
-  const [imagesWithSelfie] = useState<TypeImage[]>([...mockImages]);
+  const [imagesWithSelfie, setImagesWithSelfie] = useState<TypeImage[]>([
+    ...mockImages,
+  ]);
   const [clusters, setClusters] = useState<Cluster[]>(staticClusters);
   const [isCloseRoomDialogOpen, setIsCloseRoomDialogOpen] = useState(false);
   const [isClosingRoomLoading, setIsClosingRoomLoading] = useState(false);
@@ -53,6 +55,8 @@ export default function Room({ code }: { code: string }) {
 
   // Update the clusters with the progress
   useEffect(() => {
+    console.log("roomData updating", roomData);
+
     // Create a map of the scores
     const scoreMap = new Map(
       roomData?.scores?.map(({ cluster_id, score }) => [
@@ -66,10 +70,16 @@ export default function Room({ code }: { code: string }) {
       ...staticCluster,
       percentage: scoreMap.get(staticCluster.id) || 0,
     }));
-
-    console.log("updatedClusters", updatedClusters);
-
     setClusters(updatedClusters);
+
+    // Update the images with the unlocked ones
+    const updatedImages = mockImages.map((image) => ({
+      ...image,
+      unlocked: roomData?.unlocked_images.includes(image.id) || false,
+    }));
+
+    // TODO: Add the selfie to the images
+    setImagesWithSelfie(updatedImages);
   }, [roomData]);
 
   // Callbacks

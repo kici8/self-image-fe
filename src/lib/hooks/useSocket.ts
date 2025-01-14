@@ -97,6 +97,7 @@ export const useSocket = () => {
     });
 
     socketRef.current.on("room_progress", (data) => {
+      console.log("room_progress receiving", data);
       setRoomData(data);
     });
 

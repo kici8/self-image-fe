@@ -1,17 +1,19 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Toaster } from "@/components/ui/toaster";
+import type { Metadata } from "next";
+import { IBM_Plex_Mono, IBM_Plex_Sans_Condensed } from "next/font/google";
+import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const ibmPlexMono = IBM_Plex_Mono({
+  weight: ["400", "500", "700"],
   subsets: ["latin"],
+  variable: "--font-ibm-plex-mono",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const ibmPlexSans = IBM_Plex_Sans_Condensed({
+  weight: ["400", "600"],
   subsets: ["latin"],
+  variable: "--font-ibm-plex-condensed",
 });
 
 export const metadata: Metadata = {
@@ -28,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"

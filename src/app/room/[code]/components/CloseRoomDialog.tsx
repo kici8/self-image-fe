@@ -28,7 +28,7 @@ export default function CloseRoomDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="destructive" className="flex-1">
-          Chiudi stanza
+          Chiudi
           {isLoading ? (
             <LoaderCircleIcon className="animate-spin" />
           ) : (

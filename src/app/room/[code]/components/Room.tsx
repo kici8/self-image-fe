@@ -1,16 +1,23 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
+import { closeRoom, createNewRoomSession } from "@/lib/api";
 import { useSocket } from "@/lib/hooks/useSocket";
 import { mockImages, staticClusters, TypeImage } from "@/lib/mockdata";
-import { DownloadIcon, LoaderCircleIcon, RefreshCwIcon } from "lucide-react";
+import {
+  DownloadIcon,
+  LoaderCircleIcon,
+  RefreshCwIcon,
+  ZapIcon,
+  ZapOffIcon,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import CloseRoomDialog from "./CloseRoomDialog";
 import ClusterList, { Cluster } from "./ClusterList";
 import ImageGrid from "./ImageGrid";
-import CloseRoomDialog from "./CloseRoomDialog";
-import { closeRoom, createNewRoomSession } from "@/lib/api";
-import { useRouter } from "next/navigation";
-import { toast } from "@/hooks/use-toast";
+import CodeAnimation from "./CodeAnimation";
 
 export default function Room({ code }: { code: string }) {
   // TODO: listen for changes in the room and update the UI accordingly
@@ -184,31 +191,31 @@ export default function Room({ code }: { code: string }) {
         <ImageGrid images={imagesWithSelfie} />
       </div>
 
-      <div className="flex min-w-96 flex-grow-0 flex-col gap-6 p-3">
-        <div className="flex flex-grow-0 flex-col gap-6 rounded-xl bg-card p-3">
-          <div className="flex">
-            <div className="flex flex-1 flex-col justify-center px-6">
-              <h2 className="text-4xl font-semibold italic">{code}</h2>
-              <p className="text-sm text-muted-foreground">
-                Entra nella stanza
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {/* TODO: */}
-                {isConnected ? "Stanza collegata" : "STANZA OFFLINE"}
-              </p>
-            </div>
+      <div className="flex h-svh w-96 flex-col gap-6 overflow-hidden border-l border-foreground">
+        <div className="flex-0 flex items-center bg-foreground p-3">
+          <h2 className="flex-1 font-mono text-6xl font-bold text-primary-foreground">
+            <CodeAnimation targetCode={code} />
+          </h2>
+          <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-primary-foreground">
+            {isConnected ? (
+              <ZapIcon className="h-6 w-6 text-primary-foreground" />
+            ) : (
+              <ZapOffIcon className="h-6 w-6 text-destructive" />
+            )}
           </div>
+        </div>
 
+        <div className="flex flex-grow-0 flex-col gap-6 rounded-xl bg-card p-3">
           <div className="flex flex-col text-sm">
-            <div className="flex gap-1 text-muted-foreground">
+            {/* <div className="flex gap-1 text-muted-foreground">
               Utenti entrati:
               <span className="font-bold text-primary">
                 {roomData?.connected_players.length || 0}
               </span>
-            </div>
-            {roomData?.connected_players.map((player) => (
+            </div> */}
+            {/* {roomData?.connected_players.map((player) => (
               <span key={player}>{player}</span>
-            ))}
+            ))} */}
           </div>
           <Button onClick={onNewSession}>
             Nuova sessione
@@ -231,7 +238,7 @@ export default function Room({ code }: { code: string }) {
             onClick={onResultsDownload}
             disabled={isResultDownloadLoading}
           >
-            Scarica risultati
+            Scarica
             {isResultDownloadLoading ? (
               <LoaderCircleIcon className="animate-spin" />
             ) : (

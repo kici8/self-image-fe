@@ -8,7 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import ClusterList, { Cluster } from "./ClusterList";
 import ImageGrid from "./ImageGrid";
 import CloseRoomDialog from "./CloseRoomDialog";
-import { closeRoom } from "@/lib/api";
+import { closeRoom, createNewRoomSession } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 
@@ -39,6 +39,7 @@ export default function Room({ code }: { code: string }) {
   const [isCloseRoomDialogOpen, setIsCloseRoomDialogOpen] = useState(false);
   const [isClosingRoomLoading, setIsClosingRoomLoading] = useState(false);
   const [isResultDownloadLoading, setIsResultDownloadLoading] = useState(false);
+  const [isNewSessionLoading, setIsNewSessionLoading] = useState(false);
 
   // Effects
   // Join the room when the code is available
@@ -83,6 +84,41 @@ export default function Room({ code }: { code: string }) {
   }, [roomData]);
 
   // Callbacks
+  // TODO: Handle new session
+  // Next.js allows you to use the native window.history.pushState and
+  // window.history.replaceState methods to
+  // update the browser's history stack without reloading the page.
+  // pushState and replaceState calls integrate into the Next.js Router,
+  // allowing you to sync with usePathname and useSearchParams.
+
+  const onNewSession = async () => {
+    setIsNewSessionLoading(true);
+    try {
+      const response = await createNewRoomSession({ room_code: code });
+      if (response.status === "success") {
+        // TODO: remove the selfies from the images
+        // TODO: update the clusters
+        // What I have to do here?
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          title: "Errore, non è stato possibile creare una nuova sessione",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Errore",
+          description: "non è stato possibile creare una nuova sessione",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsNewSessionLoading(false);
+    }
+  };
+
   const onCloseRoom = async () => {
     setIsClosingRoomLoading(true);
     setIsCloseRoomDialogOpen(false);
@@ -141,12 +177,6 @@ export default function Room({ code }: { code: string }) {
       setIsResultDownloadLoading(false);
     }
   };
-  // TODO: Handle new session
-  // Next.js allows you to use the native window.history.pushState and
-  // window.history.replaceState methods to
-  // update the browser's history stack without reloading the page.
-  // pushState and replaceState calls integrate into the Next.js Router,
-  // allowing you to sync with usePathname and useSearchParams.
 
   return (
     <div className="flex h-svh">
@@ -180,9 +210,13 @@ export default function Room({ code }: { code: string }) {
               <span key={player}>{player}</span>
             ))}
           </div>
-          <Button>
+          <Button onClick={onNewSession}>
             Nuova sessione
-            <RefreshCwIcon />
+            {isNewSessionLoading ? (
+              <LoaderCircleIcon className="animate-spin" />
+            ) : (
+              <RefreshCwIcon />
+            )}
           </Button>
         </div>
 

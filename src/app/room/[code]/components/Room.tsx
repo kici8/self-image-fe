@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/hooks/use-toast";
 import { closeRoom, createNewRoomSession } from "@/lib/api";
 import { useSocket } from "@/lib/hooks/useSocket";
 import { mockImages, staticClusters, TypeImage } from "@/lib/mockdata";

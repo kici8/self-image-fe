@@ -206,18 +206,20 @@ export default function Room({ code }: { code: string }) {
               )}
             </div>
           </div>
-          <Marquee className="">
-            {(roomData?.connected_players ?? []).length > 0
-              ? (roomData?.connected_players ?? []).map((player) => (
-                  <span key={player} className="text-md mr-4 font-semibold">
-                    {player}{" "}
-                  </span>
-                ))
-              : null}
-            <span className="text-md mr-8 italic">
-              Per partecipare alla stanza inserisci il codice in alto...
-            </span>
-          </Marquee>
+          <div className="h-6">
+            <Marquee>
+              {(roomData?.connected_players ?? []).length > 0
+                ? (roomData?.connected_players ?? []).map((player) => (
+                    <span key={player} className="text-md mr-4 font-semibold">
+                      {player}{" "}
+                    </span>
+                  ))
+                : null}
+              <span className="text-md mr-8 italic">
+                Per partecipare alla stanza inserisci il codice in alto...
+              </span>
+            </Marquee>
+          </div>
           <div className="flex gap-2">
             <div className="flex h-16 items-center justify-center rounded-[20px] border border-primary px-4 py-1 font-mono text-sm font-[500]">
               Partecipanti:

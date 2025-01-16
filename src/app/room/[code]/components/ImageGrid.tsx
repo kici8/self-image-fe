@@ -1,11 +1,16 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ZoomInIcon, ZoomOutIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { cva } from "class-variance-authority";
+import {
+  CameraIcon,
+  CameraOffIcon,
+  ZoomInIcon,
+  ZoomOutIcon,
+} from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { TypeImage } from "../../../../lib/mockdata";
-import { cva } from "class-variance-authority";
-import { cn } from "@/lib/utils";
 
 export enum typeGridType {
   image = "IMAGE",
@@ -19,13 +24,15 @@ export type TypeGridImage = TypeImage & {
 
 export default function ImageGrid({ images }: { images: TypeGridImage[] }) {
   const [numberOfColumns, setNumberOfColumns] = useState(5);
+  const [showSelfie, setShowSelfie] = useState(true);
 
   // TODO:
-  // randomize the order of the images
-  // probably the images will be placed in order, than the selfies are pushed in a random position in the array
-  // Locked images appear blurred and grayed out
   // When an image is clicked show a modal with the image in full size and the description
   // Check which data is needed for the modal
+  // If the showSelfie is true, show all the images else filter out the selfies (type: SELFIE)
+  const filteredImages = showSelfie
+    ? images
+    : images.filter((image) => image.type !== typeGridType.selfie);
 
   const imageVariants = cva("transition-opacity", {
     variants: {
@@ -36,10 +43,19 @@ export default function ImageGrid({ images }: { images: TypeGridImage[] }) {
     },
   });
 
+  const ToggleButtonVariants = cva("rounded-full", {
+    variants: {
+      checked: {
+        true: ["bg-primary text-primary-foreground"],
+        false: ["bg-stone-500/30 text-stone-500"],
+      },
+    },
+  });
+
   return (
     <div className="relative h-full w-full overflow-y-auto p-4">
       <div className="gap-0" style={{ columns: numberOfColumns }}>
-        {images.map(({ src, id, unlocked }) => (
+        {filteredImages.map(({ src, id, unlocked }) => (
           <div key={id} className="p-1">
             <div className="relative overflow-hidden rounded-lg">
               <Image
@@ -71,10 +87,10 @@ export default function ImageGrid({ images }: { images: TypeGridImage[] }) {
         ))}
       </div>
 
-      <div className="fixed left-8 top-8 flex items-center justify-center gap-3">
+      <div className="fixed left-8 top-8 flex items-center justify-center gap-3 rounded-full bg-card p-2 shadow-lg">
         <Button
           size="icon"
-          className="rounded-full shadow-lg"
+          className="rounded-full"
           onClick={() =>
             setNumberOfColumns((prev) => (prev < 12 ? prev + 1 : prev))
           }
@@ -83,12 +99,20 @@ export default function ImageGrid({ images }: { images: TypeGridImage[] }) {
         </Button>
         <Button
           size="icon"
-          className="rounded-full shadow-lg"
+          className="rounded-full"
           onClick={() =>
             setNumberOfColumns((prev) => (prev > 1 ? prev - 1 : prev))
           }
         >
           <ZoomInIcon />
+        </Button>
+
+        <Button
+          className={cn(ToggleButtonVariants({ checked: showSelfie }))}
+          size="icon"
+          onClick={() => setShowSelfie((prev) => !prev)}
+        >
+          {showSelfie ? <CameraIcon /> : <CameraOffIcon />}
         </Button>
       </div>
     </div>

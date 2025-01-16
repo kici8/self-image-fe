@@ -17,7 +17,7 @@ export default function ClusterList({ cluster }: ClusterListProps) {
     <div key={id} className="flex items-center space-x-4 rounded-lg px-4 py-3">
       <div className="flex-shrink-0">{icon}</div>
       <div className="flex-grow">
-        <h3 className="text-sm font-medium text-card-foreground">{name}</h3>
+        <h3 className="text-md font-semibold text-card-foreground">{name}</h3>
         <Progress value={percentage} className="mt-2 h-2" />
       </div>
       <div className="flex-shrink-0 text-sm text-muted-foreground">

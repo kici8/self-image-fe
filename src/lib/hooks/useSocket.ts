@@ -3,11 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
-type RoomSelfie = {
-  image_base64: string;
-  applied_filters: string[];
-};
-
 type PlayerConnectedResponse = {
   player_id: string;
   nickname: string;
@@ -27,6 +22,12 @@ type RoomData = {
 };
 
 type RoomProgressResponse = RoomData;
+
+type RoomSelfie = {
+  filters: string[];
+  player_id: string;
+  selfie_id: string;
+};
 
 type roomSelfieResponse = RoomSelfie;
 
@@ -68,7 +69,8 @@ export const useSocket = () => {
 
   const [isConnected, setIsConnected] = useState(false);
   const [roomData, setRoomData] = useState<RoomProgressResponse | null>(null);
-  const [roomSelfie, setRoomSelfie] = useState<RoomSelfie[]>([]);
+  const [roomSelfies, setRoomSelfies] = useState<RoomSelfie[]>([]);
+  const [lastRoomSelfie, setLastRoomSelfie] = useState<RoomSelfie | null>(null);
 
   useEffect(() => {
     socketRef.current = io(process.env.NEXT_PUBLIC_SOCKET_URL);
@@ -102,7 +104,8 @@ export const useSocket = () => {
 
     socketRef.current.on("room_selfie", (data) => {
       console.log("room_selfie receiving", data);
-      setRoomSelfie((prev) => [...prev, data]);
+      setRoomSelfies((prev) => [...prev, data]);
+      setLastRoomSelfie(data);
     });
 
     socketRef.current.on("disconnect", () => {
@@ -141,9 +144,8 @@ export const useSocket = () => {
     isConnected,
     joinRoom,
     roomData,
-    roomSelfie,
-    setRoomData,
-    setRoomSelfie,
+    roomSelfies,
+    lastRoomSelfie,
     leaveRoom,
   };
 };

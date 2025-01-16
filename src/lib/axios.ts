@@ -12,15 +12,15 @@ const AxiosInstance = axios.create({
 // Intercept the request to add the token
 AxiosInstance.interceptors.request.use(
   (config) => {
-    // TODO: change with a proper auth token
+    // TODO: Add a token to the request
     // const token = localStorage.getItem('token');
     // const accessToken = JSON.parse(token);
-    const accessToken = process.env.NEXT_PUBLIC_API_AUTH_TOKEN;
+    // const accessToken = process.env.NEXT_PUBLIC_API_AUTH_TOKEN;
 
-    if (accessToken) {
-      //   if (config.headers) config.headers.token = accessToken;
-      config.headers.Authorization = `Bearer ${accessToken}`;
-    }
+    // if (accessToken) {
+    //   //   if (config.headers) config.headers.token = accessToken;
+    //   config.headers.Authorization = `Bearer ${accessToken}`;
+    // }
     return config;
   },
   (error) => {

@@ -1,10 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { toast } from "@/lib/hooks/use-toast";
 import { closeRoom, createNewRoomSession } from "@/lib/api";
+import { toast } from "@/lib/hooks/use-toast";
 import { useSocket } from "@/lib/hooks/useSocket";
-import { mockImages, staticClusters, TypeImage } from "@/lib/mockdata";
+import { mockImages, staticClusters } from "@/lib/mockdata";
 import {
   DownloadIcon,
   LoaderCircleIcon,
@@ -14,35 +14,20 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import Marquee from "react-fast-marquee";
 import CloseRoomDialog from "./CloseRoomDialog";
 import ClusterList, { Cluster } from "./ClusterList";
-import ImageGrid from "./ImageGrid";
 import CodeAnimation from "./CodeAnimation";
-import Marquee from "react-fast-marquee";
+import ImageGrid, { TypeGridImage, typeGridType } from "./ImageGrid";
 
 export default function Room({ code }: { code: string }) {
-  // TODO: listen for changes in the room and update the UI accordingly
-  // On the main content show the gallery of images
-
-  // On the sidebar show:
-
-  // // The room code ✅
-  // // Connection status
-  // // The list of users that ask to join the room or just the counter
-
-  // // Results and categories
-  // // New session button
-  // // Download results button
-  // // Close room button
-
   // Hooks
   const router = useRouter();
-  const { isConnected, joinRoom, roomData } = useSocket();
+  const { isConnected, joinRoom, roomData, lastRoomSelfie } = useSocket();
 
   // States
-  const [imagesWithSelfie, setImagesWithSelfie] = useState<TypeImage[]>([
-    ...mockImages,
-  ]);
+  const [mappedImages, setMappedImages] = useState<TypeGridImage[]>([]);
+  const [lastSelfieAdded, setLastSelfieAdded] = useState<string | null>(null);
   const [clusters, setClusters] = useState<Cluster[]>(staticClusters);
   const [isCloseRoomDialogOpen, setIsCloseRoomDialogOpen] = useState(false);
   const [isClosingRoomLoading, setIsClosingRoomLoading] = useState(false);
@@ -51,7 +36,6 @@ export default function Room({ code }: { code: string }) {
 
   // Effects
   // Join the room when the code is available
-
   const stableJoinRoom = useCallback(() => {
     if (code) {
       joinRoom(code);
@@ -64,8 +48,6 @@ export default function Room({ code }: { code: string }) {
 
   // Update the clusters with the progress
   useEffect(() => {
-    console.log("roomData updating", roomData);
-
     // Create a map of the scores
     const scoreMap = new Map(
       roomData?.scores?.map(({ cluster_id, score }) => [
@@ -73,40 +55,62 @@ export default function Room({ code }: { code: string }) {
         score * 100, // Convert the flat value to percentage
       ]) || [],
     );
-
     // Update the clusters with the progress map
     const updatedClusters = staticClusters.map((staticCluster) => ({
       ...staticCluster,
       percentage: scoreMap.get(staticCluster.id) || 0,
     }));
     setClusters(updatedClusters);
-
     // Update the images with the unlocked ones
     const updatedImages = mockImages.map((image) => ({
       ...image,
       unlocked: roomData?.unlocked_images.includes(image.id) || false,
+      type: typeGridType.image,
     }));
-
-    // TODO: Add the selfie to the images
-    setImagesWithSelfie(updatedImages);
+    setMappedImages(updatedImages);
   }, [roomData]);
 
-  // Callbacks
-  // TODO: Handle new session
-  // Next.js allows you to use the native window.history.pushState and
-  // window.history.replaceState methods to
-  // update the browser's history stack without reloading the page.
-  // pushState and replaceState calls integrate into the Next.js Router,
-  // allowing you to sync with usePathname and useSearchParams.
+  // Handle selfies
+  useEffect(() => {
+    if (!lastRoomSelfie) return;
+    const alreadyExists = mappedImages.find(
+      (image) => image.id === lastRoomSelfie.selfie_id,
+    );
+    if (alreadyExists || lastRoomSelfie.selfie_id === lastSelfieAdded) return;
 
+    const mappedLastSelfie: TypeGridImage = {
+      id: lastRoomSelfie.selfie_id,
+      src: `${process.env.NEXT_PUBLIC_API_URL}/api/room/selfie/${lastRoomSelfie.selfie_id}`,
+      title: undefined,
+      description: undefined,
+      year: undefined,
+      author: undefined,
+      unlocked: true,
+      type: typeGridType.selfie,
+    };
+    // Insert the mappedLastSelfie into the mappedImages at the specified index
+    setMappedImages((prevImages) => {
+      const newImages = [...prevImages];
+      newImages.splice(
+        Math.floor(Math.random() * mockImages.length),
+        0,
+        mappedLastSelfie,
+      );
+      return newImages;
+    });
+    setLastSelfieAdded(lastRoomSelfie.selfie_id);
+  }, [lastRoomSelfie, lastSelfieAdded, mappedImages]);
+
+  // Callbacks
   const onNewSession = async () => {
     setIsNewSessionLoading(true);
     try {
       const response = await createNewRoomSession({ room_code: code });
       if (response.status === "success") {
-        // TODO: remove the selfies from the images
-        // TODO: update the clusters
-        // What I have to do here?
+        const purgedMappedImages = mappedImages.filter(
+          (image) => image.type === typeGridType.image,
+        );
+        setMappedImages(purgedMappedImages);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -189,7 +193,7 @@ export default function Room({ code }: { code: string }) {
   return (
     <div className="flex h-svh">
       <div className="flex-1">
-        <ImageGrid images={imagesWithSelfie} />
+        <ImageGrid images={mappedImages} />
       </div>
 
       <div className="flex h-svh w-96 flex-col gap-8 overflow-hidden">

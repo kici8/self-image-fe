@@ -6,7 +6,7 @@ type CreateRoomResponse = {
 };
 
 export const createRoom = async (): Promise<CreateRoomResponse> => {
-  const response = await AxiosInstance.post("api/room/create");
+  const response = await AxiosInstance.post("/api/room/create");
   return response.data;
 };
 

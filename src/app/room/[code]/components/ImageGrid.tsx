@@ -7,7 +7,17 @@ import { TypeImage } from "../../../../lib/mockdata";
 import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-export default function ImageGrid({ images }: { images: TypeImage[] }) {
+export enum typeGridType {
+  image = "IMAGE",
+  selfie = "SELFIE",
+}
+
+export type TypeGridImage = TypeImage & {
+  unlocked: boolean;
+  type: typeGridType;
+};
+
+export default function ImageGrid({ images }: { images: TypeGridImage[] }) {
   const [numberOfColumns, setNumberOfColumns] = useState(5);
 
   // TODO:

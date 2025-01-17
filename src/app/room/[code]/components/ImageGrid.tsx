@@ -11,6 +11,7 @@ import {
 import Image from "next/image";
 import { useState } from "react";
 import { TypeImage } from "../../../../lib/mockdata";
+import ImageDialog from "./ImageDialog";
 
 export enum typeGridType {
   image = "IMAGE",
@@ -25,7 +26,9 @@ export type TypeGridImage = TypeImage & {
 export default function ImageGrid({ images }: { images: TypeGridImage[] }) {
   const [numberOfColumns, setNumberOfColumns] = useState(5);
   const [showSelfie, setShowSelfie] = useState(true);
-
+  const [imageModalOpen, setImageModalOpen] = useState<TypeGridImage | null>(
+    null,
+  );
   // TODO:
   // When an image is clicked show a modal with the image in full size and the description
   // Check which data is needed for the modal
@@ -55,19 +58,23 @@ export default function ImageGrid({ images }: { images: TypeGridImage[] }) {
   return (
     <div className="group relative h-full w-full overflow-y-auto p-4">
       <div className="gap-1" style={{ columns: numberOfColumns }}>
-        {filteredImages.map(({ src, id, unlocked }) => (
-          <div key={id} className="mb-1">
+        {filteredImages.map((image) => (
+          <div
+            key={image.id}
+            className="mb-1"
+            onClick={() => setImageModalOpen(image)}
+          >
             <div className="relative overflow-hidden rounded-lg">
               <Image
-                src={src}
+                src={image.src}
                 // TODO: pass the right image width and height
                 // to avoid layout shift
                 width={720}
                 height={720}
                 alt=""
-                className={cn(imageVariants({ unlocked }))}
+                className={cn(imageVariants({ unlocked: image.unlocked }))}
               />
-              {!unlocked ? (
+              {!image.unlocked ? (
                 <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-stone-500/30 text-stone-500/30">
                   <svg
                     viewBox="0 0 24 24"
@@ -114,6 +121,14 @@ export default function ImageGrid({ images }: { images: TypeGridImage[] }) {
           {showSelfie ? <CameraIcon /> : <CameraOffIcon />}
         </Button>
       </div>
+
+      {imageModalOpen ? (
+        <ImageDialog
+          image={imageModalOpen}
+          isOpen={imageModalOpen !== null}
+          setIsOpen={(open) => setImageModalOpen(open ? imageModalOpen : null)}
+        />
+      ) : null}
     </div>
   );
 }

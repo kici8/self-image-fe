@@ -59,7 +59,6 @@ export const staticClusters = [
 ];
 
 export const mockImages: TypeImage[] = [
-
   {
     id: "a.1",
     src: "/cluster-images/a.1.jpg",
@@ -134,7 +133,7 @@ export const mockImages: TypeImage[] = [
   },
   {
     id: "a.10",
-    src: "/cluster-images/a.9.jpg",
+    src: "/cluster-images/a.10.jpg",
     title: "Self-portrait-with-Straw-Hat",
     description: undefined,
     author: "Vincent Van Gogh",
@@ -207,7 +206,8 @@ export const mockImages: TypeImage[] = [
   {
     id: "b.9",
     src: "/cluster-images/b.9.jpg",
-    title: "Portrait No. 29 (Double Exposure- Full Face and Profile) Portrait of Marcel Duchamp",
+    title:
+      "Portrait No. 29 (Double Exposure- Full Face and Profile) Portrait of Marcel Duchamp",
     description: undefined,
     author: "Victor Obsatz",
     year: "1953",

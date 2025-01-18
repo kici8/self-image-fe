@@ -12,8 +12,19 @@ type Post = {
   body: string;
 };
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    // Get room code from query string
+    const { searchParams } = new URL(req.url);
+    const room_code = searchParams.get("room_code");
+
+    if (!room_code) {
+      return NextResponse.json(
+        { error: "Codice stanza mancante" },
+        { status: 400 },
+      );
+    }
+
     const externalApiUrl = "https://jsonplaceholder.typicode.com/posts";
     const response = await axios.get(externalApiUrl);
     const data = response.data;
@@ -24,7 +35,7 @@ export async function GET() {
 
     doc.setFontSize(18);
     doc.text(
-      "TODO: risultati room: roomCode - giorno: data calendario ",
+      `Stanza ${room_code} - ${new Date().toLocaleString()}`,
       pageWidth / 2,
       20,
       { align: "center" },

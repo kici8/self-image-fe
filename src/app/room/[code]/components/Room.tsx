@@ -167,7 +167,9 @@ export default function Room({ code }: { code: string }) {
   const onResultsDownload = async () => {
     setIsResultDownloadLoading(true);
     try {
-      const response = await fetch("/api/generate-results-pdf");
+      const response = await fetch(
+        `/api/generate-results-pdf/?room_code= + ${code}`,
+      );
 
       if (!response.ok)
         throw new Error("Errore durante la generazione del PDF");

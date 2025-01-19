@@ -30,7 +30,7 @@ export default function ImageDialog({
       >
         <DialogHeader className="flex flex-row items-center p-3">
           <DialogTitle className="mr-3 flex-1 text-left align-middle text-lg md:text-2xl">
-            {image.title}
+            {image.title || "Opera senza titolo"}
           </DialogTitle>
           <Button
             size="icon"
@@ -53,9 +53,15 @@ export default function ImageDialog({
             />
           </div>
           <div className="w-full overflow-y-auto p-3 md:w-1/3">
-            <h3 className="mb-2 text-lg font-semibold">{image.author}</h3>
-            <p className="mb-6 text-sm text-muted-foreground">{image.year}</p>
-            <p className="text-sm">{image.description}</p>
+            <h3 className="mb-2 text-lg font-semibold">
+              {image.author || "Autore sconosciuto"}
+            </h3>
+            <p className="mb-6 text-sm text-muted-foreground">
+              {image.year || "Senza data"}
+            </p>
+            {image.description ? (
+              <p className="text-sm">{image.description}</p>
+            ) : null}
           </div>
         </div>
       </DialogContent>

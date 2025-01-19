@@ -58,7 +58,7 @@ export const staticClusters = [
   },
 ];
 
-export const mockImages: TypeImage[] = [
+export const staticImages: TypeImage[] = [
   {
     id: "a.1",
     src: "/cluster-images/a.1.jpg",

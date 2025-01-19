@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { closeRoom, createNewRoomSession } from "@/lib/api";
 import { toast } from "@/lib/hooks/use-toast";
 import { useSocket } from "@/lib/hooks/useSocket";
-import { mockImages, staticClusters } from "@/lib/mockdata";
+import { staticImages, staticClusters } from "@/lib/mockdata";
 import {
   DownloadIcon,
   LoaderCircleIcon,
@@ -62,7 +62,7 @@ export default function Room({ code }: { code: string }) {
     }));
     setClusters(updatedClusters);
     // Update the images with the unlocked ones
-    const updatedImages = mockImages.map((image) => ({
+    const updatedImages = staticImages.map((image) => ({
       ...image,
       unlocked: roomData?.unlocked_images.includes(image.id) || false,
       type: typeGridType.image,
@@ -78,9 +78,11 @@ export default function Room({ code }: { code: string }) {
     );
     if (alreadyExists || lastRoomSelfie.selfie_id === lastSelfieAdded) return;
 
+    const selfieUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/room/selfie/${lastRoomSelfie.selfie_id}`;
+
     const mappedLastSelfie: TypeGridImage = {
       id: lastRoomSelfie.selfie_id,
-      src: `${process.env.NEXT_PUBLIC_API_URL}/api/room/selfie/${lastRoomSelfie.selfie_id}`,
+      src: selfieUrl,
       title: undefined,
       description: undefined,
       year: undefined,
@@ -92,7 +94,7 @@ export default function Room({ code }: { code: string }) {
     setMappedImages((prevImages) => {
       const newImages = [...prevImages];
       newImages.splice(
-        Math.floor(Math.random() * mockImages.length),
+        Math.floor(Math.random() * staticImages.length),
         0,
         mappedLastSelfie,
       );

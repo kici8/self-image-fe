@@ -2,301 +2,25 @@
 import { NextResponse } from "next/server";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import autoTable from "jspdf-autotable";
+import autoTable, { Styles } from "jspdf-autotable";
 import { staticClusters, staticImages } from "@/lib/mockdata";
+import { mockResultsData } from "./mockData";
 
-type Cluster = {
-  cluster_id: string;
-  score: number;
+const roomColor: Partial<Styles> = {
+  fillColor: [0, 0, 0],
+  textColor: [255, 255, 255],
 };
 
-type Session = {
-  session_id: string;
-  unlocked_images: string[];
-  unlocked_filters: string[];
-  scores: Cluster[];
+const participantColor: Partial<Styles> = {
+  fillColor: [163, 230, 53],
+  textColor: [0, 0, 0],
 };
 
-type RoomResults = {
-  sessions: Session[];
-};
-
-type Interaction = {
-  cluster_id: string;
-  image_id: string;
-  fragment_id: string;
-  liked: boolean;
-};
-
-type Participant = {
-  nickname: string;
-  sessions: {
-    session_id: string;
-    interactions: Interaction[];
-    clusters: Cluster[];
-    unlocked_images: string[];
-    unlocked_filters: string[];
-    selfie_id: string;
-  }[];
-};
-
-type Result = {
-  roomResults: RoomResults;
-  participants: Participant[];
-};
-
-const mockResultsData: Result = {
-  roomResults: {
-    sessions: [
-      {
-        session_id: "session1",
-        unlocked_images: ["d.1", "d.4", "d.5", "f.3", "f.4", "f.5"],
-        unlocked_filters: ["filter1", "filter2"],
-        scores: [
-          { cluster_id: "A", score: 0.1 },
-          { cluster_id: "B", score: 0.3 },
-          { cluster_id: "C", score: 0.4 },
-          { cluster_id: "D", score: 0.2 },
-          { cluster_id: "E", score: 0.1 },
-          { cluster_id: "F", score: 0.0 },
-        ],
-      },
-      {
-        session_id: "session2",
-        unlocked_images: ["a.4", "a.4", "c.5", "e.3", "f.4", "f.5"],
-        unlocked_filters: ["filter3"],
-        scores: [
-          { cluster_id: "A", score: 0.1 },
-          { cluster_id: "B", score: 0.3 },
-          { cluster_id: "C", score: 0.4 },
-          { cluster_id: "D", score: 0.2 },
-          { cluster_id: "E", score: 0.1 },
-          { cluster_id: "F", score: 0.0 },
-        ],
-      },
-    ],
-  },
-  participants: [
-    {
-      nickname: "Participant1",
-      sessions: [
-        {
-          session_id: "session1",
-          interactions: [
-            {
-              cluster_id: "A",
-              image_id: "a.1",
-              fragment_id: "a.1.1",
-              liked: true,
-            },
-            {
-              cluster_id: "B",
-              image_id: "b.2",
-              fragment_id: "b.2.1",
-              liked: false,
-            },
-            {
-              cluster_id: "C",
-              image_id: "c.3",
-              fragment_id: "c.3.1",
-              liked: true,
-            },
-            {
-              cluster_id: "D",
-              image_id: "d.4",
-              fragment_id: "d.4.1",
-              liked: false,
-            },
-            {
-              cluster_id: "E",
-              image_id: "e.5",
-              fragment_id: "e.5.1",
-              liked: true,
-            },
-            {
-              cluster_id: "F",
-              image_id: "f.6",
-              fragment_id: "f.6.1",
-              liked: false,
-            },
-          ],
-          clusters: [
-            { cluster_id: "A", score: 0.1 },
-            { cluster_id: "B", score: 0.5 },
-            { cluster_id: "C", score: 0.1 },
-            { cluster_id: "D", score: 0.2 },
-            { cluster_id: "E", score: 0.1 },
-            { cluster_id: "F", score: 0.0 },
-          ],
-          unlocked_images: ["d.2", "f.4"],
-          unlocked_filters: ["filter1"],
-          selfie_id: "1c9e536b-0876-463b-b70d-fefd55271a17",
-        },
-        {
-          session_id: "session1",
-          interactions: [
-            {
-              cluster_id: "A",
-              image_id: "a.1",
-              fragment_id: "a.1.1",
-              liked: true,
-            },
-            {
-              cluster_id: "B",
-              image_id: "b.2",
-              fragment_id: "b.2.1",
-              liked: false,
-            },
-            {
-              cluster_id: "C",
-              image_id: "c.3",
-              fragment_id: "c.3.1",
-              liked: true,
-            },
-            {
-              cluster_id: "D",
-              image_id: "d.4",
-              fragment_id: "d.4.1",
-              liked: false,
-            },
-            {
-              cluster_id: "E",
-              image_id: "e.5",
-              fragment_id: "e.5.1",
-              liked: true,
-            },
-            {
-              cluster_id: "F",
-              image_id: "f.6",
-              fragment_id: "f.6.1",
-              liked: false,
-            },
-          ],
-          clusters: [
-            { cluster_id: "A", score: 0.1 },
-            { cluster_id: "B", score: 0.5 },
-            { cluster_id: "C", score: 0.1 },
-            { cluster_id: "D", score: 0.2 },
-            { cluster_id: "E", score: 0.1 },
-            { cluster_id: "F", score: 0.0 },
-          ],
-          unlocked_images: ["c.5", ".a.4"],
-          unlocked_filters: ["filter1"],
-          selfie_id: "1c9e536b-0876-463b-b70d-fefd55271a17",
-        },
-      ],
-    },
-    {
-      nickname: "Participant2",
-      sessions: [
-        {
-          session_id: "session1",
-          interactions: [
-            {
-              cluster_id: "A",
-              image_id: "a.1",
-              fragment_id: "a.1.1",
-              liked: true,
-            },
-            {
-              cluster_id: "B",
-              image_id: "b.2",
-              fragment_id: "b.2.1",
-              liked: false,
-            },
-            {
-              cluster_id: "C",
-              image_id: "c.3",
-              fragment_id: "c.3.1",
-              liked: true,
-            },
-            {
-              cluster_id: "D",
-              image_id: "d.4",
-              fragment_id: "d.4.1",
-              liked: false,
-            },
-            {
-              cluster_id: "E",
-              image_id: "e.5",
-              fragment_id: "e.5.1",
-              liked: true,
-            },
-            {
-              cluster_id: "F",
-              image_id: "f.6",
-              fragment_id: "f.6.1",
-              liked: false,
-            },
-          ],
-          clusters: [
-            { cluster_id: "A", score: 0.1 },
-            { cluster_id: "B", score: 0.5 },
-            { cluster_id: "C", score: 0.1 },
-            { cluster_id: "D", score: 0.2 },
-            { cluster_id: "E", score: 0.1 },
-            { cluster_id: "F", score: 0.0 },
-          ],
-          unlocked_images: ["e.2", "f.1"],
-          unlocked_filters: ["filter1"],
-          selfie_id: "1c9e536b-0876-463b-b70d-fefd55271a17",
-        },
-        {
-          session_id: "session1",
-          interactions: [
-            {
-              cluster_id: "A",
-              image_id: "a.1",
-              fragment_id: "a.1.1",
-              liked: true,
-            },
-            {
-              cluster_id: "B",
-              image_id: "b.2",
-              fragment_id: "b.2.1",
-              liked: false,
-            },
-            {
-              cluster_id: "C",
-              image_id: "c.3",
-              fragment_id: "c.3.1",
-              liked: true,
-            },
-            {
-              cluster_id: "D",
-              image_id: "d.4",
-              fragment_id: "d.4.1",
-              liked: false,
-            },
-            {
-              cluster_id: "E",
-              image_id: "e.5",
-              fragment_id: "e.5.1",
-              liked: true,
-            },
-            {
-              cluster_id: "F",
-              image_id: "f.6",
-              fragment_id: "f.6.1",
-              liked: false,
-            },
-          ],
-          clusters: [
-            { cluster_id: "A", score: 0.1 },
-            { cluster_id: "B", score: 0.5 },
-            { cluster_id: "C", score: 0.1 },
-            { cluster_id: "D", score: 0.2 },
-            { cluster_id: "E", score: 0.1 },
-            { cluster_id: "F", score: 0.0 },
-          ],
-          unlocked_images: ["b.2", "b.5"],
-          unlocked_filters: ["filter1"],
-          selfie_id: "1c9e536b-0876-463b-b70d-fefd55271a17",
-        },
-      ],
-    },
-  ],
-};
+async function blobToBase64(blob: Blob): Promise<string> {
+  const arrayBuffer = await blob.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  return buffer.toString("base64");
+}
 
 export async function GET(req: Request) {
   try {
@@ -325,10 +49,11 @@ export async function GET(req: Request) {
       startY: 12,
       head: [["Room", "Number of Participants", "Date"]],
       body: [[room_code, participants.length, new Date().toLocaleString()]],
+      headStyles: roomColor,
     });
 
-    roomResults.sessions.forEach((session, index) => {
-      const readableSessionNumber = index + 1;
+    for (let i = 0; i < roomResults.sessions.length; i++) {
+      const readableSessionNumber = i + 1;
       // const footerText = `Risultati sessione ${readableSessionNumber}`;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -338,13 +63,13 @@ export async function GET(req: Request) {
         head: [
           [`Room Session ${readableSessionNumber} Cluster`, "Name", "Score"],
         ],
-        body: session.scores.map((score) => [
+        body: roomResults.sessions[i].scores.map((score) => [
           score.cluster_id || "undefined",
           staticClusters.find((cluster) => cluster.id === score.cluster_id)
             ?.name || "Unknown",
           score.score.toString() || "undefined",
         ]),
-        // foot: [[footerText]],
+        headStyles: roomColor,
       });
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -358,12 +83,12 @@ export async function GET(req: Request) {
             "Author",
           ],
         ],
-        body: session.unlocked_images.map((image) => [
+        body: roomResults.sessions[i].unlocked_images.map((image) => [
           image,
           staticImages.find((img) => img.id === image)?.title || "Unknown",
           staticImages.find((img) => img.id === image)?.author || "Unknown",
         ]),
-        // foot: [[footerText]],
+        headStyles: roomColor,
       });
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -371,25 +96,19 @@ export async function GET(req: Request) {
       autoTable(doc, {
         startY: lastY,
         head: [[`Room Session ${readableSessionNumber} Unlocked Filters`]],
-        body: session.unlocked_filters.map((filter) => [filter]),
-        // foot: [[footerText]],
+        body: roomResults.sessions[i].unlocked_filters.map((filter) => [
+          filter,
+        ]),
+        headStyles: roomColor,
       });
-    });
+    }
 
     // New page for each participant
-    participants.forEach((participant, index) => {
-      const readableParticipantNumber = index + 1;
-
-      doc.addPage();
-      autoTable(doc, {
-        startY: 12,
-        head: [["Participant", "Nickname"]],
-        body: [[readableParticipantNumber, participant.nickname]],
-      });
-
-      participant.sessions.forEach(async (session, sIndex) => {
+    for (let i = 0; i < participants.length; i++) {
+      const readableParticipantNumber = i + 1;
+      for (let j = 0; j < participants[i].sessions.length; j++) {
         doc.addPage();
-        const readableSessionNumber = sIndex + 1;
+        const readableSessionNumber = j + 1;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let lastY = (doc as any).lastAutoTable.finalY + 20;
@@ -397,18 +116,19 @@ export async function GET(req: Request) {
           startY: lastY,
           head: [
             [
-              `${participant.nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Cluster`,
+              `${participants[i].nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Cluster`,
               "Name",
               "Score",
             ],
           ],
-          body: session.clusters.map((cluster) => [
+          body: participants[i].sessions[j].clusters.map((cluster) => [
             cluster.cluster_id,
             staticClusters.find(
               (staticCluster) => staticCluster.id === cluster.cluster_id,
             )?.name || "Unknown",
             cluster.score.toString(),
           ]),
+          headStyles: participantColor,
         });
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -417,16 +137,17 @@ export async function GET(req: Request) {
           startY: lastY,
           head: [
             [
-              `${participant.nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Unlocked images`,
+              `${participants[i].nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Unlocked images`,
               "Name",
               "Author",
             ],
           ],
-          body: session.unlocked_images.map((image) => [
+          body: participants[i].sessions[j].unlocked_images.map((image) => [
             image,
             staticImages.find((img) => img.id === image)?.title || "Unknown",
             staticImages.find((img) => img.id === image)?.author || "Unknown",
           ]),
+          headStyles: participantColor,
         });
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -435,10 +156,13 @@ export async function GET(req: Request) {
           startY: lastY,
           head: [
             [
-              `${participant.nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Unlocked Filters`,
+              `${participants[i].nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Unlocked Filters`,
             ],
           ],
-          body: session.unlocked_filters.map((filter) => [filter]),
+          body: participants[i].sessions[j].unlocked_filters.map((filter) => [
+            filter,
+          ]),
+          headStyles: participantColor,
         });
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -447,25 +171,45 @@ export async function GET(req: Request) {
           startY: lastY,
           head: [
             [
-              `${participant.nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Action`,
+              `${participants[i].nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Action`,
               "Image ID",
               "Fragment ID",
               "Liked",
             ],
           ],
-          body: session.interactions.map((interaction) => [
+          body: participants[i].sessions[j].interactions.map((interaction) => [
             interaction.cluster_id,
             interaction.image_id,
             interaction.fragment_id,
             interaction.liked.toString(),
           ]),
+          headStyles: participantColor,
+        });
+
+        doc.addPage();
+        // TODO: add selfie image to the PDF
+        autoTable(doc, {
+          startY: 12,
+          head: [["Selfie"]],
+          body: [
+            // [participants[i].sessions[j].selfie_id, participants[i].nickname],
+            [`Selfie by ${participants[i].nickname}`],
+          ],
+          headStyles: participantColor,
         });
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         lastY = (doc as any).lastAutoTable.finalY + 10;
-        // TODO: add selfie image to the PDF
-      });
-    });
+        const selfieUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/room/selfie/${participants[i].sessions[j].selfie_id}`;
+        const response = await fetch(selfieUrl);
+        const blob = await response.blob();
+        const base64DataUrl = `data:image/jpeg;base64,${await blobToBase64(blob)}`;
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const imageWidth = 90;
+        const xOffset = (pageWidth - imageWidth) / 2;
+        doc.addImage(base64DataUrl, "JPEG", xOffset, lastY, imageWidth, 160);
+      }
+    }
 
     // generate the PDF
     const pdfBlob = doc.output("blob");

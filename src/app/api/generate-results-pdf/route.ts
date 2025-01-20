@@ -101,7 +101,6 @@ export async function GET(req: Request) {
     // New page for each participant
     for (let i = 0; i < participants.length; i++) {
       const readableParticipantNumber = i + 1;
-
       doc.addPage();
       autoTable(doc, {
         startY: 12,
@@ -134,10 +133,11 @@ export async function GET(req: Request) {
       });
 
       for (let j = 0; j < participants[i].sessions.length; j++) {
-        doc.addPage();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        lastY = (doc as any).lastAutoTable.finalY + 4;
         const readableSessionNumber = j + 1;
         autoTable(doc, {
-          startY: 12,
+          startY: lastY,
           head: [
             [
               `${participants[i].nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Cluster`,
@@ -176,28 +176,51 @@ export async function GET(req: Request) {
           headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
         });
 
-        doc.addPage();
+        // SELFIE
+        // TODO: maybe this need to be optimized without await inside the loop
+        // the possible solution is to use Promise.all to fetch all the selfies
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        lastY = (doc as any).lastAutoTable.finalY + 4;
+        const selfieUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/room/selfie/${participants[i].sessions[j].selfie_id}`;
+        const response = await fetch(selfieUrl);
+        const blob = await response.blob();
+        const base64DataUrl = `data:image/jpeg;base64,${await blobToBase64(blob)}`;
+        const imgHeight = 72;
+        const imgWidth = imgHeight * 0.5625;
+
         autoTable(doc, {
-          startY: 12,
+          startY: lastY,
           head: [
             [
               `${participants[i].nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Selfie`,
             ],
           ],
-          body: [[`Selfie by ${participants[i].nickname}`]],
+          body: [[""]],
           headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
+          didParseCell: (data) => {
+            if (
+              data.section === "body" &&
+              data.row.index === 0 &&
+              data.column.index === 0
+            ) {
+              data.cell.styles.minCellHeight = imgHeight + 8;
+            }
+          },
+          didDrawCell: (data) => {
+            if (data.section === "body" && data.column.index === 0) {
+              const xOffset = data.cell.x + (data.cell.width - imgWidth) / 2;
+              const yOffset = data.cell.y + (data.cell.height - imgHeight) / 2;
+              doc.addImage(
+                base64DataUrl,
+                "JPEG",
+                xOffset,
+                yOffset,
+                imgWidth,
+                imgHeight,
+              );
+            }
+          },
         });
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        lastY = (doc as any).lastAutoTable.finalY + 10;
-        const selfieUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/room/selfie/${participants[i].sessions[j].selfie_id}`;
-        const response = await fetch(selfieUrl);
-        const blob = await response.blob();
-        const base64DataUrl = `data:image/jpeg;base64,${await blobToBase64(blob)}`;
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const imageWidth = 90;
-        const xOffset = (pageWidth - imageWidth) / 2;
-        doc.addImage(base64DataUrl, "JPEG", xOffset, lastY, imageWidth, 160);
       }
     }
 

@@ -2,7 +2,6 @@
 
 import Alert from "@/components/Alert";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { createRoom } from "@/lib/api";
 import { ArrowRightIcon, LoaderCircleIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -23,15 +22,9 @@ export default function Home() {
     event.preventDefault();
     setIsLoading(true);
 
-    // const form = event.currentTarget;
-    // const hostCode = form.get("hostCode") as string;
-    // console.log("TODO: add an hardcoded code?", hostCode);
-
     try {
       const newRoom = await createRoom();
-      router.push(
-        `/room/${newRoom.room_code}?session_id=${newRoom.session_id}`,
-      );
+      router.push(`/room/${newRoom.room_code}`);
     } catch (err) {
       if (err instanceof Error) {
         setError(`Failed to create room: ${err.message}`);
@@ -50,17 +43,19 @@ export default function Home() {
           Crea una nuova stanza
         </h2>
         <p className="mx-auto mt-6 max-w-lg text-center text-lg">
-          Inserisci il tuo Codice Host per creare una nuova stanza e iniziare
-          l&apos;esperienza.
+          {/* Inserisci il tuo Codice Host per creare una nuova stanza e iniziare
+          l&apos;esperienza. */}
+          Inizia una nuova esperienza creando una stanza. Il codice per accedere
+          alla stanza sarà generato automaticamente.
         </p>
         <form
-          className="mx-auto mt-20 flex max-w-md gap-x-4"
+          className="mx-auto mt-20 flex max-w-md justify-center gap-x-4"
           onSubmit={handleSubmit}
         >
           <label htmlFor="hostCode" className="sr-only">
             Codice Host
           </label>
-          <Input
+          {/* <Input
             id="hostCode"
             name="hostCode"
             type="password"
@@ -68,7 +63,7 @@ export default function Home() {
             autoComplete="password"
             // required
             placeholder="Codice Host"
-          />
+          /> */}
           <Button disabled={isLoading} type="submit">
             Crea Stanza
             {isLoading ? (

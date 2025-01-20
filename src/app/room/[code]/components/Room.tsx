@@ -171,7 +171,7 @@ export default function Room({ code }: { code: string }) {
 
     try {
       const response = await fetch(
-        `/api/generate-results-pdf/?room_code= + ${code}`,
+        `/api/generate-results-pdf/?room_code=${code}`,
       );
 
       if (!response.ok)

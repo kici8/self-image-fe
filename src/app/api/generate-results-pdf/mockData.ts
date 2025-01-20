@@ -5,12 +5,12 @@ type Cluster = {
 
 type Session = {
   session_id: string;
-  unlocked_images: string[];
-  unlocked_filters: string[];
   scores: Cluster[];
 };
 
 type RoomResults = {
+  unlocked_images: string[];
+  unlocked_filters: string[];
   sessions: Session[];
 };
 
@@ -23,12 +23,12 @@ type Interaction = {
 
 type Participant = {
   nickname: string;
+  unlocked_images: string[];
+  unlocked_filters: string[];
   sessions: {
     session_id: string;
     interactions: Interaction[];
     clusters: Cluster[];
-    unlocked_images: string[];
-    unlocked_filters: string[];
     selfie_id: string;
   }[];
 };
@@ -40,11 +40,11 @@ type Result = {
 
 export const mockResultsData: Result = {
   roomResults: {
+    unlocked_images: ["d.1", "d.4", "d.5", "f.3", "f.4", "f.5"],
+    unlocked_filters: ["filter1", "filter2"],
     sessions: [
       {
         session_id: "session1",
-        unlocked_images: ["d.1", "d.4", "d.5", "f.3", "f.4", "f.5"],
-        unlocked_filters: ["filter1", "filter2"],
         scores: [
           { cluster_id: "A", score: 0.1 },
           { cluster_id: "B", score: 0.3 },
@@ -56,8 +56,6 @@ export const mockResultsData: Result = {
       },
       {
         session_id: "session2",
-        unlocked_images: ["a.4", "a.4", "c.5", "e.3", "f.4", "f.5"],
-        unlocked_filters: ["filter3"],
         scores: [
           { cluster_id: "A", score: 0.1 },
           { cluster_id: "B", score: 0.3 },
@@ -72,6 +70,8 @@ export const mockResultsData: Result = {
   participants: [
     {
       nickname: "Participant1",
+      unlocked_images: ["d.2", "f.4"],
+      unlocked_filters: ["filter1"],
       sessions: [
         {
           session_id: "session1",
@@ -121,8 +121,6 @@ export const mockResultsData: Result = {
             { cluster_id: "E", score: 0.1 },
             { cluster_id: "F", score: 0.0 },
           ],
-          unlocked_images: ["d.2", "f.4"],
-          unlocked_filters: ["filter1"],
           selfie_id: "1c9e536b-0876-463b-b70d-fefd55271a17",
         },
         {
@@ -173,14 +171,14 @@ export const mockResultsData: Result = {
             { cluster_id: "E", score: 0.1 },
             { cluster_id: "F", score: 0.0 },
           ],
-          unlocked_images: ["c.5", ".a.4"],
-          unlocked_filters: ["filter1"],
           selfie_id: "1c9e536b-0876-463b-b70d-fefd55271a17",
         },
       ],
     },
     {
       nickname: "Participant2",
+      unlocked_images: ["e.2", "f.1"],
+      unlocked_filters: ["filter1"],
       sessions: [
         {
           session_id: "session1",
@@ -230,8 +228,6 @@ export const mockResultsData: Result = {
             { cluster_id: "E", score: 0.1 },
             { cluster_id: "F", score: 0.0 },
           ],
-          unlocked_images: ["e.2", "f.1"],
-          unlocked_filters: ["filter1"],
           selfie_id: "1c9e536b-0876-463b-b70d-fefd55271a17",
         },
         {
@@ -282,8 +278,6 @@ export const mockResultsData: Result = {
             { cluster_id: "E", score: 0.1 },
             { cluster_id: "F", score: 0.0 },
           ],
-          unlocked_images: ["b.2", "b.5"],
-          unlocked_filters: ["filter1"],
           selfie_id: "1c9e536b-0876-463b-b70d-fefd55271a17",
         },
       ],

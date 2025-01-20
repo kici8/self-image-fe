@@ -11,8 +11,13 @@ const roomColor: Partial<Styles> = {
   textColor: [255, 255, 255],
 };
 
-const participantColor: Partial<Styles> = {
+const participantColorEven: Partial<Styles> = {
   fillColor: [163, 230, 53],
+  textColor: [0, 0, 0],
+};
+
+const participantColorOdd: Partial<Styles> = {
+  fillColor: [251, 191, 36],
   textColor: [0, 0, 0],
 };
 
@@ -52,12 +57,32 @@ export async function GET(req: Request) {
       headStyles: roomColor,
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let lastY = (doc as any).lastAutoTable.finalY + 4;
+    autoTable(doc, {
+      startY: lastY,
+      head: [[`Room Unlocked Images`, "Name", "Author"]],
+      body: roomResults.unlocked_images.map((image) => [
+        image,
+        staticImages.find((img) => img.id === image)?.title || "Unknown",
+        staticImages.find((img) => img.id === image)?.author || "Unknown",
+      ]),
+      headStyles: roomColor,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    lastY = (doc as any).lastAutoTable.finalY + 4;
+    autoTable(doc, {
+      startY: lastY,
+      head: [[`Room Unlocked Filters`]],
+      body: roomResults.unlocked_filters.map((filter) => [filter]),
+      headStyles: roomColor,
+    });
+
     for (let i = 0; i < roomResults.sessions.length; i++) {
       const readableSessionNumber = i + 1;
-      // const footerText = `Risultati sessione ${readableSessionNumber}`;
-
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let lastY = (doc as any).lastAutoTable.finalY + 20;
+      lastY = (doc as any).lastAutoTable.finalY + 4;
       autoTable(doc, {
         startY: lastY,
         head: [
@@ -71,6 +96,29 @@ export async function GET(req: Request) {
         ]),
         headStyles: roomColor,
       });
+    }
+
+    // New page for each participant
+    for (let i = 0; i < participants.length; i++) {
+      const readableParticipantNumber = i + 1;
+
+      doc.addPage();
+      autoTable(doc, {
+        startY: 12,
+        head: [
+          [
+            `Participant: ${participants[i].nickname ?? readableParticipantNumber} - Unlocked images`,
+            "Name",
+            "Author",
+          ],
+        ],
+        body: participants[i].unlocked_images.map((image) => [
+          image,
+          staticImages.find((img) => img.id === image)?.title || "Unknown",
+          staticImages.find((img) => img.id === image)?.author || "Unknown",
+        ]),
+        headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
+      });
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       lastY = (doc as any).lastAutoTable.finalY + 4;
@@ -78,42 +126,18 @@ export async function GET(req: Request) {
         startY: lastY,
         head: [
           [
-            `Room Session ${readableSessionNumber} Unlocked Images`,
-            "Name",
-            "Author",
+            `Participant: ${participants[i].nickname ?? readableParticipantNumber} - Unlocked Filters`,
           ],
         ],
-        body: roomResults.sessions[i].unlocked_images.map((image) => [
-          image,
-          staticImages.find((img) => img.id === image)?.title || "Unknown",
-          staticImages.find((img) => img.id === image)?.author || "Unknown",
-        ]),
-        headStyles: roomColor,
+        body: participants[i].unlocked_filters.map((filter) => [filter]),
+        headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      lastY = (doc as any).lastAutoTable.finalY + 4;
-      autoTable(doc, {
-        startY: lastY,
-        head: [[`Room Session ${readableSessionNumber} Unlocked Filters`]],
-        body: roomResults.sessions[i].unlocked_filters.map((filter) => [
-          filter,
-        ]),
-        headStyles: roomColor,
-      });
-    }
-
-    // New page for each participant
-    for (let i = 0; i < participants.length; i++) {
-      const readableParticipantNumber = i + 1;
       for (let j = 0; j < participants[i].sessions.length; j++) {
         doc.addPage();
         const readableSessionNumber = j + 1;
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let lastY = (doc as any).lastAutoTable.finalY + 20;
         autoTable(doc, {
-          startY: lastY,
+          startY: 12,
           head: [
             [
               `${participants[i].nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Cluster`,
@@ -128,41 +152,7 @@ export async function GET(req: Request) {
             )?.name || "Unknown",
             cluster.score.toString(),
           ]),
-          headStyles: participantColor,
-        });
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        lastY = (doc as any).lastAutoTable.finalY + 4;
-        autoTable(doc, {
-          startY: lastY,
-          head: [
-            [
-              `${participants[i].nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Unlocked images`,
-              "Name",
-              "Author",
-            ],
-          ],
-          body: participants[i].sessions[j].unlocked_images.map((image) => [
-            image,
-            staticImages.find((img) => img.id === image)?.title || "Unknown",
-            staticImages.find((img) => img.id === image)?.author || "Unknown",
-          ]),
-          headStyles: participantColor,
-        });
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        lastY = (doc as any).lastAutoTable.finalY + 4;
-        autoTable(doc, {
-          startY: lastY,
-          head: [
-            [
-              `${participants[i].nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Unlocked Filters`,
-            ],
-          ],
-          body: participants[i].sessions[j].unlocked_filters.map((filter) => [
-            filter,
-          ]),
-          headStyles: participantColor,
+          headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
         });
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -183,19 +173,19 @@ export async function GET(req: Request) {
             interaction.fragment_id,
             interaction.liked.toString(),
           ]),
-          headStyles: participantColor,
+          headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
         });
 
         doc.addPage();
-        // TODO: add selfie image to the PDF
         autoTable(doc, {
           startY: 12,
-          head: [["Selfie"]],
-          body: [
-            // [participants[i].sessions[j].selfie_id, participants[i].nickname],
-            [`Selfie by ${participants[i].nickname}`],
+          head: [
+            [
+              `${participants[i].nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Selfie`,
+            ],
           ],
-          headStyles: participantColor,
+          body: [[`Selfie by ${participants[i].nickname}`]],
+          headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
         });
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

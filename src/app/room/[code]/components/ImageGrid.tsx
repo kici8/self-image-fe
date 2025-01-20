@@ -5,6 +5,8 @@ import { cva } from "class-variance-authority";
 import {
   CameraIcon,
   CameraOffIcon,
+  MoonIcon,
+  SunIcon,
   ZoomInIcon,
   ZoomOutIcon,
 } from "lucide-react";
@@ -12,6 +14,12 @@ import Image from "next/image";
 import { useState } from "react";
 import { TypeImage } from "../../../../lib/mockdata";
 import ImageDialog from "./ImageDialog";
+import { useTheme } from "next-themes";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export enum typeGridType {
   image = "IMAGE",
@@ -24,6 +32,10 @@ export type TypeGridImage = TypeImage & {
 };
 
 export default function ImageGrid({ images }: { images: TypeGridImage[] }) {
+  // Hooks
+  const { setTheme, theme } = useTheme();
+
+  // States
   const [numberOfColumns, setNumberOfColumns] = useState(5);
   const [showSelfie, setShowSelfie] = useState(true);
   const [imageModalOpen, setImageModalOpen] = useState<TypeGridImage | null>(
@@ -113,13 +125,39 @@ export default function ImageGrid({ images }: { images: TypeGridImage[] }) {
           <ZoomInIcon />
         </Button>
 
-        <Button
-          className={cn(ToggleButtonVariants({ checked: showSelfie }))}
-          size="icon"
-          onClick={() => setShowSelfie((prev) => !prev)}
-        >
-          {showSelfie ? <CameraIcon /> : <CameraOffIcon />}
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className="rounded-full"
+              size="icon"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" sideOffset={8}>
+            {theme === "dark" ? (
+              <p>Metti tema chiaro</p>
+            ) : (
+              <p>Metti tema scuro</p>
+            )}
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className={cn(ToggleButtonVariants({ checked: showSelfie }))}
+              size="icon"
+              onClick={() => setShowSelfie((prev) => !prev)}
+            >
+              {showSelfie ? <CameraIcon /> : <CameraOffIcon />}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" sideOffset={8}>
+            {showSelfie ? <p>Nascondi selfie</p> : <p>Mostra selfie</p>}
+          </TooltipContent>
+        </Tooltip>
       </div>
 
       {imageModalOpen ? (

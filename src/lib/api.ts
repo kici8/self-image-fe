@@ -11,8 +11,8 @@ type Session = {
 };
 
 type RoomResults = {
-  unlocked_images: string[];
-  unlocked_filters: string[];
+  unlocked_images?: string[];
+  unlocked_filters?: string[];
   sessions: Session[];
 };
 
@@ -25,13 +25,13 @@ type Interaction = {
 
 type Participant = {
   nickname: string;
-  unlocked_images: string[];
-  unlocked_filters: string[];
+  unlocked_images?: string[];
+  unlocked_filters?: string[];
   sessions: {
     session_id: string;
     interactions: Interaction[];
     clusters: Cluster[];
-    selfie_id: string;
+    selfie_id?: string;
   }[];
 };
 
@@ -65,7 +65,8 @@ export const createNewRoomSession = async (
 };
 
 type exportRoomResultsResponse = {
-  export: {
+  status: string;
+  data: {
     roomResults: RoomResults;
     participants: Participant[];
   };
@@ -80,7 +81,7 @@ export const exportRoomResults = async (
   payload: exportRoomResultsPayload,
 ): Promise<exportRoomResultsResponse> => {
   const response = await AxiosInstance.get("/api/room/export", {
-    data: payload,
+    params: payload,
   });
   return response.data;
 };

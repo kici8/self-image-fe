@@ -41,7 +41,15 @@ export async function GET(req: Request) {
     }
 
     const fetchedRoomResults = await exportRoomResults({ room_code });
-    const { roomResults, participants } = fetchedRoomResults.export;
+
+    if (fetchedRoomResults.status !== "success") {
+      return NextResponse.json(
+        { error: "Errore durante il recupero dei risultati" },
+        { status: 500 },
+      );
+    }
+
+    const { roomResults, participants } = fetchedRoomResults.data;
 
     // initialize jsPDF
     const doc = new jsPDF();
@@ -55,10 +63,11 @@ export async function GET(req: Request) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let lastY = (doc as any).lastAutoTable.finalY + 4;
+
     autoTable(doc, {
       startY: lastY,
       head: [[`Room Unlocked Images`, "Name", "Author"]],
-      body: roomResults.unlocked_images.map((image) => [
+      body: (roomResults.unlocked_images ?? []).map((image) => [
         image,
         staticImages.find((img) => img.id === image)?.title || "Unknown",
         staticImages.find((img) => img.id === image)?.author || "Unknown",
@@ -71,7 +80,7 @@ export async function GET(req: Request) {
     autoTable(doc, {
       startY: lastY,
       head: [[`Room Unlocked Filters`]],
-      body: roomResults.unlocked_filters.map((filter) => [filter]),
+      body: (roomResults.unlocked_filters ?? []).map((filter) => [filter]),
       headStyles: roomColor,
     });
 
@@ -88,7 +97,7 @@ export async function GET(req: Request) {
           score.cluster_id || "undefined",
           staticClusters.find((cluster) => cluster.id === score.cluster_id)
             ?.name || "Unknown",
-          score.score.toString() || "undefined",
+          (Math.round(score.score * 100) / 100).toString() || "undefined",
         ]),
         headStyles: roomColor,
       });
@@ -107,7 +116,7 @@ export async function GET(req: Request) {
             "Author",
           ],
         ],
-        body: participants[i].unlocked_images.map((image) => [
+        body: (participants[i].unlocked_images ?? []).map((image) => [
           image,
           staticImages.find((img) => img.id === image)?.title || "Unknown",
           staticImages.find((img) => img.id === image)?.author || "Unknown",
@@ -124,7 +133,9 @@ export async function GET(req: Request) {
             `Participant: ${participants[i].nickname ?? readableParticipantNumber} - Unlocked Filters`,
           ],
         ],
-        body: participants[i].unlocked_filters.map((filter) => [filter]),
+        body: (participants[i].unlocked_filters ?? []).map((filter) => [
+          filter,
+        ]),
         headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
       });
 
@@ -146,7 +157,7 @@ export async function GET(req: Request) {
             staticClusters.find(
               (staticCluster) => staticCluster.id === cluster.cluster_id,
             )?.name || "Unknown",
-            cluster.score.toString(),
+            (Math.round(cluster.score * 100) / 100).toString(),
           ]),
           headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
         });
@@ -177,46 +188,62 @@ export async function GET(req: Request) {
         // the possible solution is to use Promise.all to fetch all the selfies
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         lastY = (doc as any).lastAutoTable.finalY + 4;
-        const selfieUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/room/selfie/${participants[i].sessions[j].selfie_id}`;
-        const response = await fetch(selfieUrl);
-        const blob = await response.blob();
-        const base64DataUrl = `data:image/jpeg;base64,${await blobToBase64(blob)}`;
-        const imgHeight = 72;
-        const imgWidth = imgHeight * 0.5625;
+        const selfieUrl = participants[i].sessions[j].selfie_id
+          ? `${process.env.NEXT_PUBLIC_API_URL}/api/room/selfie/${participants[i].sessions[j].selfie_id}`
+          : undefined;
+        if (selfieUrl) {
+          const response = await fetch(selfieUrl);
+          const blob = await response.blob();
+          const base64DataUrl = `data:image/jpeg;base64,${await blobToBase64(blob)}`;
+          const imgHeight = 72;
+          const imgWidth = imgHeight * 0.5625;
 
-        autoTable(doc, {
-          startY: lastY,
-          head: [
-            [
-              `${participants[i].nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Selfie`,
+          autoTable(doc, {
+            startY: lastY,
+            head: [
+              [
+                `${participants[i].nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Selfie`,
+              ],
             ],
-          ],
-          body: [[""]],
-          headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
-          didParseCell: (data) => {
-            if (
-              data.section === "body" &&
-              data.row.index === 0 &&
-              data.column.index === 0
-            ) {
-              data.cell.styles.minCellHeight = imgHeight + 8;
-            }
-          },
-          didDrawCell: (data) => {
-            if (data.section === "body" && data.column.index === 0) {
-              const xOffset = data.cell.x + (data.cell.width - imgWidth) / 2;
-              const yOffset = data.cell.y + (data.cell.height - imgHeight) / 2;
-              doc.addImage(
-                base64DataUrl,
-                "JPEG",
-                xOffset,
-                yOffset,
-                imgWidth,
-                imgHeight,
-              );
-            }
-          },
-        });
+            body: [[""]],
+            headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
+            didParseCell: (data) => {
+              if (
+                data.section === "body" &&
+                data.row.index === 0 &&
+                data.column.index === 0
+              ) {
+                data.cell.styles.minCellHeight = imgHeight + 8;
+              }
+            },
+            didDrawCell: (data) => {
+              if (data.section === "body" && data.column.index === 0) {
+                const xOffset = data.cell.x + (data.cell.width - imgWidth) / 2;
+                const yOffset =
+                  data.cell.y + (data.cell.height - imgHeight) / 2;
+                doc.addImage(
+                  base64DataUrl,
+                  "JPEG",
+                  xOffset,
+                  yOffset,
+                  imgWidth,
+                  imgHeight,
+                );
+              }
+            },
+          });
+        } else {
+          autoTable(doc, {
+            startY: lastY,
+            head: [
+              [
+                `${participants[i].nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Selfie`,
+              ],
+            ],
+            body: [["No selfie"]],
+            headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
+          });
+        }
       }
     }
 

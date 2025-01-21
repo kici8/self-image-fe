@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
+import { toast } from "./use-toast";
 
 type PlayerConnectedResponse = {
   player_id: string;
@@ -42,7 +43,7 @@ type JoinRoomPayload = {
 };
 
 type JoinRoomResponse = {
-  status: "success"; // TODO: error handling?
+  status: "success" | "error";
   data: RoomData;
 };
 
@@ -67,7 +68,8 @@ export const useSocket = () => {
     ClientToServerEvents
   > | null>(null);
 
-  const [isConnected, setIsConnected] = useState(false);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const [isRoomConnected, setIsRoomConnected] = useState(false);
   const [roomData, setRoomData] = useState<RoomProgressResponse | null>(null);
   const [roomSelfies, setRoomSelfies] = useState<RoomSelfie[]>([]);
   const [lastRoomSelfie, setLastRoomSelfie] = useState<RoomSelfie | null>(null);
@@ -76,7 +78,7 @@ export const useSocket = () => {
     socketRef.current = io(process.env.NEXT_PUBLIC_SOCKET_URL);
 
     socketRef.current.on("connect", () => {
-      setIsConnected(true);
+      setIsSocketConnected(true);
       console.log("Connected to Socket.IO server");
     });
 
@@ -109,7 +111,7 @@ export const useSocket = () => {
     });
 
     socketRef.current.on("disconnect", () => {
-      setIsConnected(false);
+      setIsSocketConnected(false);
       console.log("Disconnected from Socket.IO server");
     });
 
@@ -121,6 +123,7 @@ export const useSocket = () => {
   const joinRoom = (code: string) => {
     socketRef.current?.emit("join_room", { code }, (data) => {
       if (data.status === "success") {
+        setIsRoomConnected(true);
         setRoomData((prev) => {
           if (JSON.stringify(prev) !== JSON.stringify(data.data)) {
             console.log("Join room", data);
@@ -129,6 +132,16 @@ export const useSocket = () => {
           }
           return prev;
         });
+      }
+      if (data.status === "error") {
+        console.error("Error joining room:", data);
+        toast({
+          title: "Impossibile connettersi alla stanza",
+          description:
+            "La stanza potrebbe non esistere, essere chiusa o avere problemi di connessione.",
+          variant: "destructive",
+        });
+        setIsRoomConnected(false);
       }
     });
   };
@@ -141,7 +154,8 @@ export const useSocket = () => {
   };
 
   return {
-    isConnected,
+    isSocketConnected,
+    isRoomConnected,
     joinRoom,
     roomData,
     roomSelfies,

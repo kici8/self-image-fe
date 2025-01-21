@@ -4,14 +4,8 @@ import { Button } from "@/components/ui/button";
 import { closeRoom, createNewRoomSession } from "@/lib/api";
 import { toast } from "@/lib/hooks/use-toast";
 import { useSocket } from "@/lib/hooks/useSocket";
-import { staticImages, staticClusters } from "@/lib/mockdata";
-import {
-  DownloadIcon,
-  LoaderCircleIcon,
-  RefreshCwIcon,
-  ZapIcon,
-  ZapOffIcon,
-} from "lucide-react";
+import { staticClusters, staticImages } from "@/lib/mockdata";
+import { DownloadIcon, LoaderCircleIcon, RefreshCwIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
@@ -19,11 +13,18 @@ import CloseRoomDialog from "./CloseRoomDialog";
 import ClusterList, { Cluster } from "./ClusterList";
 import CodeAnimation from "./CodeAnimation";
 import ImageGrid, { TypeGridImage, typeGridType } from "./ImageGrid";
+import ConnectionIndicator from "./ConnectionIndicator";
 
 export default function Room({ code }: { code: string }) {
   // Hooks
   const router = useRouter();
-  const { isConnected, joinRoom, roomData, lastRoomSelfie } = useSocket();
+  const {
+    joinRoom,
+    roomData,
+    lastRoomSelfie,
+    isRoomConnected,
+    isSocketConnected,
+  } = useSocket();
 
   // States
   const [mappedImages, setMappedImages] = useState<TypeGridImage[]>([]);
@@ -202,44 +203,43 @@ export default function Room({ code }: { code: string }) {
       </div>
 
       <div className="flex h-svh w-96 flex-col gap-8 overflow-hidden">
-        <div className="flex flex-col gap-6 rounded-bl-[32px] bg-stone-500/30 p-3 text-foreground">
+        <div className="flex flex-col gap-6 p-3 text-foreground">
           <div className="flex-0 flex items-center">
             <h2 className="flex-1 font-mono text-6xl font-bold">
               <CodeAnimation targetCode={code} />
             </h2>
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-primary">
-              {isConnected ? (
-                <ZapIcon className="h-5 w-5" />
-              ) : (
-                <ZapOffIcon className="h-5 w-5 text-destructive" />
-              )}
-            </div>
+            <ConnectionIndicator
+              isRoomConnected={isRoomConnected}
+              isSocketConnected={isSocketConnected}
+            />
           </div>
           <div className="h-6">
             <Marquee>
-              {(roomData?.connected_players ?? []).length > 0
-                ? (roomData?.connected_players ?? []).map((player) => (
-                    <span key={player} className="text-md mr-4 font-semibold">
+              <p className="text-md"></p>
+              {(roomData?.connected_players ?? []).length > 0 ? (
+                <>
+                  <span className="mr-2 font-semibold">{`Partecipanti (${roomData?.connected_players.length || 0}):`}</span>
+                  {(roomData?.connected_players ?? []).map((player) => (
+                    <span key={player} className="mr-2 font-semibold">
                       {player}{" "}
                     </span>
-                  ))
-                : null}
-              <span className="text-md mr-8 italic">
-                Per partecipare alla stanza inserisci il codice in alto...
+                  ))}
+                </>
+              ) : null}
+              <span className="mx-8 italic text-secondary-foreground">
+                - Per partecipare alla stanza inserisci il codice sopra -
               </span>
             </Marquee>
           </div>
+
           <div className="flex gap-2">
-            <div className="flex h-16 items-center justify-center rounded-[20px] border border-primary px-4 py-1 font-mono text-sm font-[500]">
-              Partecipanti:
-              <span className="px-1 font-bold">
-                {roomData?.connected_players.length || 0}
-              </span>
-            </div>
+            {/* <Button className="flex-1 rounded-full" variant="outline">
+              Partecipanti: {roomData?.connected_players.length || 0}
+            </Button> */}
             <Button
               onClick={onNewSession}
               disabled={isNewSessionLoading}
-              className="h-16 flex-1 rounded-[20px]"
+              className="flex-1 rounded-full"
             >
               Nuova sessione
               {isNewSessionLoading ? (

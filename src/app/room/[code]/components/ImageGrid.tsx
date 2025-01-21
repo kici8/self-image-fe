@@ -106,26 +106,41 @@ export default function ImageGrid({ images }: { images: TypeGridImage[] }) {
         ))}
       </div>
       <div className="fixed left-8 top-8 flex items-center justify-center gap-3 rounded-full bg-card p-2 opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
-        <Button
-          size="icon"
-          className="rounded-full"
-          onClick={() =>
-            setNumberOfColumns((prev) => (prev < 12 ? prev + 1 : prev))
-          }
-        >
-          <ZoomOutIcon />
-        </Button>
-        <Button
-          size="icon"
-          className="rounded-full"
-          onClick={() =>
-            setNumberOfColumns((prev) => (prev > 1 ? prev - 1 : prev))
-          }
-        >
-          <ZoomInIcon />
-        </Button>
+        <Tooltip delayDuration={125}>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              className="rounded-full"
+              onClick={() =>
+                setNumberOfColumns((prev) => (prev < 12 ? prev + 1 : prev))
+              }
+            >
+              <ZoomOutIcon />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" sideOffset={8}>
+            Riduci
+          </TooltipContent>
+        </Tooltip>
 
-        <Tooltip>
+        <Tooltip delayDuration={125}>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              className="rounded-full"
+              onClick={() =>
+                setNumberOfColumns((prev) => (prev > 1 ? prev - 1 : prev))
+              }
+            >
+              <ZoomInIcon />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" sideOffset={8}>
+            Ingrandisci
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip delayDuration={125}>
           <TooltipTrigger asChild>
             <Button
               className="rounded-full"
@@ -136,15 +151,11 @@ export default function ImageGrid({ images }: { images: TypeGridImage[] }) {
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" sideOffset={8}>
-            {theme === "dark" ? (
-              <p>Metti tema chiaro</p>
-            ) : (
-              <p>Metti tema scuro</p>
-            )}
+            {theme === "dark" ? <p>Tema chiaro</p> : <p>Tema scuro</p>}
           </TooltipContent>
         </Tooltip>
 
-        <Tooltip>
+        <Tooltip delayDuration={125}>
           <TooltipTrigger asChild>
             <Button
               className={cn(ToggleButtonVariants({ checked: showSelfie }))}

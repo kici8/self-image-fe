@@ -4,16 +4,15 @@ import { Button } from "@/components/ui/button";
 import { closeRoom, createNewRoomSession } from "@/lib/api";
 import { toast } from "@/lib/hooks/use-toast";
 import { useSocket } from "@/lib/hooks/useSocket";
-import { staticClusters, staticImages } from "@/lib/mockdata";
 import { DownloadIcon, LoaderCircleIcon, RefreshCwIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
 import CloseRoomDialog from "./CloseRoomDialog";
-import ClusterList, { Cluster } from "./ClusterList";
+import ClusterList from "./ClusterList";
 import CodeAnimation from "./CodeAnimation";
-import ImageGrid, { TypeGridImage, typeGridType } from "./ImageGrid";
 import ConnectionIndicator from "./ConnectionIndicator";
+import ImageGrid from "./ImageGrid";
 
 export default function Room({ code }: { code: string }) {
   // Hooks
@@ -21,15 +20,14 @@ export default function Room({ code }: { code: string }) {
   const {
     joinRoom,
     roomData,
-    lastRoomSelfie,
+    clusters: mappedClusters,
+    images: processedImages,
+    selfies: mappedSelfies,
     isRoomConnected,
     isSocketConnected,
   } = useSocket();
 
   // States
-  const [mappedImages, setMappedImages] = useState<TypeGridImage[]>([]);
-  const [lastSelfieAdded, setLastSelfieAdded] = useState<string | null>(null);
-  const [clusters, setClusters] = useState<Cluster[]>(staticClusters);
   const [isCloseRoomDialogOpen, setIsCloseRoomDialogOpen] = useState(false);
   const [isClosingRoomLoading, setIsClosingRoomLoading] = useState(false);
   const [isResultDownloadLoading, setIsResultDownloadLoading] = useState(false);
@@ -47,73 +45,17 @@ export default function Room({ code }: { code: string }) {
     stableJoinRoom();
   }, [stableJoinRoom]);
 
-  // Update the clusters with the progress
-  useEffect(() => {
-    // Create a map of the scores
-    const scoreMap = new Map(
-      roomData?.scores?.map(({ cluster_id, score }) => [
-        cluster_id,
-        score * 100, // Convert the flat value to percentage
-      ]) || [],
-    );
-    // Update the clusters with the progress map
-    const updatedClusters = staticClusters.map((staticCluster) => ({
-      ...staticCluster,
-      percentage: scoreMap.get(staticCluster.id) || 0,
-    }));
-    setClusters(updatedClusters);
-    // Update the images with the unlocked ones
-    const updatedImages = staticImages.map((image) => ({
-      ...image,
-      unlocked: roomData?.unlocked_images.includes(image.id) || false,
-      type: typeGridType.image,
-    }));
-    setMappedImages(updatedImages);
-  }, [roomData]);
-
-  // Handle selfies
-  useEffect(() => {
-    if (!lastRoomSelfie) return;
-    const alreadyExists = mappedImages.find(
-      (image) => image.id === lastRoomSelfie.selfie_id,
-    );
-    if (alreadyExists || lastRoomSelfie.selfie_id === lastSelfieAdded) return;
-
-    const selfieUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/room/selfie/${lastRoomSelfie.selfie_id}`;
-
-    const mappedLastSelfie: TypeGridImage = {
-      id: lastRoomSelfie.selfie_id,
-      src: selfieUrl,
-      title: undefined,
-      description: undefined,
-      year: undefined,
-      author: undefined,
-      unlocked: true,
-      type: typeGridType.selfie,
-    };
-    // Insert the mappedLastSelfie into the mappedImages at the specified index
-    setMappedImages((prevImages) => {
-      const newImages = [...prevImages];
-      newImages.splice(
-        Math.floor(Math.random() * staticImages.length),
-        0,
-        mappedLastSelfie,
-      );
-      return newImages;
-    });
-    setLastSelfieAdded(lastRoomSelfie.selfie_id);
-  }, [lastRoomSelfie, lastSelfieAdded, mappedImages]);
-
   // Callbacks
   const onNewSession = async () => {
     setIsNewSessionLoading(true);
     try {
       const response = await createNewRoomSession({ room_code: code });
       if (response.status === "success") {
-        const purgedMappedImages = mappedImages.filter(
-          (image) => image.type === typeGridType.image,
-        );
-        setMappedImages(purgedMappedImages);
+        toast({
+          title: "Nuova sessione creata",
+          description: "Una nuova sessione è stata creata correttamente.",
+          variant: "default",
+        });
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -196,10 +138,20 @@ export default function Room({ code }: { code: string }) {
     }
   };
 
+  // Show only the selfies of the current session
+  const filteredSelfies = mappedSelfies.filter(
+    (selfie) => selfie.session_id === roomData?.session_id,
+  );
+
+  // Merge the images and the selfies and sort them by index
+  const allImages = [...processedImages, ...filteredSelfies].sort(
+    (a, b) => a.index - b.index,
+  );
+
   return (
     <div className="flex h-svh">
       <div className="flex-1">
-        <ImageGrid images={mappedImages} />
+        <ImageGrid images={allImages} />
       </div>
 
       <div className="flex h-svh w-96 flex-col gap-8 overflow-hidden">
@@ -252,7 +204,7 @@ export default function Room({ code }: { code: string }) {
         </div>
 
         <div className="flex flex-1 flex-col gap-2">
-          <ClusterList cluster={clusters} />
+          <ClusterList cluster={mappedClusters} />
         </div>
 
         <div className="flex gap-2 rounded-lg bg-card px-4 py-4">

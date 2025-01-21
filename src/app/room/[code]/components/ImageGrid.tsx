@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { TypeImage } from "../../../../lib/mockdata";
+import { TypeImage } from "../../../../lib/staticdata";
 import ImageDialog from "./ImageDialog";
 import { useTheme } from "next-themes";
 import {
@@ -27,8 +27,10 @@ export enum typeGridType {
 }
 
 export type TypeGridImage = TypeImage & {
+  index: number;
   unlocked: boolean;
   type: typeGridType;
+  session_id: string | null;
 };
 
 export default function ImageGrid({ images }: { images: TypeGridImage[] }) {

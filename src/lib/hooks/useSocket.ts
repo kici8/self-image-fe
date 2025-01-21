@@ -3,6 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { toast } from "./use-toast";
+import { staticClusters, staticImages } from "../staticdata";
+import {
+  TypeGridImage,
+  typeGridType,
+} from "@/app/room/[code]/components/ImageGrid";
+import { Cluster } from "@/app/room/[code]/components/ClusterList";
 
 type PlayerConnectedResponse = {
   player_id: string;
@@ -62,6 +68,33 @@ interface ClientToServerEvents {
   ) => void;
 }
 
+function getMappedImages(
+  sessionId: string | null,
+  unlockedImages: string[],
+): TypeGridImage[] {
+  return staticImages.map((image) => ({
+    ...image,
+    index: staticImages.indexOf(image),
+    unlocked: unlockedImages.includes(image.id) || false,
+    type: typeGridType.image,
+    session_id: sessionId,
+  }));
+}
+
+function getMappedClusters(
+  scores: {
+    cluster_id: string;
+    score: number;
+  }[],
+): Cluster[] {
+  return staticClusters.map((cluster) => ({
+    ...cluster,
+    percentage:
+      (scores.find((score) => score.cluster_id === cluster.id)?.score ?? 0) *
+      100,
+  }));
+}
+
 export const useSocket = () => {
   const socketRef = useRef<Socket<
     ServerToClientEvents,
@@ -71,8 +104,9 @@ export const useSocket = () => {
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const [isRoomConnected, setIsRoomConnected] = useState(false);
   const [roomData, setRoomData] = useState<RoomProgressResponse | null>(null);
-  const [roomSelfies, setRoomSelfies] = useState<RoomSelfie[]>([]);
-  const [lastRoomSelfie, setLastRoomSelfie] = useState<RoomSelfie | null>(null);
+  const [selfies, setSelfies] = useState<TypeGridImage[]>([]);
+  const [images, setImages] = useState<TypeGridImage[]>([]);
+  const [clusters, setClusters] = useState<Cluster[]>([]);
 
   useEffect(() => {
     socketRef.current = io(process.env.NEXT_PUBLIC_SOCKET_URL);
@@ -84,11 +118,6 @@ export const useSocket = () => {
 
     socketRef.current.on("player_connected", (data) => {
       console.log("player_connected", data);
-      const alreadyConnected = roomData?.connected_players.includes(
-        data.nickname,
-      );
-
-      if (alreadyConnected) return;
       setRoomData((prev) =>
         prev
           ? {
@@ -101,13 +130,33 @@ export const useSocket = () => {
 
     socketRef.current.on("room_progress", (data) => {
       console.log("room_progress receiving", data);
+      // Update room data
       setRoomData(data);
+      // Update images
+      setImages(getMappedImages(data.session_id, data.unlocked_images));
+      // Update clusters
+      setClusters(getMappedClusters(data.scores));
     });
 
     socketRef.current.on("room_selfie", (data) => {
       console.log("room_selfie receiving", data);
-      setRoomSelfies((prev) => [...prev, data]);
-      setLastRoomSelfie(data);
+      // Update selfies
+      setSelfies((prev) => [
+        ...prev,
+        {
+          id: data.selfie_id,
+          author: undefined,
+          description: undefined,
+          filters: data.filters,
+          src: `${process.env.NEXT_PUBLIC_API_URL}/api/room/selfie/${data.selfie_id}`,
+          title: undefined,
+          year: undefined,
+          session_id: roomData?.session_id || null,
+          index: Math.floor(Math.random() * staticImages.length),
+          unlocked: true,
+          type: typeGridType.selfie,
+        },
+      ]);
     });
 
     socketRef.current.on("disconnect", () => {
@@ -118,21 +167,42 @@ export const useSocket = () => {
     return () => {
       socketRef.current?.disconnect();
     };
-  }, [roomData?.connected_players]);
+  }, [roomData?.session_id]);
 
   const joinRoom = (code: string) => {
     socketRef.current?.emit("join_room", { code }, (data) => {
       if (data.status === "success") {
         setIsRoomConnected(true);
+        // Init room data
         setRoomData((prev) => {
           if (JSON.stringify(prev) !== JSON.stringify(data.data)) {
             console.log("Join room", data);
-
             return data.data;
           }
           return prev;
         });
+        // Init clusters
+        setClusters((prev) => {
+          const newClusters = getMappedClusters(data.data.scores);
+          if (JSON.stringify(prev) !== JSON.stringify(newClusters)) {
+            return getMappedClusters(data.data.scores);
+          }
+          return prev;
+        });
+
+        // Init images
+        setImages((prev) => {
+          const newImages = getMappedImages(
+            data.data.session_id,
+            data.data.unlocked_images,
+          );
+          if (JSON.stringify(prev) !== JSON.stringify(newImages)) {
+            return newImages;
+          }
+          return prev;
+        });
       }
+
       if (data.status === "error") {
         console.error("Error joining room:", data);
         toast({
@@ -158,8 +228,9 @@ export const useSocket = () => {
     isRoomConnected,
     joinRoom,
     roomData,
-    roomSelfies,
-    lastRoomSelfie,
+    selfies,
+    images,
+    clusters,
     leaveRoom,
   };
 };

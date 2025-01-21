@@ -1,10 +1,10 @@
 // app/api/generate-pdf/route.ts
-import { NextResponse } from "next/server";
+import { exportRoomResults } from "@/lib/api";
+import { staticClusters, staticImages } from "@/lib/mockdata";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import autoTable, { Styles } from "jspdf-autotable";
-import { staticClusters, staticImages } from "@/lib/mockdata";
-import { mockResultsData } from "./mockData";
+import { NextResponse } from "next/server";
 
 const roomColor: Partial<Styles> = {
   fillColor: [0, 0, 0],
@@ -40,15 +40,11 @@ export async function GET(req: Request) {
       );
     }
 
-    // TODO: fetch data from the API
-    // const externalApiUrl = "https://jsonplaceholder.typicode.com/posts";
-    // const response = await axios.get(externalApiUrl);
-    // const data = response.data;
-    const { roomResults, participants } = mockResultsData;
+    const fetchedRoomResults = await exportRoomResults({ room_code });
+    const { roomResults, participants } = fetchedRoomResults.export;
 
     // initialize jsPDF
     const doc = new jsPDF();
-    // const pageWidth = doc.internal.pageSize.getWidth();
 
     autoTable(doc, {
       startY: 12,

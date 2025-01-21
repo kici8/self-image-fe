@@ -1,3 +1,5 @@
+// TODO: Remove this file after implementing the API call to get the results data
+
 type Cluster = {
   cluster_id: string;
   score: number;

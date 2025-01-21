@@ -1,5 +1,40 @@
 import AxiosInstance from "./axios";
 
+type Cluster = {
+  cluster_id: string;
+  score: number;
+};
+
+type Session = {
+  session_id: string;
+  scores: Cluster[];
+};
+
+type RoomResults = {
+  unlocked_images: string[];
+  unlocked_filters: string[];
+  sessions: Session[];
+};
+
+type Interaction = {
+  cluster_id: string;
+  image_id: string;
+  fragment_id: string;
+  liked: boolean;
+};
+
+type Participant = {
+  nickname: string;
+  unlocked_images: string[];
+  unlocked_filters: string[];
+  sessions: {
+    session_id: string;
+    interactions: Interaction[];
+    clusters: Cluster[];
+    selfie_id: string;
+  }[];
+};
+
 type CreateRoomResponse = {
   room_code: string;
   session_id: string;
@@ -30,13 +65,15 @@ export const createNewRoomSession = async (
 };
 
 type exportRoomResultsResponse = {
-  // TODO: file to download
-  export: unknown;
+  export: {
+    roomResults: RoomResults;
+    participants: Participant[];
+  };
 };
 
 type exportRoomResultsPayload = {
   room_code: string;
-  session_id: string;
+  session_id?: string;
 };
 
 export const exportRoomResults = async (

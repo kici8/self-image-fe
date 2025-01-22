@@ -69,6 +69,8 @@ export default function ImageGrid({ images }: { images: TypeGridImage[] }) {
     },
   });
 
+  console.log("images----", filteredImages);
+
   return (
     <div className="group relative h-full w-full overflow-y-auto p-4">
       <div className="gap-1" style={{ columns: numberOfColumns }}>

@@ -154,7 +154,7 @@ export default function Room({ code }: { code: string }) {
         <ImageGrid images={allImages} />
       </div>
 
-      <div className="flex h-svh w-96 flex-col gap-8 overflow-hidden">
+      <div className="flex h-svh w-96 flex-col gap-8 overflow-hidden border-l border-border bg-card">
         <div className="flex flex-col gap-6 p-3 text-foreground">
           <div className="flex-0 flex items-center">
             <h2 className="flex-1 font-mono text-6xl font-bold">
@@ -191,7 +191,7 @@ export default function Room({ code }: { code: string }) {
             <Button
               onClick={onNewSession}
               disabled={isNewSessionLoading}
-              className="flex-1 rounded-full"
+              className="flex-1"
             >
               Nuova sessione
               {isNewSessionLoading ? (
@@ -207,7 +207,7 @@ export default function Room({ code }: { code: string }) {
           <ClusterList cluster={mappedClusters} />
         </div>
 
-        <div className="flex gap-2 rounded-lg bg-card px-4 py-4">
+        <div className="flex gap-2 rounded-lg px-4 py-4">
           <Button
             variant="outline"
             className="flex-1"

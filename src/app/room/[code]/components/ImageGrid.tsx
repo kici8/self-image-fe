@@ -78,7 +78,7 @@ export default function ImageGrid({ images }: { images: TypeGridImage[] }) {
             className="mb-1"
             onClick={() => setImageModalOpen(image)}
           >
-            <div className="relative overflow-hidden rounded-lg">
+            <div className="relative overflow-hidden">
               <Image
                 src={image.src}
                 // TODO: pass the right image width and height

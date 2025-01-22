@@ -36,7 +36,7 @@ export default function CloseRoomDialog({
           )}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Chiudi stanza</DialogTitle>
           <DialogDescription>
@@ -44,7 +44,7 @@ export default function CloseRoomDialog({
             aver prima salvato i risultati.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className="mt-6 flex flex-col gap-1 md:flex-row">
           <DialogClose asChild>
             <Button>Torna alla stanza</Button>
           </DialogClose>

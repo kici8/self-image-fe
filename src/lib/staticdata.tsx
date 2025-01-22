@@ -1,12 +1,6 @@
-import { cn } from "@/lib/utils";
-import {
-  BoxIcon,
-  GlassesIcon,
-  Grid2x2XIcon,
-  PaletteIcon,
-  SmileIcon,
-  UserIcon,
-} from "lucide-react";
+import IconClusterA from "@/components/icons/IconClusterA";
+import IconClusterB from "@/components/icons/IconClusterB";
+import { BoxIcon, GlassesIcon, Grid2x2XIcon, UserIcon } from "lucide-react";
 
 export type TypeImage = {
   id: string;
@@ -17,19 +11,19 @@ export type TypeImage = {
   year: string | undefined;
 };
 
-const iconClasses = cn("h-6 w-6 shrink-0 grow-0");
+const iconClasses = "w-full h-full";
 
 export const staticClusters = [
   {
     id: "A",
     name: "Stile",
-    icon: <PaletteIcon className={iconClasses} />,
+    icon: <IconClusterA className={iconClasses} />,
     percentage: 0,
   },
   {
     id: "B",
     name: "Limite",
-    icon: <SmileIcon className={cn(iconClasses, "-rotate-90")} />,
+    icon: <IconClusterB className={iconClasses} />,
     percentage: 0,
   },
   {

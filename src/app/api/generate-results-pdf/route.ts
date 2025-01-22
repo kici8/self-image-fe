@@ -199,6 +199,8 @@ export async function GET(req: Request) {
           const imgWidth = imgHeight * 0.5625;
 
           autoTable(doc, {
+            pageBreak: "avoid",
+            rowPageBreak: "avoid",
             startY: lastY,
             head: [
               [

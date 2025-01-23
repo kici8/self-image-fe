@@ -1,8 +1,14 @@
+import IconClusterA from "@/components/icons/IconClusterA";
 import IconClusterASolid from "@/components/icons/IconClusterASolid";
+import IconClusterB from "@/components/icons/IconClusterB";
 import IconClusterBSolid from "@/components/icons/IconClusterBSolid";
+import IconClusterC from "@/components/icons/IconClusterC";
 import IconClusterCSolid from "@/components/icons/IconClusterCSolid";
+import IconClusterD from "@/components/icons/IconClusterD";
 import IconClusterDSolid from "@/components/icons/IconClusterDSolid";
+import IconClusterE from "@/components/icons/IconClusterE";
 import IconClusterESolid from "@/components/icons/IconClusterESolid";
+import IconClusterF from "@/components/icons/IconClusterF";
 import IconClusterFSolid from "@/components/icons/IconClusterFSolid";
 
 export type TypeImage = {
@@ -14,43 +20,48 @@ export type TypeImage = {
   year: string | undefined;
 };
 
-const iconClasses = "w-full h-full";
-
 export const staticClusters = [
   {
     id: "A",
     name: "Stile",
-    icon: <IconClusterASolid className={iconClasses} />,
+    hiddenIcon: <IconClusterA />,
+    icon: <IconClusterASolid />,
     percentage: 0,
   },
   {
     id: "B",
     name: "Limite",
-    icon: <IconClusterBSolid className={iconClasses} />,
+    hiddenIcon: <IconClusterB />,
+    icon: <IconClusterBSolid />,
     percentage: 0,
   },
   {
     id: "C",
     name: "Presenza",
-    icon: <IconClusterCSolid className={iconClasses} />,
+    hiddenIcon: <IconClusterC />,
+    icon: <IconClusterCSolid />,
+
     percentage: 0,
   },
   {
     id: "D",
     name: "Finzione",
-    icon: <IconClusterDSolid className={iconClasses} />,
+    hiddenIcon: <IconClusterD />,
+    icon: <IconClusterDSolid />,
     percentage: 0,
   },
   {
     id: "E",
     name: "Creazione",
-    icon: <IconClusterESolid className={iconClasses} />,
+    hiddenIcon: <IconClusterE />,
+    icon: <IconClusterESolid />,
     percentage: 0,
   },
   {
     id: "F",
     name: "Assenza",
-    icon: <IconClusterFSolid className={iconClasses} />,
+    hiddenIcon: <IconClusterF />,
+    icon: <IconClusterFSolid />,
     percentage: 0,
   },
 ];

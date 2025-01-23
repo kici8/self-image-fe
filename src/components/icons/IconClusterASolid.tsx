@@ -21,65 +21,37 @@ const IconClusterASolid = React.forwardRef<
     {...props}
   >
     <g>
-      <rect
-        x="16"
-        y="16"
-        width="480"
-        height="480"
-        fillRule="nonzero"
-        className="fill-self-blue-700"
-      />
-      <rect
-        x="256"
-        y="16"
-        width="240"
-        height="240"
-        fillRule="nonzero"
-        className="fill-self-blue-400"
-      />
-      <rect
-        x="16"
-        y="16"
-        width="240"
-        height="240"
-        fillRule="nonzero"
-        className="fill-self-blue-200"
-      />
-      <rect
-        x="16"
-        y="256"
-        width="240"
-        height="240"
-        fillRule="nonzero"
-        className="fill-self-blue-400"
-      />
-      <rect
-        x="256"
-        y="256"
-        width="240"
-        height="240"
-        fillRule="nonzero"
-        className="fill-self-blue-700"
-      />
       <path
-        d="M460,256C460,368.666 368.666,460 256,460C143.334,460 52,368.666 52,256C52,143.334 143.334,52 256,52C368.666,52 460,143.334 460,256Z"
-        fillRule="nonzero"
+        d="M496,256L496,16L256,16L256,96C344.364,96.002 415.996,167.636 415.996,256L496,256Z"
         className="fill-self-blue-400"
       />
       <path
-        d="M460,256C460,143.334 368.666,52 256,52L256,256L460,256Z"
-        fillRule="nonzero"
+        d="M256,16L16,16L16,256L95.996,256C95.996,167.634 167.631,96 255.996,96C255.998,96 255.999,96 256,96L256,16Z"
         className="fill-self-blue-200"
       />
       <path
-        d="M256,52C143.334,52 52,143.334 52,256L256,256L256,52Z"
-        fillRule="nonzero"
+        d="M16,256L16,496L256,496L256,416C255.999,416 255.998,416 255.996,416C167.631,416 95.996,344.365 95.996,256L16,256Z"
         className="fill-self-blue-400"
       />
       <path
-        d="M52,256C52,368.666 143.334,460 256,460L256,256L52,256Z"
-        fillRule="nonzero"
+        d="M256,496L496,496L496,256L415.996,256C415.996,344.364 344.364,415.998 256,416L256,496Z"
         className="fill-self-blue-700"
+      />
+      <path
+        d="M95.996,256C95.996,167.634 167.631,96 255.996,96C255.998,96 255.999,96 256,96L256,256L95.996,256Z"
+        className="fill-self-blue-400"
+      />
+      <path
+        d="M256,416C255.999,416 255.998,416 255.996,416C167.631,416 95.996,344.365 95.996,256L256,256L256,416Z"
+        className="fill-self-blue-700"
+      />
+      <path
+        d="M415.996,256C415.996,344.364 344.364,415.998 256,416L256,256L415.996,256Z"
+        className="fill-self-blue-400"
+      />
+      <path
+        d="M256,96C344.364,96.002 415.996,167.636 415.996,256L256,256L256,96Z"
+        className="fill-self-blue-200"
       />
     </g>
   </svg>

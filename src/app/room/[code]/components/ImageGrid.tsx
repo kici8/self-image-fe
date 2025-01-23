@@ -107,7 +107,7 @@ export default function ImageGrid({ images }: { images: TypeGridImage[] }) {
           </div>
         ))}
       </div>
-      <div className="fixed left-8 top-8 flex items-center justify-center gap-3 rounded-full bg-card p-2 opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+      <div className="fixed left-8 top-8 flex items-center justify-center gap-3 rounded-full border bg-card p-2 opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
         <Tooltip delayDuration={125}>
           <TooltipTrigger asChild>
             <Button

@@ -4,15 +4,14 @@
     <rect id="Artboard1" x="0" y="0" width="511.993" height="512" style="fill:none;"/>
     <g id="Artboard11" serif:id="Artboard1">
         <g>
-            <rect x="16" y="16" width="480" height="480" style="fill:#170c3f;fill-rule:nonzero;"/>
-            <rect x="256" y="16" width="240" height="240" style="fill:#5158e1;fill-rule:nonzero;"/>
-            <rect x="16" y="16" width="240" height="240" style="fill:#b1b4ee;fill-rule:nonzero;"/>
-            <rect x="16" y="256" width="240" height="240" style="fill:#5158e1;fill-rule:nonzero;"/>
-            <rect x="256" y="256" width="240" height="240" style="fill:#170c3f;fill-rule:nonzero;"/>
-            <path d="M460,256C460,368.666 368.666,460 256,460C143.334,460 52,368.666 52,256C52,143.334 143.334,52 256,52C368.666,52 460,143.334 460,256Z" style="fill:#5158e1;fill-rule:nonzero;"/>
-            <path d="M460,256C460,143.334 368.666,52 256,52L256,256L460,256Z" style="fill:#b0b4ee;fill-rule:nonzero;"/>
-            <path d="M256,52C143.334,52 52,143.334 52,256L256,256L256,52Z" style="fill:#5158e1;fill-rule:nonzero;"/>
-            <path d="M52,256C52,368.666 143.334,460 256,460L256,256L52,256Z" style="fill:#170c3f;fill-rule:nonzero;"/>
+            <path d="M496,256L496,16L256,16L256,96C344.364,96.002 415.996,167.636 415.996,256L496,256Z" style="fill:#5158e1;"/>
+            <path d="M256,16L16,16L16,256L95.996,256C95.996,167.634 167.631,96 255.996,96C255.998,96 255.999,96 256,96L256,16Z" style="fill:#b1b4ee;"/>
+            <path d="M16,256L16,496L256,496L256,416C255.999,416 255.998,416 255.996,416C167.631,416 95.996,344.365 95.996,256L16,256Z" style="fill:#5158e1;"/>
+            <path d="M256,496L496,496L496,256L415.996,256C415.996,344.364 344.364,415.998 256,416L256,496Z" style="fill:#170c3f;"/>
+            <path d="M95.996,256C95.996,167.634 167.631,96 255.996,96C255.998,96 255.999,96 256,96L256,256L95.996,256Z" style="fill:#5158e1;"/>
+            <path d="M256,416C255.999,416 255.998,416 255.996,416C167.631,416 95.996,344.365 95.996,256L256,256L256,416Z" style="fill:#170c3f;"/>
+            <path d="M415.996,256C415.996,344.364 344.364,415.998 256,416L256,256L415.996,256Z" style="fill:#5158e1;"/>
+            <path d="M256,96C344.364,96.002 415.996,167.636 415.996,256L256,256L256,96Z" style="fill:#b1b4ee;"/>
         </g>
     </g>
 </svg>

@@ -203,13 +203,14 @@ export default function Room({ code }: { code: string }) {
           </div>
         </div>
 
-        <div className="flex flex-1 flex-col gap-8">
+        <div className="-mx-3 flex flex-1 flex-col">
           {mappedClusters.map((cluster) => (
             <ClusterListItem
               key={cluster.id}
               id={cluster.id}
               name={cluster.name}
               icon={cluster.icon}
+              hiddenIcon={cluster.hiddenIcon}
               percentage={cluster.percentage}
             />
           ))}

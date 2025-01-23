@@ -62,8 +62,7 @@ export default function ClusterListItem({
             {showName ? name : "*".repeat(name.length)}
           </h3>
           <span className="font-mono text-sm leading-none">
-            {" "}
-            {Math.round(percentage)}%
+            {Math.round(percentage)}
           </span>
         </div>
 

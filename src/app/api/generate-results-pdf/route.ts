@@ -1,6 +1,6 @@
 // app/api/generate-pdf/route.ts
 import { exportRoomResults } from "@/lib/api";
-import { staticClusters, staticImages } from "@/lib/staticData";
+import { staticClusters, staticImages } from "@/lib/referenceElements";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import autoTable, { Styles } from "jspdf-autotable";

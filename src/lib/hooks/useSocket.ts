@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { toast } from "./use-toast";
-import { staticClusters, staticImages } from "../staticData";
+import { staticClusters, staticImages } from "../referenceElements";
 import {
   TypeGridImage,
   typeGridType,

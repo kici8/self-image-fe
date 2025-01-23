@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { TypeImage } from "../../../../lib/staticData";
+import { TypeImage } from "../../../../lib/referenceElements";
 import ImageDialog from "./ImageDialog";
 import { useTheme } from "next-themes";
 import {

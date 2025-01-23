@@ -270,12 +270,12 @@ export default function Room({ code }: { code: string }) {
   }
 
   return (
-    <div className="flex h-svh">
+    <div className="flex flex-col-reverse sm:h-svh sm:flex-row">
       <div className="flex-1">
         <ImageGrid images={allImages} />
       </div>
 
-      <div className="flex h-svh w-96 flex-col gap-8 overflow-hidden border-l border-border bg-card p-6 pt-4">
+      <div className="flex w-full flex-col gap-8 overflow-hidden border-l border-border bg-card p-6 pt-4 sm:h-svh sm:w-96">
         <div className="flex flex-col gap-6 text-foreground">
           <div className="flex-0 flex items-center">
             <h2 className="flex-1 font-mono text-6xl font-bold leading-none">

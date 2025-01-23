@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
 import CloseRoomDialog from "./CloseRoomDialog";
-import ClusterList from "./ClusterList";
+import ClusterListItem from "./ClusterListItem";
 import CodeAnimation from "./CodeAnimation";
 import ConnectionIndicator from "./ConnectionIndicator";
 import ImageGrid from "./ImageGrid";
@@ -154,10 +154,10 @@ export default function Room({ code }: { code: string }) {
         <ImageGrid images={allImages} />
       </div>
 
-      <div className="flex h-svh w-96 flex-col gap-8 overflow-hidden border-l border-border bg-card">
-        <div className="flex flex-col gap-6 p-3 text-foreground">
+      <div className="flex h-svh w-96 flex-col gap-8 overflow-hidden border-l border-border bg-card p-6 pt-4">
+        <div className="flex flex-col gap-6 text-foreground">
           <div className="flex-0 flex items-center">
-            <h2 className="flex-1 font-mono text-6xl font-bold">
+            <h2 className="flex-1 font-mono text-6xl font-bold leading-none">
               <CodeAnimation targetCode={code} />
             </h2>
             <ConnectionIndicator
@@ -203,11 +203,19 @@ export default function Room({ code }: { code: string }) {
           </div>
         </div>
 
-        <div className="flex flex-1 flex-col gap-2">
-          <ClusterList cluster={mappedClusters} />
+        <div className="flex flex-1 flex-col gap-8">
+          {mappedClusters.map((cluster) => (
+            <ClusterListItem
+              key={cluster.id}
+              id={cluster.id}
+              name={cluster.name}
+              icon={cluster.icon}
+              percentage={cluster.percentage}
+            />
+          ))}
         </div>
 
-        <div className="flex gap-2 rounded-lg px-4 py-4">
+        <div className="flex gap-4 rounded-lg">
           <Button
             variant="outline"
             className="flex-1"

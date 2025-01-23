@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <rect id="Artboard1" x="0" y="0" width="511.993" height="512" style="fill:none;"/>
+    <g id="Artboard11" serif:id="Artboard1">
+        <g>
+            <rect x="16" y="16" width="480" height="480" style="fill:#170c3f;fill-rule:nonzero;"/>
+            <rect x="256" y="16" width="240" height="240" style="fill:#5158e1;fill-rule:nonzero;"/>
+            <rect x="16" y="16" width="240" height="240" style="fill:#b1b4ee;fill-rule:nonzero;"/>
+            <rect x="16" y="256" width="240" height="240" style="fill:#5158e1;fill-rule:nonzero;"/>
+            <rect x="256" y="256" width="240" height="240" style="fill:#170c3f;fill-rule:nonzero;"/>
+            <path d="M460,256C460,368.666 368.666,460 256,460C143.334,460 52,368.666 52,256C52,143.334 143.334,52 256,52C368.666,52 460,143.334 460,256Z" style="fill:#5158e1;fill-rule:nonzero;"/>
+            <path d="M460,256C460,143.334 368.666,52 256,52L256,256L460,256Z" style="fill:#b0b4ee;fill-rule:nonzero;"/>
+            <path d="M256,52C143.334,52 52,143.334 52,256L256,256L256,52Z" style="fill:#5158e1;fill-rule:nonzero;"/>
+            <path d="M52,256C52,368.666 143.334,460 256,460L256,256L52,256Z" style="fill:#170c3f;fill-rule:nonzero;"/>
+        </g>
+    </g>
+</svg>

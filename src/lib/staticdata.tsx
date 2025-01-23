@@ -1,6 +1,9 @@
-import IconClusterA from "@/components/icons/IconClusterA";
-import IconClusterB from "@/components/icons/IconClusterB";
-import { BoxIcon, GlassesIcon, Grid2x2XIcon, UserIcon } from "lucide-react";
+import IconClusterASolid from "@/components/icons/IconClusterASolid";
+import IconClusterBSolid from "@/components/icons/IconClusterBSolid";
+import IconClusterCSolid from "@/components/icons/IconClusterCSolid";
+import IconClusterDSolid from "@/components/icons/IconClusterDSolid";
+import IconClusterESolid from "@/components/icons/IconClusterESolid";
+import IconClusterFSolid from "@/components/icons/IconClusterFSolid";
 
 export type TypeImage = {
   id: string;
@@ -17,37 +20,37 @@ export const staticClusters = [
   {
     id: "A",
     name: "Stile",
-    icon: <IconClusterA className={iconClasses} />,
+    icon: <IconClusterASolid className={iconClasses} />,
     percentage: 0,
   },
   {
     id: "B",
     name: "Limite",
-    icon: <IconClusterB className={iconClasses} />,
+    icon: <IconClusterBSolid className={iconClasses} />,
     percentage: 0,
   },
   {
     id: "C",
     name: "Presenza",
-    icon: <UserIcon className={iconClasses} />,
+    icon: <IconClusterCSolid className={iconClasses} />,
     percentage: 0,
   },
   {
     id: "D",
     name: "Finzione",
-    icon: <GlassesIcon className={iconClasses} />,
+    icon: <IconClusterDSolid className={iconClasses} />,
     percentage: 0,
   },
   {
     id: "E",
     name: "Creazione",
-    icon: <BoxIcon className={iconClasses} />,
+    icon: <IconClusterESolid className={iconClasses} />,
     percentage: 0,
   },
   {
     id: "F",
     name: "Assenza",
-    icon: <Grid2x2XIcon className={iconClasses} />,
+    icon: <IconClusterFSolid className={iconClasses} />,
     percentage: 0,
   },
 ];

@@ -25,8 +25,9 @@ type Interaction = {
 
 type Participant = {
   nickname: string;
-  unlocked_images?: string[];
-  unlocked_filters?: string[];
+  // TODO: why no unlocked_images and unlocked_filters?
+  // unlocked_images?: string[];
+  // unlocked_filters?: string[];
   sessions: {
     session_id: string;
     interactions: Interaction[];

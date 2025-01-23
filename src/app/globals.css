@@ -8,7 +8,18 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+  /* --color-purple-50: hsl(237.4 56.1% 92%);
+  --color-purple-100: hsl(237 60.6% 87.1%);
+  --color-purple-200: hsl(236.7 64.3% 78%);
+  --color-purple-300: hsl(236.6 67.1% 69%);
+  --color-purple-400: hsl(237.1 70.6% 60%);
+  --color-purple-500: hsl(237.2 66.3% 50%);
+  --color-purple-600: hsl(236.8 63.7% 40%);
+  --color-purple-700: hsl(236.8 60.8% 30%);
+  --color-purple-800: hsl(236.9 56.9% 20%);
+  --color-purple-900: hsl(237.8 52.9% 10%);
+  --color-purple-950: hsl(240 46.2% 5.1%); */
+    --background: 220 13% 91%;
     --foreground: 20 14.3% 4.1%;
     --card: 0 0% 100%;
     --card-foreground: 20 14.3% 4.1%;
@@ -22,8 +33,8 @@ body {
     --muted-foreground: 25 5.3% 44.7%;
     --accent: 60 4.8% 95.9%;
     --accent-foreground: 24 9.8% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 60 9.1% 97.8%;
+    --destructive: 343 65% 61%;
+    --destructive-foreground: 251 41% 8%;
     --border: 20 5.9% 90%;
     --input: 20 5.9% 90%;
     --ring: 20 14.3% 4.1%;
@@ -35,20 +46,20 @@ body {
     --radius: 0.5rem;
   }
   .dark {
-    --background: 251 41% 8%;
-    --foreground: 60 9.1% 97.8%;
-    --card: 252 62% 9%;
-    --card-foreground: 60 9.1% 97.8%;
-    --popover: 252 62% 9%;
-    --popover-foreground: 60 9.1% 97.8%;
-    --primary: 60 9.1% 97.8%;
+    --background: 240 46.2% 5.1%;
+    --foreground: 237.4 56.1% 92%;
+    --card: 237.8 52.9% 10%;
+    --card-foreground: 237.4 56.1% 92%;
+    --popover: 237.8 52.9% 10%;
+    --popover-foreground: 237.4 56.1% 92%;
+    --primary: 237.4 56.1% 92%;
     --primary-foreground: 24 9.8% 10%;
     --secondary: 249 10% 26%;
-    --secondary-foreground: 60 9.1% 97.8%;
+    --secondary-foreground: 237.4 56.1% 92%;
     --muted: 251 41% 8%;
     --muted-foreground: 24 5.4% 63.9%;
-    --accent: 251 41% 8%;
-    --accent-foreground: 60 9.1% 97.8%;
+    --accent: 237.1 70.6% 60%;
+    --accent-foreground: 237.4 56.1% 92%;
     --destructive: 343 65% 61%;
     --destructive-foreground: 251 41% 8%;
     --border: 253 8% 45%;

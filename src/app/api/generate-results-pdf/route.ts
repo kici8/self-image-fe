@@ -1,6 +1,6 @@
 // app/api/generate-pdf/route.ts
 import { exportRoomResults } from "@/lib/api";
-import { staticClusters, staticImages } from "@/lib/staticdata";
+import { staticClusters, staticImages } from "@/lib/staticData";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import autoTable, { Styles } from "jspdf-autotable";
@@ -12,13 +12,13 @@ const roomColor: Partial<Styles> = {
 };
 
 const participantColorEven: Partial<Styles> = {
-  fillColor: [163, 230, 53],
-  textColor: [0, 0, 0],
+  fillColor: [40, 48, 135],
+  textColor: [255, 255, 255],
 };
 
 const participantColorOdd: Partial<Styles> = {
-  fillColor: [251, 191, 36],
-  textColor: [0, 0, 0],
+  fillColor: [89, 111, 251],
+  textColor: [255, 255, 255],
 };
 
 async function blobToBase64(blob: Blob): Promise<string> {
@@ -49,6 +49,7 @@ export async function GET(req: Request) {
       );
     }
 
+    console.log("fetchedRoomResults", fetchedRoomResults.data.participants[0]);
     const { roomResults, participants } = fetchedRoomResults.data;
 
     // initialize jsPDF
@@ -107,44 +108,46 @@ export async function GET(req: Request) {
     for (let i = 0; i < participants.length; i++) {
       const readableParticipantNumber = i + 1;
       doc.addPage();
-      autoTable(doc, {
-        startY: 12,
-        head: [
-          [
-            `Participant: ${participants[i].nickname ?? readableParticipantNumber} - Unlocked images`,
-            "Name",
-            "Author",
-          ],
-        ],
-        body: (participants[i].unlocked_images ?? []).map((image) => [
-          image,
-          staticImages.find((img) => img.id === image)?.title || "Unknown",
-          staticImages.find((img) => img.id === image)?.author || "Unknown",
-        ]),
-        headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
-      });
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      lastY = (doc as any).lastAutoTable.finalY + 4;
-      autoTable(doc, {
-        startY: lastY,
-        head: [
-          [
-            `Participant: ${participants[i].nickname ?? readableParticipantNumber} - Unlocked Filters`,
-          ],
-        ],
-        body: (participants[i].unlocked_filters ?? []).map((filter) => [
-          filter,
-        ]),
-        headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
-      });
+      // autoTable(doc, {
+      //   startY: 12,
+      //   head: [
+      //     [
+      //       `Participant: ${participants[i].nickname ?? readableParticipantNumber} - Unlocked images`,
+      //       "Name",
+      //       "Author",
+      //     ],
+      //   ],
+      //   body: (participants[i].unlocked_images ?? []).map((image) => [
+      //     image,
+      //     staticImages.find((img) => img.id === image)?.title || "Unknown",
+      //     staticImages.find((img) => img.id === image)?.author || "Unknown",
+      //   ]),
+      //   headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
+      // });
+
+      // TODO: why no unlocked_filters?
+      // lastY = (doc as any).lastAutoTable.finalY + 4;
+      // autoTable(doc, {
+      //   startY: lastY,
+      //   head: [
+      //     [
+      //       `Participant: ${participants[i].nickname ?? readableParticipantNumber} - Unlocked Filters`,
+      //     ],
+      //   ],
+      //   body: (participants[i].unlocked_filters ?? []).map((filter) => [
+      //     filter,
+      //   ]),
+      //   headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
+      // });
 
       for (let j = 0; j < participants[i].sessions.length; j++) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        lastY = (doc as any).lastAutoTable.finalY + 4;
+        // TODO: add back lastY if unlocked_images and unlocked_filters are added back
+        // lastY = (doc as any).lastAutoTable.finalY + 4;
         const readableSessionNumber = j + 1;
         autoTable(doc, {
-          startY: lastY,
+          // startY: lastY,
+          startY: 12,
           head: [
             [
               `${participants[i].nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Cluster`,
@@ -164,23 +167,36 @@ export async function GET(req: Request) {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         lastY = (doc as any).lastAutoTable.finalY + 4;
+
         autoTable(doc, {
           startY: lastY,
           head: [
             [
               `${participants[i].nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Action`,
-              "Image ID",
-              "Fragment ID",
+              "Author",
+              "Cluster",
+              "Fragment",
               "Liked",
             ],
           ],
-          body: participants[i].sessions[j].interactions.map((interaction) => [
-            interaction.cluster_id,
-            interaction.image_id,
-            interaction.fragment_id,
-            interaction.liked.toString(),
-          ]),
+          body: participants[i].sessions[j].interactions.map((interaction) => {
+            const image = staticImages.find(
+              (sImage) => sImage.id == interaction.image_id,
+            );
+            return [
+              image?.title || "No title",
+              image?.author || "No author",
+              interaction.cluster_id,
+              interaction.fragment_id,
+              interaction.liked.toString(),
+            ];
+          }),
           headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
+          didParseCell: (data) => {
+            if (data.column.dataKey === 4 && data.cell.raw === "true") {
+              data.cell.styles.fontStyle = "bold";
+            }
+          },
         });
 
         // SELFIE

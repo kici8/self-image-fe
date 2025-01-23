@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { TypeImage } from "../../../../lib/staticdata";
+import { TypeImage } from "../../../../lib/staticData";
 import ImageDialog from "./ImageDialog";
 import { useTheme } from "next-themes";
 import {
@@ -89,7 +89,7 @@ export default function ImageGrid({ images }: { images: TypeGridImage[] }) {
                 className={cn(imageVariants({ unlocked: image.unlocked }))}
               />
               {!image.unlocked ? (
-                <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-stone-500/30 text-stone-500/30">
+                <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-card text-card-foreground/10">
                   <svg
                     viewBox="0 0 24 24"
                     fillRule="evenodd"

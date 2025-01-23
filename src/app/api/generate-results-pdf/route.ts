@@ -49,7 +49,6 @@ export async function GET(req: Request) {
       );
     }
 
-    console.log("fetchedRoomResults", fetchedRoomResults.data.participants[0]);
     const { roomResults, participants } = fetchedRoomResults.data;
 
     // initialize jsPDF
@@ -108,46 +107,44 @@ export async function GET(req: Request) {
     for (let i = 0; i < participants.length; i++) {
       const readableParticipantNumber = i + 1;
       doc.addPage();
+      autoTable(doc, {
+        startY: 12,
+        head: [
+          [
+            `Participant: ${participants[i].nickname ?? readableParticipantNumber} - Unlocked images`,
+            "Name",
+            "Author",
+          ],
+        ],
+        body: (participants[i].unlocked_images ?? []).map((image) => [
+          image,
+          staticImages.find((img) => img.id === image)?.title || "Unknown",
+          staticImages.find((img) => img.id === image)?.author || "Unknown",
+        ]),
+        headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
+      });
 
-      // autoTable(doc, {
-      //   startY: 12,
-      //   head: [
-      //     [
-      //       `Participant: ${participants[i].nickname ?? readableParticipantNumber} - Unlocked images`,
-      //       "Name",
-      //       "Author",
-      //     ],
-      //   ],
-      //   body: (participants[i].unlocked_images ?? []).map((image) => [
-      //     image,
-      //     staticImages.find((img) => img.id === image)?.title || "Unknown",
-      //     staticImages.find((img) => img.id === image)?.author || "Unknown",
-      //   ]),
-      //   headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
-      // });
-
-      // TODO: why no unlocked_filters?
-      // lastY = (doc as any).lastAutoTable.finalY + 4;
-      // autoTable(doc, {
-      //   startY: lastY,
-      //   head: [
-      //     [
-      //       `Participant: ${participants[i].nickname ?? readableParticipantNumber} - Unlocked Filters`,
-      //     ],
-      //   ],
-      //   body: (participants[i].unlocked_filters ?? []).map((filter) => [
-      //     filter,
-      //   ]),
-      //   headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
-      // });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      lastY = (doc as any).lastAutoTable.finalY + 4;
+      autoTable(doc, {
+        startY: lastY,
+        head: [
+          [
+            `Participant: ${participants[i].nickname ?? readableParticipantNumber} - Unlocked Filters`,
+          ],
+        ],
+        body: (participants[i].unlocked_filters ?? []).map((filter) => [
+          filter,
+        ]),
+        headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
+      });
 
       for (let j = 0; j < participants[i].sessions.length; j++) {
-        // TODO: add back lastY if unlocked_images and unlocked_filters are added back
-        // lastY = (doc as any).lastAutoTable.finalY + 4;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        lastY = (doc as any).lastAutoTable.finalY + 4;
         const readableSessionNumber = j + 1;
         autoTable(doc, {
-          // startY: lastY,
-          startY: 12,
+          startY: lastY,
           head: [
             [
               `${participants[i].nickname ?? readableParticipantNumber} - Session ${readableSessionNumber} - Cluster`,
@@ -167,7 +164,6 @@ export async function GET(req: Request) {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         lastY = (doc as any).lastAutoTable.finalY + 4;
-
         autoTable(doc, {
           startY: lastY,
           head: [

@@ -50,6 +50,7 @@ type JoinRoomPayload = {
 
 type JoinRoomResponse = {
   status: "success" | "error";
+  message?: string;
   data: RoomData;
 };
 
@@ -95,14 +96,21 @@ function getMappedClusters(
   }));
 }
 
+export enum RoomStatus {
+  open,
+  closed,
+  notFound,
+  genericError,
+}
+
 export const useSocket = () => {
   const socketRef = useRef<Socket<
     ServerToClientEvents,
     ClientToServerEvents
   > | null>(null);
 
+  const [roomStatus, setRoomStatus] = useState<RoomStatus>(RoomStatus.notFound);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
-  const [isRoomConnected, setIsRoomConnected] = useState(false);
   const [roomData, setRoomData] = useState<RoomProgressResponse | null>(null);
   const [selfies, setSelfies] = useState<TypeGridImage[]>([]);
   const [images, setImages] = useState<TypeGridImage[]>([]);
@@ -178,7 +186,7 @@ export const useSocket = () => {
   const joinRoom = (code: string) => {
     socketRef.current?.emit("join_room", { code }, (data) => {
       if (data.status === "success") {
-        setIsRoomConnected(true);
+        setRoomStatus(RoomStatus.open);
         // Init room data
         setRoomData((prev) => {
           if (JSON.stringify(prev) !== JSON.stringify(data.data)) {
@@ -211,13 +219,37 @@ export const useSocket = () => {
 
       if (data.status === "error") {
         console.error("Error joining room:", data);
-        toast({
-          title: "Impossibile connettersi alla stanza",
-          description:
-            "La stanza potrebbe non esistere, essere chiusa o avere problemi di connessione.",
-          variant: "destructive",
+
+        // Show images and clusters anyway
+        setImages((prev) => {
+          const newImages = getMappedImages(null, []);
+          if (JSON.stringify(prev) !== JSON.stringify(newImages)) {
+            return newImages;
+          }
+          return prev;
         });
-        setIsRoomConnected(false);
+
+        setClusters((prev) => {
+          const newClusters = getMappedClusters([]);
+          if (JSON.stringify(prev) !== JSON.stringify(newClusters)) {
+            return newClusters;
+          }
+          return prev;
+        });
+
+        if (data.message === "Record not found") {
+          setRoomStatus(RoomStatus.notFound);
+        } else if (data.message === "Room is closed") {
+          setRoomStatus(RoomStatus.closed);
+        } else {
+          setRoomStatus(RoomStatus.genericError);
+          toast({
+            title: "Impossibile connettersi alla stanza",
+            description:
+              "La stanza potrebbe non esistere, essere chiusa o avere problemi di connessione.",
+            variant: "destructive",
+          });
+        }
       }
     });
   };
@@ -231,7 +263,7 @@ export const useSocket = () => {
 
   return {
     isSocketConnected,
-    isRoomConnected,
+    roomStatus,
     joinRoom,
     roomData,
     selfies,

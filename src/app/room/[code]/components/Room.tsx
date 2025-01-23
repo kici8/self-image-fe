@@ -3,8 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { closeRoom, createNewRoomSession } from "@/lib/api";
 import { toast } from "@/lib/hooks/use-toast";
-import { useSocket } from "@/lib/hooks/useSocket";
-import { DownloadIcon, LoaderCircleIcon, RefreshCwIcon } from "lucide-react";
+import { RoomStatus, useSocket } from "@/lib/hooks/useSocket";
+import {
+  DoorClosedIcon,
+  DownloadIcon,
+  LoaderCircleIcon,
+  RefreshCwIcon,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
@@ -23,7 +28,7 @@ export default function Room({ code }: { code: string }) {
     clusters: mappedClusters,
     images: processedImages,
     selfies: mappedSelfies,
-    isRoomConnected,
+    roomStatus,
     isSocketConnected,
   } = useSocket();
 
@@ -32,6 +37,7 @@ export default function Room({ code }: { code: string }) {
   const [isClosingRoomLoading, setIsClosingRoomLoading] = useState(false);
   const [isResultDownloadLoading, setIsResultDownloadLoading] = useState(false);
   const [isNewSessionLoading, setIsNewSessionLoading] = useState(false);
+  const areRoomActionsDisable = roomStatus !== RoomStatus.open;
 
   // Effects
   // Join the room when the code is available
@@ -148,6 +154,121 @@ export default function Room({ code }: { code: string }) {
     (a, b) => a.index - b.index,
   );
 
+  const sectionRoomClosed = (
+    <div className="flex flex-col gap-2">
+      <DoorClosedIcon className="text-destructive" />
+      <div>
+        <h2 className="text-xl font-semibold">Stanza chiusa</h2>
+        <p>
+          La stanza è stata chiusa, non è più possibile visualizzare i dati o
+          partecipare.
+        </p>
+      </div>
+      <Button className="mt-4 w-full" onClick={() => router.push("/")}>
+        Torna alla home
+      </Button>
+    </div>
+  );
+
+  const sectionRoomNotFound = (
+    <div className="flex flex-col gap-2">
+      <DoorClosedIcon className="text-destructive" />
+      <div>
+        <h2 className="text-xl font-semibold">Stanza non trovata</h2>
+        <p>
+          La stanza non è stata trovata, controlla il codice inserito o creane
+          una nuova.
+        </p>
+      </div>
+      <Button className="mt-4 w-full" onClick={() => router.push("/")}>
+        Torna alla home
+      </Button>
+    </div>
+  );
+
+  const sectionDefault = (
+    <>
+      <div className="h-6">
+        <Marquee>
+          <p className="text-md"></p>
+          {(roomData?.connected_players ?? []).length > 0 ? (
+            <>
+              <span className="mr-2 font-semibold">{`Partecipanti (${roomData?.connected_players.length || 0}):`}</span>
+              {(roomData?.connected_players ?? []).map((player) => (
+                <span key={player} className="mr-2 font-semibold">
+                  {player}{" "}
+                </span>
+              ))}
+            </>
+          ) : null}
+          <span className="mx-8 italic text-secondary-foreground">
+            - Per partecipare alla stanza inserisci il codice sopra -
+          </span>
+        </Marquee>
+      </div>
+
+      <div className="flex gap-2">
+        <Button
+          onClick={onNewSession}
+          disabled={isNewSessionLoading || areRoomActionsDisable}
+          className="flex-1"
+        >
+          Nuova sessione
+          {isNewSessionLoading ? (
+            <LoaderCircleIcon className="animate-spin" />
+          ) : (
+            <RefreshCwIcon />
+          )}
+        </Button>
+      </div>
+
+      <div className="-mx-3 flex flex-1 flex-col">
+        {mappedClusters.map((cluster) => (
+          <ClusterListItem
+            key={cluster.id}
+            id={cluster.id}
+            name={cluster.name}
+            icon={cluster.icon}
+            hiddenIcon={cluster.hiddenIcon}
+            percentage={cluster.percentage}
+          />
+        ))}
+      </div>
+
+      <div className="flex gap-4 rounded-lg">
+        <Button
+          variant="outline"
+          className="flex-1"
+          onClick={onResultsDownload}
+          disabled={isResultDownloadLoading || areRoomActionsDisable}
+        >
+          Scarica
+          {isResultDownloadLoading ? (
+            <LoaderCircleIcon className="animate-spin" />
+          ) : (
+            <DownloadIcon />
+          )}
+        </Button>
+        <CloseRoomDialog
+          disabled={areRoomActionsDisable}
+          isOpen={isCloseRoomDialogOpen}
+          setIsOpen={setIsCloseRoomDialogOpen}
+          onCloseRoom={onCloseRoom}
+          isLoading={isClosingRoomLoading}
+        />
+      </div>
+    </>
+  );
+
+  let content;
+  if (roomStatus === RoomStatus.closed) {
+    content = sectionRoomClosed;
+  } else if (roomStatus === RoomStatus.notFound) {
+    content = sectionRoomNotFound;
+  } else {
+    content = sectionDefault;
+  }
+
   return (
     <div className="flex h-svh">
       <div className="flex-1">
@@ -161,82 +282,12 @@ export default function Room({ code }: { code: string }) {
               <CodeAnimation targetCode={code} />
             </h2>
             <ConnectionIndicator
-              isRoomConnected={isRoomConnected}
+              isRoomConnected={roomStatus === RoomStatus.open}
               isSocketConnected={isSocketConnected}
             />
           </div>
-          <div className="h-6">
-            <Marquee>
-              <p className="text-md"></p>
-              {(roomData?.connected_players ?? []).length > 0 ? (
-                <>
-                  <span className="mr-2 font-semibold">{`Partecipanti (${roomData?.connected_players.length || 0}):`}</span>
-                  {(roomData?.connected_players ?? []).map((player) => (
-                    <span key={player} className="mr-2 font-semibold">
-                      {player}{" "}
-                    </span>
-                  ))}
-                </>
-              ) : null}
-              <span className="mx-8 italic text-secondary-foreground">
-                - Per partecipare alla stanza inserisci il codice sopra -
-              </span>
-            </Marquee>
-          </div>
-
-          <div className="flex gap-2">
-            {/* <Button className="flex-1 rounded-full" variant="outline">
-              Partecipanti: {roomData?.connected_players.length || 0}
-            </Button> */}
-            <Button
-              onClick={onNewSession}
-              disabled={isNewSessionLoading}
-              className="flex-1"
-            >
-              Nuova sessione
-              {isNewSessionLoading ? (
-                <LoaderCircleIcon className="animate-spin" />
-              ) : (
-                <RefreshCwIcon />
-              )}
-            </Button>
-          </div>
         </div>
-
-        <div className="-mx-3 flex flex-1 flex-col">
-          {mappedClusters.map((cluster) => (
-            <ClusterListItem
-              key={cluster.id}
-              id={cluster.id}
-              name={cluster.name}
-              icon={cluster.icon}
-              hiddenIcon={cluster.hiddenIcon}
-              percentage={cluster.percentage}
-            />
-          ))}
-        </div>
-
-        <div className="flex gap-4 rounded-lg">
-          <Button
-            variant="outline"
-            className="flex-1"
-            onClick={onResultsDownload}
-            disabled={isResultDownloadLoading}
-          >
-            Scarica
-            {isResultDownloadLoading ? (
-              <LoaderCircleIcon className="animate-spin" />
-            ) : (
-              <DownloadIcon />
-            )}
-          </Button>
-          <CloseRoomDialog
-            isOpen={isCloseRoomDialogOpen}
-            setIsOpen={setIsCloseRoomDialogOpen}
-            onCloseRoom={onCloseRoom}
-            isLoading={isClosingRoomLoading}
-          />
-        </div>
+        {content}
       </div>
     </div>
   );

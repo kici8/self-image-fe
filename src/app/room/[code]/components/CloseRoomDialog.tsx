@@ -16,18 +16,24 @@ type CloseRoomDialogProps = {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   isLoading: boolean;
+  disabled: boolean;
 };
 
 export default function CloseRoomDialog({
   onCloseRoom,
   isLoading,
   isOpen,
+  disabled,
   setIsOpen,
 }: CloseRoomDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="destructive" className="flex-1">
+        <Button
+          variant="destructive"
+          className="flex-1"
+          disabled={disabled || isLoading}
+        >
           Chiudi
           {isLoading ? (
             <LoaderCircleIcon className="animate-spin" />

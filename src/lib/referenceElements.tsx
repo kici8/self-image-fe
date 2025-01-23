@@ -23,17 +23,17 @@ export type TypeImage = {
 
 export const staticClusters = [
   {
-    id: "A",
-    name: "Stile",
-    hiddenIcon: <IconClusterA />,
-    icon: <IconClusterASolid />,
-    percentage: 0,
-  },
-  {
     id: "B",
     name: "Limite",
     hiddenIcon: <IconClusterB />,
     icon: <IconClusterBSolid />,
+    percentage: 0,
+  },
+  {
+    id: "A",
+    name: "Stile",
+    hiddenIcon: <IconClusterA />,
+    icon: <IconClusterASolid />,
     percentage: 0,
   },
   {

@@ -17,6 +17,7 @@ export type TypeImage = {
   title: string | undefined;
   description: string | undefined;
   author: string | undefined;
+  author_id?: string;
   year: string | undefined;
 };
 

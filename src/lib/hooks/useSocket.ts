@@ -139,24 +139,30 @@ export const useSocket = () => {
     });
 
     socketRef.current.on("room_selfie", (data) => {
-      console.log("room_selfie receiving", data);
-      // Update selfies
-      setSelfies((prev) => [
-        ...prev,
-        {
-          id: data.selfie_id,
-          author: undefined,
-          description: undefined,
-          filters: data.filters,
-          src: `${process.env.NEXT_PUBLIC_API_URL}/api/room/selfie/${data.selfie_id}`,
-          title: undefined,
-          year: undefined,
-          session_id: roomData?.session_id || null,
-          index: Math.floor(Math.random() * staticImages.length),
-          unlocked: true,
-          type: typeGridType.selfie,
-        },
-      ]);
+      console.log("room_selfie receiving", data, selfies);
+      // Update selfies only if the player has not already submitted a selfie
+      if (
+        selfies.find((selfie) => selfie.author_id === data.player_id) ==
+        undefined
+      ) {
+        setSelfies((prev) => [
+          ...prev,
+          {
+            id: data.selfie_id,
+            author: undefined,
+            author_id: data.player_id,
+            description: undefined,
+            filters: data.filters,
+            src: `${process.env.NEXT_PUBLIC_API_URL}/api/room/selfie/${data.selfie_id}`,
+            title: undefined,
+            year: undefined,
+            session_id: roomData?.session_id || null,
+            index: Math.floor(Math.random() * staticImages.length),
+            unlocked: true,
+            type: typeGridType.selfie,
+          },
+        ]);
+      }
     });
 
     socketRef.current.on("disconnect", () => {
@@ -167,7 +173,7 @@ export const useSocket = () => {
     return () => {
       socketRef.current?.disconnect();
     };
-  }, [roomData?.session_id]);
+  }, [roomData?.session_id, selfies]);
 
   const joinRoom = (code: string) => {
     socketRef.current?.emit("join_room", { code }, (data) => {

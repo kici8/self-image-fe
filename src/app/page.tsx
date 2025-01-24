@@ -1,6 +1,7 @@
 "use client";
 
 import Alert from "@/components/Alert";
+import Logo from "@/components/icons/logo";
 import { Button } from "@/components/ui/button";
 import { createRoom } from "@/lib/api";
 import { ArrowRightIcon, LoaderCircleIcon } from "lucide-react";
@@ -38,13 +39,14 @@ export default function Home() {
 
   return (
     <div className="background min-h-svh py-16 sm:py-24">
-      <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div>
+          <Logo className="mx-auto mb-8 w-40" />
+        </div>
         <h2 className="mx-auto max-w-3xl text-center text-4xl font-semibold tracking-tight sm:text-5xl">
           Crea una nuova stanza
         </h2>
         <p className="mx-auto mt-6 max-w-lg text-center text-lg">
-          {/* Inserisci il tuo Codice Host per creare una nuova stanza e iniziare
-          l&apos;esperienza. */}
           Inizia una nuova esperienza creando una stanza. Il codice per accedere
           alla stanza sarà generato automaticamente.
         </p>
@@ -55,15 +57,6 @@ export default function Home() {
           <label htmlFor="hostCode" className="sr-only">
             Codice Host
           </label>
-          {/* <Input
-            id="hostCode"
-            name="hostCode"
-            type="password"
-            disabled={isLoading}
-            autoComplete="password"
-            // required
-            placeholder="Codice Host"
-          /> */}
           <Button disabled={isLoading} type="submit">
             Crea Stanza
             {isLoading ? (

@@ -50,6 +50,11 @@ export default function ImageDialog({
               fill
               style={{ objectFit: "contain", width: "100%", height: "100%" }}
               priority
+              data-loaded="false"
+              onLoad={(event) => {
+                event.currentTarget.setAttribute("data-loaded", "true");
+              }}
+              className="data-[loaded=false]:animate-pulse data-[loaded=false]:bg-self-blue-300/10"
             />
           </div>
           <div className="w-full overflow-y-auto p-4 md:w-1/3">

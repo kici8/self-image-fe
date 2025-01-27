@@ -148,29 +148,39 @@ export const useSocket = () => {
 
     socketRef.current.on("room_selfie", (data) => {
       console.log("room_selfie receiving", data, selfies);
-      // Update selfies only if the player has not already submitted a selfie
-      if (
-        selfies.find((selfie) => selfie.author_id === data.player_id) ==
-        undefined
-      ) {
-        setSelfies((prev) => [
-          ...prev,
-          {
-            id: data.selfie_id,
-            author: undefined,
-            author_id: data.player_id,
-            description: undefined,
-            filters: data.filters,
-            src: `${process.env.NEXT_PUBLIC_API_URL}/api/room/selfie/${data.selfie_id}`,
-            title: undefined,
-            year: undefined,
-            session_id: roomData?.session_id || null,
-            index: Math.floor(Math.random() * staticImages.length),
-            unlocked: true,
-            type: typeGridType.selfie,
-          },
-        ]);
-      }
+      // Update selfies
+      setSelfies((prev) => {
+        const existingSelfieIndex = prev.findIndex(
+          (selfie) =>
+            selfie.author_id === data.player_id &&
+            selfie.session_id === roomData?.session_id,
+        );
+
+        const newSelfie = {
+          id: data.selfie_id,
+          author: undefined,
+          author_id: data.player_id,
+          description: undefined,
+          filters: data.filters,
+          src: `${process.env.NEXT_PUBLIC_API_URL}/api/room/selfie/${data.selfie_id}`,
+          title: undefined,
+          year: undefined,
+          session_id: roomData?.session_id || null,
+          index: Math.floor(Math.random() * staticImages.length),
+          unlocked: true,
+          type: typeGridType.selfie,
+        };
+
+        // If the selfie already exists, update it
+        if (existingSelfieIndex !== -1) {
+          const updatedSelfies = [...prev];
+          updatedSelfies[existingSelfieIndex] = newSelfie;
+          return updatedSelfies;
+        } else {
+          // Otherwise, add it
+          return [...prev, newSelfie];
+        }
+      });
     });
 
     socketRef.current.on("disconnect", () => {

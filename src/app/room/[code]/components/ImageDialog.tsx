@@ -10,7 +10,9 @@ import Image from "next/image";
 import { TypeGridImage } from "./ImageGrid";
 import { XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import ReactMarkdown from "react-markdown";
+import { remark } from "remark";
+import html from "remark-html";
+import { useEffect, useState } from "react";
 
 type ImageDialogProps = {
   isOpen: boolean;
@@ -23,6 +25,19 @@ export default function ImageDialog({
   isOpen,
   setIsOpen,
 }: ImageDialogProps) {
+  const [htmlContent, setHtmlContent] = useState("");
+
+  useEffect(() => {
+    if (image.description) {
+      remark()
+        .use(html)
+        .process(image.description)
+        .then((file) => {
+          setHtmlContent(String(file));
+        });
+    }
+  }, [image.description]);
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent
@@ -43,7 +58,7 @@ export default function ImageDialog({
           </Button>
         </DialogHeader>
         <div className="flex h-full flex-col overflow-hidden md:flex-row">
-          <div className="relative flex h-[50vh] w-full items-center justify-center bg-primary/10 md:h-full md:w-2/3">
+          <div className="relative flex h-[50vh] w-full items-center justify-center bg-primary/10 md:h-full md:w-1/2">
             <Image
               // TODO: add placeholder image
               src={image.src || "/placeholder.svg"}
@@ -58,20 +73,21 @@ export default function ImageDialog({
               className="data-[loaded=false]:animate-pulse data-[loaded=false]:bg-self-blue-300/10"
             />
           </div>
-          <div className="w-full overflow-y-auto p-4 md:w-1/3">
-            <h4 className="mb-2 text-sm font-semibold">
+          <div className="w-full overflow-y-auto p-4 md:w-1/2">
+            <h4 className="mb-2 text-lg font-semibold">
               {image.author || "Autore sconosciuto"}
             </h4>
             <h3 className="mb-2 text-2xl font-semibold">
               {image.title || "Opera senza titolo"}
             </h3>
-            <p className="mb-8 text-sm text-muted-foreground">
+            <p className="mb-8 text-lg text-muted-foreground">
               {image.year || "Senza data"}
             </p>
             {image.description ? (
-              <div className="text-sm">
-                <ReactMarkdown>{image.description}</ReactMarkdown>
-              </div>
+              <div
+                className="text-sm"
+                dangerouslySetInnerHTML={{ __html: htmlContent }}
+              />
             ) : null}
           </div>
         </div>

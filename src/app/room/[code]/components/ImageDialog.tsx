@@ -10,6 +10,7 @@ import Image from "next/image";
 import { TypeGridImage } from "./ImageGrid";
 import { XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ReactMarkdown from "react-markdown";
 
 type ImageDialogProps = {
   isOpen: boolean;
@@ -68,7 +69,9 @@ export default function ImageDialog({
               {image.year || "Senza data"}
             </p>
             {image.description ? (
-              <p className="text-sm">{image.description}</p>
+              <div className="text-sm">
+                <ReactMarkdown>{image.description}</ReactMarkdown>
+              </div>
             ) : null}
           </div>
         </div>

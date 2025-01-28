@@ -73,8 +73,14 @@ export const staticImages: TypeImage[] = [
     src: "/cluster-images/a.1.jpg",
     title: "Marilyn",
     description: `Vi siete mai chiesti cosa significa davvero essere un’icona? L’immagine che vedete è una delle opere più celebri di Andy Warhol, un artista che ha trasformato il modo in cui ci rapportiamo con le immagini. Sapete chi è lei, vero? È Marilyn Monroe, ma non proprio ‟lei‟. È una versione di lei, rielaborata, coloratissima, un po’ fuori dagli schemi.
+
+
     Warhol l’ha creata nel 1962, pochi mesi dopo la morte dell’attrice. Strano, vero? Era ossessionato dall’idea di fama, di celebrità, ma anche dal fatto che tutto ciò che ci sembra eterno può svanire in un attimo. Forse lo capite anche voi: quante volte vedete una foto sui social che sembra ‟perfetta‟, ma sapete che dietro c’è molto di più?
+
+
     La sua immagine è stata presa da una foto promozionale del film Niagara (1953) e Warhol l’ha trasformata in qualcosa di nuovo, usando una tecnica chiamata serigrafia. Ha scelto colori vivissimi – rosa shocking, giallo acceso, nero profondo – per esagerare i tratti del volto. Non è più una persona reale, ma diventa un simbolo. Eppure, guardandola, forse vedete anche qualcosa di fragile, di spezzato. Warhol era affascinato da come la fama può renderti brillante ma anche ‟finto‟, quasi come una maschera.
+
+
     E voi, come la vedete? Un’opera d’arte? Un simbolo? O una riflessione su quanto sia difficile capire chi siamo davvero in mezzo a tutto questo caos di immagini? Forse un po’ di tutto. `
     ,
     author: "Andy Warhol",
@@ -102,7 +108,7 @@ export const staticImages: TypeImage[] = [
     id: "a.3",
     src: "/cluster-images/a.3.jpg",
     title: "Il cervo ferito",
-    description: undefined,
+    description: ,
     author: "Frida Kahlo",
     year: "1946",
   },
@@ -339,7 +345,7 @@ export const staticImages: TypeImage[] = [
     author: "Matthew Barney",
     description:
       "Matthew Barney is an American artist who works in sculpture, photography, drawing and film. His early works are characterized by their complex narrative structures and the use of unusual materials.",
-    year: undefined,
+    year: "1995",
   },
   {
     id: "d.4",
@@ -348,7 +354,7 @@ export const staticImages: TypeImage[] = [
     description:
       "David LaChapelle is an American photographer and director. His works are characterized by their colorful, surreal and often provocative style.",
     author: "David LaChapelle",
-    year: undefined,
+    year: "1997",
   },
   {
     id: "d.5",
@@ -371,10 +377,10 @@ export const staticImages: TypeImage[] = [
   {
     id: "d.7",
     src: "/cluster-images/d.7.jpg",
-    title: undefined,
+    title: "Il Cavaliere Oscuro",
     description: undefined,
-    author: undefined,
-    year: undefined,
+    author: "Christopher Nolan",
+    year: "2008",
   },
   {
     id: "d.8",

@@ -85,7 +85,7 @@ export default function ImageDialog({
             </p>
             {image.description ? (
               <div
-                className="text-sm"
+                className="text-lg"
                 dangerouslySetInnerHTML={{ __html: htmlContent }}
               />
             ) : null}

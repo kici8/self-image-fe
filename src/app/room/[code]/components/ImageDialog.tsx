@@ -1,18 +1,17 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { XIcon } from "lucide-react";
 import Image from "next/image";
 import { TypeGridImage } from "./ImageGrid";
-import { XIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { remark } from "remark";
-import html from "remark-html";
-import { useEffect, useState } from "react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 type ImageDialogProps = {
   isOpen: boolean;
@@ -25,19 +24,6 @@ export default function ImageDialog({
   isOpen,
   setIsOpen,
 }: ImageDialogProps) {
-  const [htmlContent, setHtmlContent] = useState("");
-
-  useEffect(() => {
-    if (image.description) {
-      remark()
-        .use(html)
-        .process(image.description)
-        .then((file) => {
-          setHtmlContent(String(file));
-        });
-    }
-  }, [image.description]);
-
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent
@@ -84,10 +70,11 @@ export default function ImageDialog({
               {image.year || "Senza data"}
             </p>
             {image.description ? (
-              <div
-                className="text-lg"
-                dangerouslySetInnerHTML={{ __html: htmlContent }}
-              />
+              <div className="text-lg">
+                <Markdown remarkPlugins={[remarkGfm]}>
+                  {image.description}
+                </Markdown>
+              </div>
             ) : null}
           </div>
         </div>

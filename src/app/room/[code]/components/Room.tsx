@@ -275,7 +275,7 @@ export default function Room({ code }: { code: string }) {
         <ImageGrid images={allImages} />
       </div>
 
-      <div className="flex w-full flex-col gap-8 overflow-hidden border-l border-border bg-card p-6 pt-4 sm:h-svh sm:w-96">
+      <div className="flex w-full flex-col gap-8 overflow-hidden border-b border-border bg-card p-6 pt-4 sm:h-svh sm:w-96 sm:border-b-0 sm:border-l">
         <div className="flex flex-col gap-6 text-foreground">
           <div className="flex-0 flex items-center">
             <h2 className="flex-1 font-mono text-6xl font-bold leading-none">

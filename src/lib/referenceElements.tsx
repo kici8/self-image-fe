@@ -72,7 +72,11 @@ export const staticImages: TypeImage[] = [
     id: "a.1",
     src: "/cluster-images/a.1.jpg",
     title: "Marilyn",
-    description: "Nessuna",
+    description: `Vi siete mai chiesti cosa significa davvero essere un’icona? L’immagine che vedete è una delle opere più celebri di Andy Warhol, un artista che ha trasformato il modo in cui ci rapportiamo con le immagini. Sapete chi è lei, vero? È Marilyn Monroe, ma non proprio ‟lei‟. È una versione di lei, rielaborata, coloratissima, un po’ fuori dagli schemi.
+    Warhol l’ha creata nel 1962, pochi mesi dopo la morte dell’attrice. Strano, vero? Era ossessionato dall’idea di fama, di celebrità, ma anche dal fatto che tutto ciò che ci sembra eterno può svanire in un attimo. Forse lo capite anche voi: quante volte vedete una foto sui social che sembra ‟perfetta‟, ma sapete che dietro c’è molto di più?
+    La sua immagine è stata presa da una foto promozionale del film Niagara (1953) e Warhol l’ha trasformata in qualcosa di nuovo, usando una tecnica chiamata serigrafia. Ha scelto colori vivissimi – rosa shocking, giallo acceso, nero profondo – per esagerare i tratti del volto. Non è più una persona reale, ma diventa un simbolo. Eppure, guardandola, forse vedete anche qualcosa di fragile, di spezzato. Warhol era affascinato da come la fama può renderti brillante ma anche ‟finto‟, quasi come una maschera.
+    E voi, come la vedete? Un’opera d’arte? Un simbolo? O una riflessione su quanto sia difficile capire chi siamo davvero in mezzo a tutto questo caos di immagini? Forse un po’ di tutto. `
+    ,
     author: "Andy Warhol",
     year: "1962",
   },
@@ -80,7 +84,17 @@ export const staticImages: TypeImage[] = [
     id: "a.2",
     src: "/cluster-images/a.2.jpg",
     title: "Autoritratto con spalla nuda sollevata",
-    description: undefined,
+    description: `Vi siete mai guardati allo specchio e sentiti... strani? Come se quello che vedete non fosse solo ‟voi‟, ma qualcosa di più, qualcosa di diverso?  È proprio quello che Egon Schiele sembra dirci con questo autoritratto del 1912.
+    Guardatelo: il suo viso è distorto, le sue spalle sembrano troppo grandi, troppo vicine, eppure è tutto intenzionale. Schiele non voleva solo mostrarsi com’era. No, lui voleva farci sentire il suo stato d’animo, la sua inquietudine, il suo senso di fragilità.
+    All'epoca, l'arte tradizionale cercava di rappresentare la realtà in modo perfetto, ma Schiele, con le sue pennellate nervose, ha deciso di rompere le regole. Lui voleva che voi vedeste lui — non solo il suo corpo, ma anche la sua anima.
+    E cosa vedete voi? Un uomo che si osserva con occhi quasi spaventati, come se non fosse sicuro di ciò che sta guardando. Il corpo è storto… ma è reale. Non è forse così che vi sentite anche voi, a volte? Spesso cerchiamo di essere perfetti agli occhi degli altri, ma dentro siamo pieni di dubbi.
+    Schiele aveva solo 22 anni quando ha dipinto quest’opera, ed era ossessionato dal tempo, dalla vita e dalla morte. Era un periodo difficile per lui, ma è proprio questa intensità che ci colpisce ancora oggi.
+    E voi? Cosa vedete quando vi guardate allo specchio?
+    Frida
+    Vi siete mai sentiti come se qualcuno vi avesse colpito proprio lì, dove fa più male? Ecco, quello che vedete è il dipinto Il Cervo Ferito di Frida Kahlo e lei, fidatevi, può capirvi.
+    Frida l’ha realizzato nel 1946, in un periodo in cui il dolore era diventato parte della sua vita. Guardate: il corpo di un cervo e la testa della pittrice stessa. Sembra forte, con le sue corna imponenti, ma nonostante questo è ferita. Le frecce che la trafiggono parlano di sofferenza, non solo fisica ma anche emotiva.
+    Dietro di lei c’è un bosco, ma non è un luogo tranquillo. Gli alberi sembrano freddi, quasi spettrali, e il cielo azzurro lontano fa sembrare tutto ancora più isolato. La natura, che di solito dà conforto, qui sembra distante, incapace di aiutarla.
+    `,
     author: "Egon Schiele",
     year: "1912",
   },

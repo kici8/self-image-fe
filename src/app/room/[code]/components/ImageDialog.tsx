@@ -70,7 +70,7 @@ export default function ImageDialog({
               {image.year || "Senza data"}
             </p>
             {image.description ? (
-              <div className="text-lg">
+              <div className="text-lg [&_p]:mb-4">
                 <Markdown remarkPlugins={[remarkGfm]}>
                   {image.description}
                 </Markdown>

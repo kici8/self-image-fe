@@ -5,5 +5,5 @@
     ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
     ["cn\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
   ],
-  "cSpell.words": ["autotable"]
+  "cSpell.words": ["autotable", "landmarker", "tfjs"]
 }

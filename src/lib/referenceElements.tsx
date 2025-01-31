@@ -24,21 +24,21 @@ export type TypeImage = {
 export const staticClusters = [
   {
     id: "B",
-    name: "Limite",
+    name: "Nascondersi",
     hiddenIcon: <IconClusterB />,
     icon: <IconClusterBSolid />,
     percentage: 0,
   },
   {
     id: "A",
-    name: "Stile",
+    name: "Disegnarsi",
     hiddenIcon: <IconClusterA />,
     icon: <IconClusterASolid />,
     percentage: 0,
   },
   {
     id: "C",
-    name: "Presenza",
+    name: "Presentarsi",
     hiddenIcon: <IconClusterC />,
     icon: <IconClusterCSolid />,
 
@@ -46,21 +46,21 @@ export const staticClusters = [
   },
   {
     id: "D",
-    name: "Finzione",
+    name: "Mascherarsi",
     hiddenIcon: <IconClusterD />,
     icon: <IconClusterDSolid />,
     percentage: 0,
   },
   {
     id: "E",
-    name: "Creazione",
+    name: "(S)comporsi",
     hiddenIcon: <IconClusterE />,
     icon: <IconClusterESolid />,
     percentage: 0,
   },
   {
     id: "F",
-    name: "Assenza",
+    name: "Sottrarsi",
     hiddenIcon: <IconClusterF />,
     icon: <IconClusterFSolid />,
     percentage: 0,

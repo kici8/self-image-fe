@@ -116,7 +116,10 @@ const WebcamFeed: React.FC = () => {
                 <VideoMesh video={webcamRef.current.video} />
               )}
               {faceResults && (
-                <FaceMeshComponent faceLandmarkerResult={faceResults} />
+                <FaceMeshComponent
+                  faceLandmarkerResult={faceResults}
+                  aspect={videoDimension.width / videoDimension.height}
+                />
               )}
             </Canvas>
           </div>
@@ -143,6 +146,7 @@ const VideoMesh: React.FC<{ video: HTMLVideoElement }> = ({ video }) => {
     if (video.readyState >= video.HAVE_CURRENT_DATA && meshRef.current) {
       // Mirror the video on the X axis by setting a negative scale value.
       meshRef.current.scale.set(-aspect, 1, 1);
+      meshRef.current.renderOrder = 2;
       videoTexture.needsUpdate = true;
     }
   });

@@ -13,17 +13,24 @@ import { UV_COORDS } from "./UVCOORDS";
 // Component properties interface
 interface Props {
   faceLandmarkerResult: FaceLandmarkerResult;
+  aspect: number;
 }
 
-function normalize(point: NormalizedLandmark): [number, number, number] {
-  const x = -(point.x - 0.5) * 2;
-  const y = -(point.y - 0.5) * 2;
+function normalize(
+  point: NormalizedLandmark,
+  aspect: number,
+): [number, number, number] {
+  const x = -(point.x - 0.5) * aspect;
+  const y = 0.5 - point.y;
   const z = point.z;
 
   return [x, y, z];
 }
 
-const FaceMeshComponent: React.FC<Props> = ({ faceLandmarkerResult }) => {
+const FaceMeshComponent: React.FC<Props> = ({
+  faceLandmarkerResult,
+  aspect,
+}) => {
   const meshRef = useRef<THREE.Mesh>(null);
 
   // Load texture and prevent flipping on Y axis.
@@ -54,7 +61,7 @@ const FaceMeshComponent: React.FC<Props> = ({ faceLandmarkerResult }) => {
     // Create vertices array from landmarks.
     const vertices = new Float32Array(keypoints.length * 3);
     keypoints.forEach((landmark, i) => {
-      const [x, y, z] = normalize(landmark);
+      const [x, y, z] = normalize(landmark, aspect);
       vertices[i * 3] = x;
       vertices[i * 3 + 1] = y;
       vertices[i * 3 + 2] = z;
@@ -72,6 +79,7 @@ const FaceMeshComponent: React.FC<Props> = ({ faceLandmarkerResult }) => {
 
     // Update mesh geometry.
     meshRef.current.geometry = geometry;
+    meshRef.current.renderOrder = 1;
   });
 
   return (
@@ -83,6 +91,7 @@ const FaceMeshComponent: React.FC<Props> = ({ faceLandmarkerResult }) => {
         opacity={0.8}
         side={THREE.DoubleSide}
         wireframe={false}
+        depthTest={false}
       ></meshStandardMaterial>
     </mesh>
   );

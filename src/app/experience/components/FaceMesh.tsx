@@ -3,8 +3,8 @@ import {
   FaceLandmarkerResult,
   NormalizedLandmark,
 } from "@mediapipe/tasks-vision";
-import { useLoader } from "@react-three/fiber";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useFrame, useLoader } from "@react-three/fiber";
+import React, { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { TextureLoader } from "three";
 import { triangles } from "./TRIANGLES";
@@ -24,20 +24,16 @@ function normalize(point: NormalizedLandmark): [number, number, number] {
 }
 
 const FaceMeshComponent: React.FC<Props> = ({ faceLandmarkerResult }) => {
-  // Create a ref to store the Three.js mesh instance
   const meshRef = useRef<THREE.Mesh>(null);
 
-  // States
-  const [isUVMapped, setIsUVMapped] = useState(false);
-
-  // Load the texture using react-three-fiber's useLoader hook
+  // Load texture and prevent flipping on Y axis.
   const texture = useLoader(
     TextureLoader,
     "/ar/canonical_face_model_uv_visualization_brutto.png",
   );
-
   texture.flipY = false;
 
+  // Pre-calculate the UV array from your canonical UV coords.
   const uv = useMemo(() => {
     const uvArray = new Float32Array(UV_COORDS.length * 2);
     UV_COORDS.forEach((point, i) => {
@@ -47,47 +43,36 @@ const FaceMeshComponent: React.FC<Props> = ({ faceLandmarkerResult }) => {
     return uvArray;
   }, []);
 
-  useEffect(() => {
-    // Ensure a mesh reference is available before proceeding
+  // Update the mesh geometry every frame.
+  useFrame(() => {
     if (!meshRef.current) return;
 
-    // Extract face landmarks from the result
-    const vertices: number[] = faceLandmarkerResult.faceLandmarks[0].reduce(
-      (acc, landmark) => {
-        const [x, y, z] = normalize(landmark);
-        return [...acc, x, y, z];
-      },
-      [] as number[],
-    );
+    // Get face landmarks (assuming the first face).
+    const keypoints = faceLandmarkerResult.faceLandmarks[0];
+    if (!keypoints) return; // Optionally early-return if no face
 
-    const indices: number[] = triangles.reduce(
-      (acc, triangle) => [...acc, ...triangle],
-      [] as number[],
-    );
-
-    // Create a new BufferGeometry which will hold our mesh data
-    const geometry = new THREE.BufferGeometry();
-
-    if (!isUVMapped) {
-      // Map UV coordinates using the predefined canonical texture mapping.
-    }
-
-    UV_COORDS.forEach((point, i) => {
-      uv[i * 2] = point.x;
-      uv[i * 2 + 1] = point.y;
+    // Create vertices array from landmarks.
+    const vertices = new Float32Array(keypoints.length * 3);
+    keypoints.forEach((landmark, i) => {
+      const [x, y, z] = normalize(landmark);
+      vertices[i * 3] = x;
+      vertices[i * 3 + 1] = y;
+      vertices[i * 3 + 2] = z;
     });
 
+    // Build geometry and assign attributes.
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
     geometry.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
-    setIsUVMapped(true);
 
-    geometry.setIndex(indices);
-    geometry.setAttribute(
-      "position",
-      new THREE.BufferAttribute(new Float32Array(vertices), 3),
-    );
+    // Flatten triangle indices.
+    const indices = new Uint16Array(triangles.flat());
+    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+    geometry.computeVertexNormals();
 
+    // Update mesh geometry.
     meshRef.current.geometry = geometry;
-  }, [faceLandmarkerResult, isUVMapped, uv]);
+  });
 
   return (
     // Render the mesh. The mesh will use the material that applies the texture.

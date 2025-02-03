@@ -5,15 +5,16 @@ import {
   FaceLandmarkerResult,
   FilesetResolver,
 } from "@mediapipe/tasks-vision";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import React, { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import FaceMeshComponent from "./FaceMesh";
+import * as THREE from "three";
 
 const WebcamFeed: React.FC = () => {
   // refs
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const webcamRef = useRef<Webcam>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   // states
   const [loaded, setLoaded] = useState(false);
@@ -21,7 +22,7 @@ const WebcamFeed: React.FC = () => {
   const [faceResults, setFaceResults] = useState<FaceLandmarkerResult | null>(
     null,
   );
-  const [containerDimension, setContainerDimension] = useState<{
+  const [videoDimension, setVideoDimension] = useState<{
     width: number;
     height: number;
   } | null>(null);
@@ -56,6 +57,14 @@ const WebcamFeed: React.FC = () => {
     if (!landmarker) return;
     const video = webcamRef.current?.video;
     if (!video || video.readyState < 4) return;
+    console.log("🥎🏀 video dimension", {
+      video_w: video.videoWidth,
+      video_wh: video.videoHeight,
+    });
+    setVideoDimension({
+      width: video.videoWidth,
+      height: video.videoHeight,
+    });
     const result = landmarker.detectForVideo(video, performance.now());
     setFaceResults(result);
   }
@@ -64,68 +73,86 @@ const WebcamFeed: React.FC = () => {
   const trackAnimationID = requestAnimationFrame(track);
 
   // EFFECTS AND CLEANUPS
-
   useEffect(() => {
-    // FIXME: ResizeObserver is not supported in Safari?
-    // FIXME: on resize mediapipe face mesh breaks
-    // // roi->width > 0 && roi->height > 0 ROI width and height must be > 0.;
-    // // Adding proto packet of type mediapipe. NormalizedRect to stream norm_rect was not ok
-
-    if (containerRef.current) {
-      const observer = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-          const { width, height } = entry.contentRect;
-          setContainerDimension({
-            width: width,
-            height: height,
-          });
-        }
-      });
-
-      observer.observe(containerRef.current);
-
-      // Cleanup function
-      return () => {
-        cancelAnimationFrame(trackAnimationID);
-        observer.disconnect();
-      };
-    }
+    // Cleanup function
+    return () => {
+      cancelAnimationFrame(trackAnimationID);
+    };
   }, [trackAnimationID]);
 
   return (
-    <div
-      ref={containerRef}
-      className="relative h-full w-full flex-1 bg-red-400"
-    >
-      <Webcam
-        mirrored={true}
-        ref={webcamRef}
-        className="absolute h-full max-h-full w-full object-cover"
-        videoConstraints={{
-          facingMode: "user",
-          height: containerDimension?.height || 1080,
-          width: containerDimension?.width || 1920,
-        }}
-        onLoadedData={handleVideoLoad}
-      />
-
-      {loaded && (
-        <div
-          className="absolute"
-          style={{
-            height: containerDimension?.height || 1080,
-            width: containerDimension?.width || 1920,
+    <div className="relative h-full w-full flex-1 bg-red-400">
+      <>
+        <Webcam
+          mirrored={true}
+          ref={webcamRef}
+          className="absolute opacity-0"
+          videoConstraints={{
+            facingMode: "user",
           }}
-        >
-          <Canvas camera={{ position: [0, 0, 10], fov: 10 }}>
-            <ambientLight intensity={0.5} />
-            {faceResults && (
-              <FaceMeshComponent faceLandmarkerResult={faceResults} />
-            )}
-          </Canvas>
-        </div>
-      )}
+          onLoadedData={handleVideoLoad}
+        />
+
+        {loaded && videoDimension !== null ? (
+          <div
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-violet-500"
+            style={{
+              height: videoDimension?.height,
+              width: videoDimension?.width,
+            }}
+          >
+            <Canvas
+              ref={canvasRef}
+              camera={{
+                position: [0, 0, 1], // Move the camera back so the plane fits
+                fov: 50,
+                near: 0.1,
+                far: 1000,
+                aspect: videoDimension.width / videoDimension.height,
+              }}
+            >
+              <ambientLight intensity={0.01} />
+              {webcamRef.current?.video && (
+                <VideoMesh video={webcamRef.current.video} />
+              )}
+              {faceResults && (
+                <FaceMeshComponent faceLandmarkerResult={faceResults} />
+              )}
+            </Canvas>
+          </div>
+        ) : (
+          <div>Loading...</div>
+        )}
+      </>
     </div>
+  );
+};
+
+// Component to create a mesh with the video texture.
+const VideoMesh: React.FC<{ video: HTMLVideoElement }> = ({ video }) => {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const { size } = useThree();
+  // Create a VideoTexture from the video element
+  const videoTexture = new THREE.VideoTexture(video);
+  videoTexture.flipY = true;
+  // Const
+  const aspect = size.width / size.height;
+
+  // Update texture on every frame if required
+  useFrame(() => {
+    if (video.readyState >= video.HAVE_CURRENT_DATA && meshRef.current) {
+      // Mirror the video on the X axis by setting a negative scale value.
+      meshRef.current.scale.set(-aspect, 1, 1);
+      videoTexture.needsUpdate = true;
+    }
+  });
+
+  return (
+    <mesh ref={meshRef}>
+      <planeGeometry />
+      {/* You can replace meshBasicMaterial with a custom shader material */}
+      <meshBasicMaterial map={videoTexture} />
+    </mesh>
   );
 };
 

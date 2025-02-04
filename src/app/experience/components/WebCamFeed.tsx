@@ -6,20 +6,25 @@ import {
   FilesetResolver,
 } from "@mediapipe/tasks-vision";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import {
-  BrightnessContrast,
-  EffectComposer,
-  Sepia,
-} from "@react-three/postprocessing";
-import { BlendFunction } from "postprocessing";
 import React, { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import * as THREE from "three";
-import FaceMeshComponent from "./FaceMesh";
+import XRayFilter from "../filters/XRayFilter";
+import { Button } from "@/components/ui/button";
+import SerigraphyFilter from "../filters/SerigraphyFilter";
 
-const WebcamFeed: React.FC = () => {
+enum Filters {
+  SERIGRAPHY,
+  XRAY,
+}
+
+type WebcamFeedProps = {
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
+};
+
+const WebcamFeed: React.FC<WebcamFeedProps> = ({ canvasRef }) => {
   // refs
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+
   const webcamRef = useRef<Webcam>(null);
 
   // states
@@ -32,6 +37,7 @@ const WebcamFeed: React.FC = () => {
     width: number;
     height: number;
   } | null>(null);
+  const [activeFilter, setActiveFilter] = useState<Filters>(Filters.SERIGRAPHY);
 
   // CALLBACKS
   async function handleVideoLoad(
@@ -63,14 +69,13 @@ const WebcamFeed: React.FC = () => {
     if (!landmarker) return;
     const video = webcamRef.current?.video;
     if (!video || video.readyState < 4) return;
-    console.log("🥎🏀 video dimension", {
-      video_w: video.videoWidth,
-      video_wh: video.videoHeight,
-    });
+
     setVideoDimension({
       width: video.videoWidth,
       height: video.videoHeight,
     });
+    // FIXME: how to meke the canvas responsive to the screen size and video dimension?
+
     const result = landmarker.detectForVideo(video, performance.now());
     setFaceResults(result);
   }
@@ -87,7 +92,14 @@ const WebcamFeed: React.FC = () => {
   }, [trackAnimationID]);
 
   return (
-    <div className="relative h-full w-full flex-1 bg-red-400">
+    <div className="relative h-full w-full flex-1 overflow-hidden bg-black">
+      <div className="fixed left-0 top-0 z-10 bg-white p-4">
+        <Button onClick={() => setActiveFilter(Filters.XRAY)}>XRAY</Button>
+        <Button onClick={() => setActiveFilter(Filters.SERIGRAPHY)}>
+          SERIGRAPHY
+        </Button>
+      </div>
+
       <>
         <Webcam
           mirrored={true}
@@ -101,10 +113,9 @@ const WebcamFeed: React.FC = () => {
 
         {loaded && videoDimension !== null ? (
           <div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-cyan-900"
+            className="absolute left-1/2 top-0 min-h-full min-w-full -translate-x-1/2 transform"
             style={{
-              height: videoDimension?.height,
-              width: videoDimension?.width,
+              aspectRatio: `${videoDimension.width}/${videoDimension.height}`,
             }}
           >
             <Canvas
@@ -123,27 +134,18 @@ const WebcamFeed: React.FC = () => {
                 <VideoMesh video={webcamRef.current.video} />
               )}
 
-              {faceResults && (
-                <FaceMeshComponent
+              {faceResults && activeFilter == Filters.XRAY && (
+                <XRayFilter
                   faceLandmarkerResult={faceResults}
                   aspect={videoDimension.width / videoDimension.height}
                 />
               )}
-              <EffectComposer>
-                <BrightnessContrast
-                  brightness={0.8}
-                  contrast={-0.9}
-                  opacity={0.99}
-                  blendFunction={BlendFunction.INVERT_RGB}
+              {faceResults && activeFilter == Filters.SERIGRAPHY && (
+                <SerigraphyFilter
+                  faceLandmarkerResult={faceResults}
+                  aspect={videoDimension.width / videoDimension.height}
                 />
-                <Sepia opacity={1} blendFunction={BlendFunction.NORMAL} />
-                <BrightnessContrast
-                  brightness={0.6}
-                  contrast={-0.8}
-                  opacity={0.99}
-                  blendFunction={BlendFunction.DARKEN}
-                />
-              </EffectComposer>
+              )}
             </Canvas>
           </div>
         ) : (

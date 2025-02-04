@@ -3,10 +3,9 @@ import {
   FaceLandmarkerResult,
   NormalizedLandmark,
 } from "@mediapipe/tasks-vision";
-import { useFrame, useLoader } from "@react-three/fiber";
-import React, { useMemo, useRef } from "react";
+import { useFrame } from "@react-three/fiber";
+import React, { useMemo } from "react";
 import * as THREE from "three";
-import { TextureLoader } from "three";
 import { triangles } from "./TRIANGLES";
 import { UV_COORDS } from "./UVCOORDS";
 
@@ -14,6 +13,9 @@ import { UV_COORDS } from "./UVCOORDS";
 interface Props {
   faceLandmarkerResult: FaceLandmarkerResult;
   aspect: number;
+  texture: THREE.Texture;
+  opacity?: number;
+  ref: React.RefObject<THREE.Mesh | null>;
 }
 
 function normalize(
@@ -30,12 +32,17 @@ function normalize(
 const FaceMeshComponent: React.FC<Props> = ({
   faceLandmarkerResult,
   aspect,
+  texture,
+  opacity = 1,
+  ref,
 }) => {
-  const meshRef = useRef<THREE.Mesh>(null);
-
+  // Example of loading a texture
   // Load texture and prevent flipping on Y axis.
-  const texture = useLoader(TextureLoader, "/ar/uv-x-ray.png");
-  texture.flipY = false;
+  // const texture = useLoader(
+  //   TextureLoader,
+  //   "/ar/canonical_face_model_uv_visualization_brutto.png",
+  // );
+  // texture.flipY = false;
 
   // Pre-calculate the UV array from your canonical UV coords.
   const uv = useMemo(() => {
@@ -49,7 +56,7 @@ const FaceMeshComponent: React.FC<Props> = ({
 
   // Update the mesh geometry every frame.
   useFrame(() => {
-    if (!meshRef.current) return;
+    if (!ref.current) return;
 
     // Get face landmarks (assuming the first face).
     const keypoints = faceLandmarkerResult.faceLandmarks[0];
@@ -75,17 +82,17 @@ const FaceMeshComponent: React.FC<Props> = ({
     geometry.computeVertexNormals();
 
     // Update mesh geometry.
-    meshRef.current.geometry = geometry;
-    meshRef.current.renderOrder = 1;
+    ref.current.geometry = geometry;
+    ref.current.renderOrder = 1;
   });
 
   return (
     // Render the mesh. The mesh will use the material that applies the texture.
-    <mesh ref={meshRef}>
+    <mesh ref={ref}>
       <meshStandardMaterial
         map={texture}
         transparent={true}
-        opacity={0.8}
+        opacity={opacity}
         side={THREE.DoubleSide}
         wireframe={false}
         depthTest={false}

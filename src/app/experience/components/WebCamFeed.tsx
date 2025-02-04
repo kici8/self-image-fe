@@ -1,17 +1,18 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { useIntervalAnimation } from "@/lib/hooks/useIntervalAnimation";
 import {
   FaceLandmarker,
   FaceLandmarkerResult,
   FilesetResolver,
 } from "@mediapipe/tasks-vision";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import * as THREE from "three";
-import XRayFilter from "../filters/XRayFilter";
-import { Button } from "@/components/ui/button";
 import SerigraphyFilter from "../filters/SerigraphyFilter";
+import XRayFilter from "../filters/XRayFilter";
 
 enum Filters {
   SERIGRAPHY,
@@ -37,7 +38,7 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({ canvasRef }) => {
     width: number;
     height: number;
   } | null>(null);
-  const [activeFilter, setActiveFilter] = useState<Filters>(Filters.SERIGRAPHY);
+  const [activeFilter, setActiveFilter] = useState<Filters>(Filters.XRAY);
 
   // CALLBACKS
   async function handleVideoLoad(
@@ -65,31 +66,25 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({ canvasRef }) => {
     setLoaded(true);
   }
 
-  function track() {
-    if (!landmarker) return;
-    const video = webcamRef.current?.video;
-    if (!video || video.readyState < 4) return;
+  const track = useCallback(
+    (time: number) => {
+      if (!landmarker) return;
+      const video = webcamRef.current?.video;
+      if (!video || video.readyState < 4) return;
 
-    setVideoDimension({
-      width: video.videoWidth,
-      height: video.videoHeight,
-    });
-    // FIXME: how to meke the canvas responsive to the screen size and video dimension?
+      setVideoDimension({
+        width: video.videoWidth,
+        height: video.videoHeight,
+      });
 
-    const result = landmarker.detectForVideo(video, performance.now());
-    setFaceResults(result);
-  }
+      const result = landmarker.detectForVideo(video, time);
+      setFaceResults(result);
+    },
+    [landmarker],
+  );
 
-  // TRACKING WITH REQUEST ANIMATION FRAME
-  const trackAnimationID = requestAnimationFrame(track);
-
-  // EFFECTS AND CLEANUPS
-  useEffect(() => {
-    // Cleanup function
-    return () => {
-      cancelAnimationFrame(trackAnimationID);
-    };
-  }, [trackAnimationID]);
+  // Use the custom hook based on setTimeout instead of requestAnimationFrame.
+  useIntervalAnimation(track, 16);
 
   return (
     <div className="relative h-full w-full flex-1 overflow-hidden bg-black">

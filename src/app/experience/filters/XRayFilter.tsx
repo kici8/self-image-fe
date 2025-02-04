@@ -41,12 +41,6 @@ const XRayFilter: React.FC<Props> = ({ faceLandmarkerResult, aspect }) => {
           blendFunction={BlendFunction.INVERT_RGB}
         />
         <Sepia opacity={1} blendFunction={BlendFunction.NORMAL} />
-        <BrightnessContrast
-          brightness={0.6}
-          contrast={-0.8}
-          opacity={0.99}
-          blendFunction={BlendFunction.DARKEN}
-        />
       </EffectComposer>
     </>
   );

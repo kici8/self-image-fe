@@ -1,3 +1,4 @@
+"use client";
 import { useCallback, useEffect, useRef } from "react";
 
 export function useAnimationFrame(callback: (time: number) => void) {

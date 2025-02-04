@@ -1,8 +1,9 @@
+"use client";
 import { useEffect, useRef } from "react";
 
 export function useIntervalAnimation(
   callback: (time: number) => void,
-  interval: number = 6, // roughly 60fps
+  interval: number = 16, // roughly 60fps
 ) {
   const savedCallback = useRef(callback);
 

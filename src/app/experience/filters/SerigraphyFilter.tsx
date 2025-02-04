@@ -1,14 +1,14 @@
 "use client";
 import { FaceLandmarkerResult } from "@mediapipe/tasks-vision";
 import { useLoader } from "@react-three/fiber";
+import React from "react";
+import * as THREE from "three";
+import FaceMeshComponent from "../components/FaceMesh";
+import { BlendFunction } from "postprocessing";
 import {
   BrightnessContrast,
   EffectComposer,
 } from "@react-three/postprocessing";
-import { BlendFunction } from "postprocessing";
-import React from "react";
-import * as THREE from "three";
-import FaceMeshComponent from "../components/FaceMesh";
 
 // Component properties interface
 interface Props {
@@ -38,10 +38,8 @@ const SerigraphyFilter: React.FC<Props> = ({
       />
       <EffectComposer>
         <BrightnessContrast
-          brightness={0.0}
-          contrast={0.4}
-          opacity={0.4}
-          blendFunction={BlendFunction.MULTIPLY}
+          brightness={-0.1}
+          blendFunction={BlendFunction.NORMAL}
         />
       </EffectComposer>
     </>

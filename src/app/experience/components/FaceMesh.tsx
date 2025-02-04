@@ -34,10 +34,7 @@ const FaceMeshComponent: React.FC<Props> = ({
   const meshRef = useRef<THREE.Mesh>(null);
 
   // Load texture and prevent flipping on Y axis.
-  const texture = useLoader(
-    TextureLoader,
-    "/ar/canonical_face_model_uv_visualization_brutto.png",
-  );
+  const texture = useLoader(TextureLoader, "/ar/uv-x-ray.png");
   texture.flipY = false;
 
   // Pre-calculate the UV array from your canonical UV coords.

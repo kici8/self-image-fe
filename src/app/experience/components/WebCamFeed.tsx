@@ -6,10 +6,16 @@ import {
   FilesetResolver,
 } from "@mediapipe/tasks-vision";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import {
+  BrightnessContrast,
+  EffectComposer,
+  Sepia,
+} from "@react-three/postprocessing";
+import { BlendFunction } from "postprocessing";
 import React, { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
-import FaceMeshComponent from "./FaceMesh";
 import * as THREE from "three";
+import FaceMeshComponent from "./FaceMesh";
 
 const WebcamFeed: React.FC = () => {
   // refs
@@ -95,7 +101,7 @@ const WebcamFeed: React.FC = () => {
 
         {loaded && videoDimension !== null ? (
           <div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-violet-500"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-cyan-900"
             style={{
               height: videoDimension?.height,
               width: videoDimension?.width,
@@ -111,16 +117,33 @@ const WebcamFeed: React.FC = () => {
                 aspect: videoDimension.width / videoDimension.height,
               }}
             >
-              <ambientLight intensity={0.01} />
+              <ambientLight intensity={1} />
+
               {webcamRef.current?.video && (
                 <VideoMesh video={webcamRef.current.video} />
               )}
+
               {faceResults && (
                 <FaceMeshComponent
                   faceLandmarkerResult={faceResults}
                   aspect={videoDimension.width / videoDimension.height}
                 />
               )}
+              <EffectComposer>
+                <BrightnessContrast
+                  brightness={0.8}
+                  contrast={-0.9}
+                  opacity={0.99}
+                  blendFunction={BlendFunction.INVERT_RGB}
+                />
+                <Sepia opacity={1} blendFunction={BlendFunction.NORMAL} />
+                <BrightnessContrast
+                  brightness={0.6}
+                  contrast={-0.8}
+                  opacity={0.99}
+                  blendFunction={BlendFunction.DARKEN}
+                />
+              </EffectComposer>
             </Canvas>
           </div>
         ) : (
@@ -146,7 +169,7 @@ const VideoMesh: React.FC<{ video: HTMLVideoElement }> = ({ video }) => {
     if (video.readyState >= video.HAVE_CURRENT_DATA && meshRef.current) {
       // Mirror the video on the X axis by setting a negative scale value.
       meshRef.current.scale.set(-aspect, 1, 1);
-      meshRef.current.renderOrder = 2;
+      meshRef.current.renderOrder = 0;
       videoTexture.needsUpdate = true;
     }
   });

@@ -1,30 +1,24 @@
-"use client";
 import { useEffect, useRef } from "react";
 
 export function useIntervalAnimation(
   callback: (time: number) => void,
-  interval: number = 16, // roughly 60fps
+  delay: number,
 ) {
-  const savedCallback = useRef(callback);
+  const savedCallback = useRef<(time: number) => void | null>(null);
 
-  // Remember latest callback
   useEffect(() => {
     savedCallback.current = callback;
   }, [callback]);
 
   useEffect(() => {
-    let timeoutId: number;
-
-    const tick = () => {
-      const now = performance.now();
-      savedCallback.current(now);
-      timeoutId = window.setTimeout(tick, interval);
-    };
-
+    let id: NodeJS.Timeout;
+    function tick() {
+      if (savedCallback.current) {
+        savedCallback.current(performance.now());
+      }
+      id = setTimeout(tick, delay);
+    }
     tick();
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [interval]);
+    return () => clearTimeout(id);
+  }, [delay]);
 }

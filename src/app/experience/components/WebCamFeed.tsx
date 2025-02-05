@@ -8,7 +8,13 @@ import {
   FilesetResolver,
 } from "@mediapipe/tasks-vision";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import React, { useCallback, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Webcam from "react-webcam";
 import * as THREE from "three";
 import SerigraphyFilter from "../filters/SerigraphyFilter";
@@ -114,6 +120,7 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({ canvasRef }) => {
             }}
           >
             <Canvas
+              key={activeFilter} // In questo modo la canvas verrà ricreata ad ogni cambio filtro
               ref={canvasRef}
               camera={{
                 position: [0, 0, 1], // Move the camera back so the plane fits
@@ -151,33 +158,42 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({ canvasRef }) => {
   );
 };
 
-// Component to create a mesh with the video texture.
 const VideoMesh: React.FC<{ video: HTMLVideoElement }> = ({ video }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const { size } = useThree();
-  // Create a VideoTexture from the video element
-  const videoTexture = new THREE.VideoTexture(video);
-  videoTexture.flipY = true;
-  // Const
   const aspect = size.width / size.height;
 
-  // Update texture on every frame if required
+  const videoTexture = useMemo(() => {
+    const texture = new THREE.VideoTexture(video);
+    texture.flipY = true;
+    return texture;
+  }, [video]);
+
+  // Crea geometry e material manualmente per poi poter fare il cleanup.
+  const geometry = useMemo(() => new THREE.PlaneGeometry(1, 1), []);
+  const material = useMemo(
+    () => new THREE.MeshBasicMaterial({ map: videoTexture }),
+    [videoTexture],
+  );
+
+  // Cleanup: rilascia texture, geometry e material quando il componente si smonta.
+  useEffect(() => {
+    return () => {
+      videoTexture.dispose();
+      geometry.dispose();
+      material.dispose();
+    };
+  }, [videoTexture, geometry, material]);
+
   useFrame(() => {
     if (video.readyState >= video.HAVE_CURRENT_DATA && meshRef.current) {
-      // Mirror the video on the X axis by setting a negative scale value.
       meshRef.current.scale.set(-aspect, 1, 1);
       meshRef.current.renderOrder = 0;
       videoTexture.needsUpdate = true;
     }
   });
 
-  return (
-    <mesh ref={meshRef}>
-      <planeGeometry />
-      {/* You can replace meshBasicMaterial with a custom shader material */}
-      <meshBasicMaterial map={videoTexture} />
-    </mesh>
-  );
+  return <mesh ref={meshRef} geometry={geometry} material={material} />;
 };
 
 export default WebcamFeed;

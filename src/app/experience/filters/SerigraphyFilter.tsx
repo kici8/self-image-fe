@@ -23,7 +23,7 @@ const SerigraphyFilter: React.FC<Props> = ({
   const faceMeshRef = React.useRef<THREE.Mesh | null>(null);
 
   //  Load texture and prevent flipping on Y axis.
-  const texture = useLoader(THREE.TextureLoader, "/ar/serigraphy.png");
+  const texture = useLoader(THREE.TextureLoader, "/ar/serigraphy-small.png");
   texture.flipY = false;
 
   return (

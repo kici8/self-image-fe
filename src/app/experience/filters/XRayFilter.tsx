@@ -20,7 +20,7 @@ interface Props {
 const XRayFilter: React.FC<Props> = ({ faceLandmarkerResult, aspect }) => {
   const faceMeshRef = React.useRef<THREE.Mesh | null>(null);
   //  Load texture and prevent flipping on Y axis.
-  const texture = useLoader(THREE.TextureLoader, "/ar/uv-x-ray.png");
+  const texture = useLoader(THREE.TextureLoader, "/ar/uv-x-ray-small.jpg");
   texture.flipY = false;
 
   return (

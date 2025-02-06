@@ -27,9 +27,10 @@ enum Filters {
 
 type WebcamFeedProps = {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  rendererRef: React.RefObject<THREE.WebGLRenderer | null>;
 };
 
-const WebcamFeed: React.FC<WebcamFeedProps> = ({ canvasRef }) => {
+const WebcamFeed: React.FC<WebcamFeedProps> = ({ canvasRef, rendererRef }) => {
   // refs
 
   const webcamRef = useRef<Webcam>(null);
@@ -128,6 +129,12 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({ canvasRef }) => {
                 near: 0.1,
                 far: 1000,
                 aspect: videoDimension.width / videoDimension.height,
+              }}
+              gl={{
+                preserveDrawingBuffer: true,
+              }}
+              onCreated={({ gl }) => {
+                rendererRef.current = gl;
               }}
             >
               <ambientLight intensity={1} />

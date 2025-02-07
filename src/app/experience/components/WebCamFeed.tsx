@@ -19,6 +19,7 @@ import Webcam from "react-webcam";
 import * as THREE from "three";
 import SerigraphyFilter from "../filters/SerigraphyFilter";
 import XRayFilter from "../filters/XRayFilter";
+import { PerformanceMonitor, Stats } from "@react-three/drei";
 
 enum Filters {
   SERIGRAPHY,
@@ -57,6 +58,7 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
     height: number;
   } | null>(null);
   const [activeFilter, setActiveFilter] = useState<Filters>(Filters.XRAY);
+  const [dpr, setDpr] = useState(1);
 
   // CALLBACKS
   // TODO: FaceLandmarker is also a drei component, we can use it directly
@@ -118,7 +120,7 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
 
   return (
     <div className="relative h-full w-full flex-1 overflow-hidden bg-black">
-      <div className="fixed left-0 top-0 z-10 bg-white p-4">
+      <div className="fixed right-0 top-0 z-10 bg-white p-4">
         <Button onClick={() => setActiveFilter(Filters.XRAY)}>XRAY</Button>
         <Button onClick={() => setActiveFilter(Filters.SERIGRAPHY)}>
           SERIGRAPHY
@@ -157,6 +159,7 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
               // Change the key to reset the canvas this prevent cleanup issues
               key={activeFilter}
               ref={canvasRef}
+              dpr={dpr}
               camera={{
                 position: [0, 0, 1], // Move the camera back so the plane fits
                 fov: 50,
@@ -168,7 +171,7 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
                 // FIXME: preserveDrawingBuffer is needed for the screenshot
                 // but it's not recommended for performance
                 // How can we workaround this?
-                preserveDrawingBuffer: true,
+                preserveDrawingBuffer: false,
                 antialias: false,
               }}
               onCreated={({ gl, camera, scene }) => {
@@ -195,6 +198,11 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
                   aspect={videoDimension.width / videoDimension.height}
                 />
               )}
+              <Stats showPanel={0} className="bottom-0 left-0" />
+              <PerformanceMonitor
+                onIncline={() => setDpr(2)}
+                onDecline={() => setDpr(0.25)}
+              />
             </Canvas>
           </div>
         ) : null}

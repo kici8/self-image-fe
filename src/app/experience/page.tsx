@@ -19,6 +19,20 @@ import {
   Undo2Icon,
   UploadIcon,
 } from "lucide-react";
+import { cva } from "class-variance-authority";
+import { cn } from "@/lib/utils";
+
+const cameraButtonSVGVariants = cva(
+  "absolute left-0 top-0 h-full w-full group-disabled:opacity-40",
+  {
+    variants: {
+      loading: {
+        true: ["animate-spin"],
+        false: ["animate-none"],
+      },
+    },
+  },
+);
 
 const ExperiencePage: React.FC = () => {
   // FIXME: remove Mock user ID
@@ -32,12 +46,13 @@ const ExperiencePage: React.FC = () => {
   const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [cameraButtonDisabled, setCameraButtonDisabled] = useState(false);
+  const [isProcessingSelfie, setIsProcessingSelfie] = useState(false);
+  const [isSceneLoaded, setIsSceneLoaded] = useState(false);
 
   const handleTakeSelfie = async () => {
-    setCameraButtonDisabled(true);
+    setIsProcessingSelfie(true);
     if (!rendererRef.current) {
-      setCameraButtonDisabled(false);
+      setIsProcessingSelfie(false);
       return;
     }
 
@@ -102,20 +117,41 @@ const ExperiencePage: React.FC = () => {
     }
     setScreenshotUrl(null);
     setModalOpen(false);
-    setCameraButtonDisabled(false);
+    setIsProcessingSelfie(false);
   };
 
   return (
     <div className="relative h-svh w-svw">
-      <WebcamFeed canvasRef={canvasRef} rendererRef={rendererRef} />
+      <WebcamFeed
+        canvasRef={canvasRef}
+        rendererRef={rendererRef}
+        isSceneLoaded={isSceneLoaded}
+        setIsSceneLoaded={setIsSceneLoaded}
+      />
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 transform">
         <button
-          disabled={cameraButtonDisabled}
+          disabled={isProcessingSelfie || !isSceneLoaded}
           onClick={handleTakeSelfie}
-          className="group relative h-20 w-20 rounded-full border-4 border-white bg-transparent transition-all disabled:border-transparent"
+          className="group relative h-20 w-20 bg-transparent text-white"
           aria-label="Scatta selfie"
         >
-          <span className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-white transition-all group-hover:size-10/12 group-active:size-6/12 group-disabled:animate-pulse group-disabled:cursor-not-allowed" />
+          <svg
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            className={cn(cameraButtonSVGVariants({ loading: !isSceneLoaded }))}
+          >
+            <circle
+              cx="12"
+              cy="12"
+              fill="none"
+              r="10"
+              strokeWidth="1"
+              stroke="currentColor"
+              strokeDasharray={!isSceneLoaded ? "42 64" : "64 64"}
+              strokeLinecap="round"
+            />
+          </svg>
+          <span className="absolute left-1/2 top-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-white transition-all group-hover:scale-75 group-active:scale-50 group-disabled:scale-50 group-disabled:cursor-not-allowed group-disabled:opacity-40" />
         </button>
       </div>
 

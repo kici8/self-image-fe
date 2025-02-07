@@ -28,15 +28,21 @@ enum Filters {
 type WebcamFeedProps = {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
   rendererRef: React.RefObject<THREE.WebGLRenderer | null>;
+  isSceneLoaded: boolean;
+  setIsSceneLoaded: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const WebcamFeed: React.FC<WebcamFeedProps> = ({ canvasRef, rendererRef }) => {
+const WebcamFeed: React.FC<WebcamFeedProps> = ({
+  canvasRef,
+  rendererRef,
+  isSceneLoaded,
+  setIsSceneLoaded,
+}) => {
   // refs
 
   const webcamRef = useRef<Webcam>(null);
 
   // states
-  const [loaded, setLoaded] = useState(false);
   const [landmarker, setLandmarker] = useState<FaceLandmarker | null>(null);
   const [faceResults, setFaceResults] = useState<FaceLandmarkerResult | null>(
     null,
@@ -53,10 +59,12 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({ canvasRef, rendererRef }) => {
   ) {
     const video = event.currentTarget;
     if (video.readyState !== 4) return;
-    if (loaded) return;
+    if (isSceneLoaded) return;
+    // FIXME: add as npm package
     const vision = await FilesetResolver.forVisionTasks(
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm",
     );
+    // FIXME: add as npm package
     const faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
       baseOptions: {
         modelAssetPath:
@@ -70,7 +78,7 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({ canvasRef, rendererRef }) => {
       numFaces: 1,
     });
     setLandmarker(faceLandmarker);
-    setLoaded(true);
+    setIsSceneLoaded(true);
   }
 
   const track = useCallback(
@@ -113,7 +121,7 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({ canvasRef, rendererRef }) => {
           onLoadedData={handleVideoLoad}
         />
 
-        {loaded && videoDimension !== null ? (
+        {isSceneLoaded && videoDimension !== null ? (
           <div
             className="absolute left-1/2 top-0 min-h-full min-w-full -translate-x-1/2 transform"
             style={{
@@ -157,9 +165,7 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({ canvasRef, rendererRef }) => {
               )}
             </Canvas>
           </div>
-        ) : (
-          <div>Loading...</div>
-        )}
+        ) : null}
       </>
     </div>
   );

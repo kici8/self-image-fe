@@ -79,9 +79,12 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
       },
 
       runningMode: "VIDEO",
-      outputFacialTransformationMatrixes: true,
-      outputFaceBlendshapes: true,
+      outputFacialTransformationMatrixes: false,
+      outputFaceBlendshapes: false,
       numFaces: 1,
+      minFaceDetectionConfidence: 0.1,
+      minFacePresenceConfidence: 0.1,
+      minTrackingConfidence: 0.1,
     });
     setLandmarker(faceLandmarker);
     setIsSceneLoaded(true);

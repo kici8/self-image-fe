@@ -46,7 +46,7 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
   // refs
   const webcamRef = useRef<Webcam>(null);
   const lastDetectionTimeRef = useRef(0);
-  const detectionInterval = 100; // in milliseconds
+  const detectionInterval = 66;
 
   // states
   const [landmarker, setLandmarker] = useState<FaceLandmarker | null>(null);
@@ -89,7 +89,6 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
       minTrackingConfidence: 0.1,
     });
     setLandmarker(faceLandmarker);
-    setIsSceneLoaded(true);
   }
 
   const track = useCallback(
@@ -104,6 +103,11 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
           height: video.videoHeight,
         });
       }
+
+      if (!isSceneLoaded) {
+        setIsSceneLoaded(true);
+      }
+
       // Throttle detection: only run if enough time has passed.
       if (time - lastDetectionTimeRef.current < detectionInterval) return;
       lastDetectionTimeRef.current = time;
@@ -112,7 +116,13 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
       const result = landmarker.detectForVideo(video, time);
       setFaceResults(result);
     },
-    [landmarker, videoDimension?.height, videoDimension?.width],
+    [
+      isSceneLoaded,
+      landmarker,
+      setIsSceneLoaded,
+      videoDimension?.height,
+      videoDimension?.width,
+    ],
   );
 
   // Check if on performance side is better to use useFrame or an interval based loop
@@ -135,13 +145,13 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
           videoConstraints={{
             facingMode: "user",
             width: {
-              max: 360,
+              max: 320,
             },
             height: {
-              max: 360,
+              max: 320,
             },
             frameRate: {
-              max: 30,
+              max: 60,
             },
           }}
           onLoadedData={handleVideoLoad}
@@ -155,7 +165,6 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
             }}
           >
             <Canvas
-              frameloop="demand"
               // Change the key to reset the canvas this prevent cleanup issues
               key={activeFilter}
               ref={canvasRef}

@@ -34,6 +34,42 @@ const cameraButtonSVGVariants = cva(
   },
 );
 
+// This is a helper function to convert a canvas to a Blob that works on iOS Safari (I hope)
+function canvasToBlob(
+  canvas: HTMLCanvasElement,
+  type = "image/jpeg",
+  quality = 1.0,
+): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    if (canvas.toBlob) {
+      canvas.toBlob(
+        (blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error("Canvas is empty"));
+        },
+        type,
+        quality,
+      );
+    } else {
+      // Fallback for iOS Safari: use toDataURL then convert
+      try {
+        const dataUrl = canvas.toDataURL(type, quality);
+        const byteString = atob(dataUrl.split(",")[1]);
+        const mimeString = dataUrl.split(",")[0].split(":")[1].split(";")[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+        const blob = new Blob([ab], { type: mimeString });
+        resolve(blob);
+      } catch (error) {
+        reject(error);
+      }
+    }
+  });
+}
+
 const ExperiencePage: React.FC = () => {
   // FIXME: remove Mock user ID
   const mockUserId = "1397665e-fd7e-424b-9e6c-78336377488e";
@@ -58,18 +94,18 @@ const ExperiencePage: React.FC = () => {
 
     const canvas = rendererRef.current.domElement;
 
-    canvas.toBlob(
-      async (blob) => {
-        if (!blob) return;
-
-        // Create a URL for preview
-        const previewUrl = URL.createObjectURL(blob);
-        setScreenshotUrl(previewUrl);
-        setModalOpen(true);
-      },
-      "image/jpeg",
-      1.0,
-    );
+    // Use our helper that works on iOS
+    try {
+      const blob = await canvasToBlob(canvas, "image/jpeg", 1.0);
+      // Create a URL for preview
+      const previewUrl = URL.createObjectURL(blob);
+      setScreenshotUrl(previewUrl);
+      setModalOpen(true);
+    } catch (error) {
+      console.error("Error capturing canvas:", error);
+    } finally {
+      setIsProcessingSelfie(false);
+    }
   };
 
   const handleDownload = () => {

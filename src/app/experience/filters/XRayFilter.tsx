@@ -4,12 +4,6 @@ import { useLoader } from "@react-three/fiber";
 import React from "react";
 import * as THREE from "three";
 import FaceMeshComponent from "../components/FaceMesh";
-import {
-  BrightnessContrast,
-  EffectComposer,
-  Sepia,
-} from "@react-three/postprocessing";
-import { BlendFunction } from "postprocessing";
 
 // Component properties interface
 interface Props {
@@ -33,7 +27,8 @@ const XRayFilter: React.FC<Props> = ({ faceLandmarkerResult, aspect }) => {
         opacity={0.6}
         ref={faceMeshRef}
       />
-      <EffectComposer>
+      {/* Check if removing the EffectComposer will fix the issue with iOs safari screenshot not working */}
+      {/* <EffectComposer>
         <BrightnessContrast
           brightness={0.8}
           contrast={-0.9}
@@ -41,7 +36,7 @@ const XRayFilter: React.FC<Props> = ({ faceLandmarkerResult, aspect }) => {
           blendFunction={BlendFunction.INVERT_RGB}
         />
         <Sepia opacity={1} blendFunction={BlendFunction.NORMAL} />
-      </EffectComposer>
+      </EffectComposer> */}
     </>
   );
 };

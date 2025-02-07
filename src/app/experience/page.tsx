@@ -42,8 +42,10 @@ function canvasToBlob(
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
     if (canvas.toBlob) {
+      console.log("🔵 Using canvas.toBlob");
       canvas.toBlob(
         (blob) => {
+          console.log("🔵 Blob created", blob);
           if (blob) resolve(blob);
           else reject(new Error("Canvas is empty"));
         },
@@ -54,6 +56,7 @@ function canvasToBlob(
       // Fallback for iOS Safari: use toDataURL then convert
       try {
         const dataUrl = canvas.toDataURL(type, quality);
+        console.log("🟧 Using canvas.toDataURL");
         const byteString = atob(dataUrl.split(",")[1]);
         const mimeString = dataUrl.split(",")[0].split(":")[1].split(";")[0];
         const ab = new ArrayBuffer(byteString.length);
@@ -62,6 +65,7 @@ function canvasToBlob(
           ia[i] = byteString.charCodeAt(i);
         }
         const blob = new Blob([ab], { type: mimeString });
+        console.log("🟧 blob from dataUrl", blob);
         resolve(blob);
       } catch (error) {
         reject(error);
@@ -198,7 +202,10 @@ const ExperiencePage: React.FC = () => {
             open ? setModalOpen(open) : closeScreenshotModal()
           }
         >
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent
+            className="sm:max-w-[425px]"
+            aria-describedby={undefined}
+          >
             <DialogHeader>
               <DialogTitle>Carica Selfie</DialogTitle>
             </DialogHeader>

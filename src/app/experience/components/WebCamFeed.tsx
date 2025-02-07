@@ -28,6 +28,8 @@ enum Filters {
 type WebcamFeedProps = {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
   rendererRef: React.RefObject<THREE.WebGLRenderer | null>;
+  sceneRef: React.RefObject<THREE.Scene | null>;
+  cameraRef: React.RefObject<THREE.Camera | null>;
   isSceneLoaded: boolean;
   setIsSceneLoaded: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -35,6 +37,8 @@ type WebcamFeedProps = {
 const WebcamFeed: React.FC<WebcamFeedProps> = ({
   canvasRef,
   rendererRef,
+  sceneRef,
+  cameraRef,
   isSceneLoaded,
   setIsSceneLoaded,
 }) => {
@@ -140,9 +144,12 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
               }}
               gl={{
                 preserveDrawingBuffer: true,
+                antialias: false,
               }}
-              onCreated={({ gl }) => {
+              onCreated={({ gl, camera, scene }) => {
                 rendererRef.current = gl;
+                cameraRef.current = camera;
+                sceneRef.current = scene;
               }}
             >
               <ambientLight intensity={1} />
@@ -178,6 +185,7 @@ const VideoMesh: React.FC<{ video: HTMLVideoElement }> = ({ video }) => {
 
   const videoTexture = useMemo(() => {
     const texture = new THREE.VideoTexture(video);
+    texture.colorSpace = THREE.SRGBColorSpace;
     texture.flipY = true;
     return texture;
   }, [video]);

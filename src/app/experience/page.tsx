@@ -34,55 +34,14 @@ const cameraButtonSVGVariants = cva(
   },
 );
 
-// This is a helper function to convert a canvas to a Blob that works on iOS Safari (I hope)
-function canvasToBlob(
-  canvas: HTMLCanvasElement,
-  type = "image/jpeg",
-  quality = 1.0,
-): Promise<Blob> {
-  return new Promise((resolve, reject) => {
-    if (canvas.toBlob) {
-      console.log("🔵 Using canvas.toBlob");
-      canvas.toBlob(
-        (blob) => {
-          console.log("🔵 Blob created", blob);
-          if (blob) resolve(blob);
-          else reject(new Error("Canvas is empty"));
-        },
-        type,
-        quality,
-      );
-    } else {
-      // Fallback for iOS Safari: use toDataURL then convert
-      try {
-        const dataUrl = canvas.toDataURL(type, quality);
-        console.log("🟧 Using canvas.toDataURL");
-        const byteString = atob(dataUrl.split(",")[1]);
-        const mimeString = dataUrl.split(",")[0].split(":")[1].split(";")[0];
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
-        for (let i = 0; i < byteString.length; i++) {
-          ia[i] = byteString.charCodeAt(i);
-        }
-        const blob = new Blob([ab], { type: mimeString });
-        console.log("🟧 blob from dataUrl", blob);
-        resolve(blob);
-      } catch (error) {
-        reject(error);
-      }
-    }
-  });
-}
-
 const ExperiencePage: React.FC = () => {
-  // FIXME: remove Mock user ID
   const mockUserId = "1397665e-fd7e-424b-9e6c-78336377488e";
 
-  // Refs
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const cameraRef = useRef<THREE.Camera | null>(null);
 
-  // State for screenshot modal
   const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -91,6 +50,7 @@ const ExperiencePage: React.FC = () => {
 
   const handleTakeSelfie = async () => {
     setIsProcessingSelfie(true);
+
     if (!rendererRef.current) {
       setIsProcessingSelfie(false);
       return;
@@ -98,10 +58,16 @@ const ExperiencePage: React.FC = () => {
 
     const canvas = rendererRef.current.domElement;
 
-    // Use our helper that works on iOS
+    // Forza il ridisegno della scena
+    if (sceneRef.current && cameraRef.current) {
+      rendererRef.current.render(sceneRef.current, cameraRef.current);
+    }
+
+    // Aspetta un frame per assicurarsi che il canvas sia aggiornato
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     try {
       const blob = await canvasToBlob(canvas, "image/jpeg", 1.0);
-      // Create a URL for preview
       const previewUrl = URL.createObjectURL(blob);
       setScreenshotUrl(previewUrl);
       setModalOpen(true);
@@ -111,6 +77,39 @@ const ExperiencePage: React.FC = () => {
       setIsProcessingSelfie(false);
     }
   };
+
+  function canvasToBlob(
+    canvas: HTMLCanvasElement,
+    type = "image/jpeg",
+    quality = 1.0,
+  ): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      try {
+        // Safari iOS Fix: Usa un canvas 2D per catturare l'immagine
+        const offscreenCanvas = document.createElement("canvas");
+        offscreenCanvas.width = canvas.width;
+        offscreenCanvas.height = canvas.height;
+        const ctx = offscreenCanvas.getContext("2d");
+
+        if (!ctx) {
+          reject(new Error("Failed to create 2D context"));
+          return;
+        }
+
+        ctx.drawImage(canvas, 0, 0);
+        offscreenCanvas.toBlob(
+          (blob) => {
+            if (blob) resolve(blob);
+            else reject(new Error("Canvas is empty"));
+          },
+          type,
+          quality,
+        );
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
 
   const handleDownload = () => {
     if (!screenshotUrl) return;
@@ -124,11 +123,9 @@ const ExperiencePage: React.FC = () => {
     if (!screenshotUrl) return;
     setUploading(true);
     try {
-      // Convert the screenshotUrl blob back to Blob
       const response = await fetch(screenshotUrl);
       const blob = await response.blob();
 
-      // Create FormData and append fields
       const formData = new FormData();
       formData.append("player_id", mockUserId);
       formData.append("file", blob, `selfie-${Date.now()}.jpeg`);
@@ -139,11 +136,6 @@ const ExperiencePage: React.FC = () => {
       } else {
         console.error("Upload failed:", res.status);
       }
-      // FIXME: Clean up the modal and URL or just redirect to the next page
-      // if (screenshotUrl) {
-      //   URL.revokeObjectURL(screenshotUrl);
-      // }
-      // setModalOpen(false);
     } catch (error) {
       console.error("Error uploading screenshot:", error);
     } finally {
@@ -165,6 +157,8 @@ const ExperiencePage: React.FC = () => {
       <WebcamFeed
         canvasRef={canvasRef}
         rendererRef={rendererRef}
+        sceneRef={sceneRef}
+        cameraRef={cameraRef}
         isSceneLoaded={isSceneLoaded}
         setIsSceneLoaded={setIsSceneLoaded}
       />
@@ -195,7 +189,7 @@ const ExperiencePage: React.FC = () => {
         </button>
       </div>
 
-      {modalOpen && screenshotUrl && (
+      {modalOpen && (
         <Dialog
           open={modalOpen}
           onOpenChange={(open) =>
@@ -211,6 +205,7 @@ const ExperiencePage: React.FC = () => {
             </DialogHeader>
             <div className="relative">
               <Button
+                disabled={!screenshotUrl}
                 onClick={handleDownload}
                 variant="ghost"
                 size="icon"
@@ -218,28 +213,27 @@ const ExperiencePage: React.FC = () => {
               >
                 <DownloadIcon />
               </Button>
-              <Image
-                src={screenshotUrl}
-                alt="Screenshot preview"
-                className="mb-4 max-h-[60vh] w-full object-contain"
-                width={500}
-                height={500}
-                unoptimized
-              />
+              {screenshotUrl ? (
+                <Image
+                  src={screenshotUrl}
+                  alt="Screenshot preview"
+                  className="mb-4 max-h-[60vh] w-full object-contain"
+                  width={500}
+                  height={500}
+                  unoptimized
+                />
+              ) : (
+                <div className="mb-4 h-[60vh] w-full animate-pulse rounded bg-gray-300" />
+              )}
             </div>
             <DialogFooter className="flex flex-col gap-2 sm:flex-row">
-              <Button
-                onClick={closeScreenshotModal}
-                variant="outline"
-                className="flex-1 sm:flex-auto"
-              >
+              <Button onClick={closeScreenshotModal} variant="outline">
                 Scatta ancora
                 <Undo2Icon />
               </Button>
               <Button
                 onClick={handleSubmit}
-                disabled={uploading}
-                className="flex-1"
+                disabled={uploading || !screenshotUrl}
               >
                 Carica selfie
                 {uploading ? (

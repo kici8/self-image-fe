@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useIntervalAnimation } from "@/lib/hooks/useIntervalAnimation";
+import { useAnimationFrame } from "@/lib/hooks/useAnimationFrame";
 import {
   FaceLandmarker,
   FaceLandmarkerResult,
@@ -43,8 +43,9 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
   setIsSceneLoaded,
 }) => {
   // refs
-
   const webcamRef = useRef<Webcam>(null);
+  const lastDetectionTimeRef = useRef(0);
+  const detectionInterval = 100; // in milliseconds
 
   // states
   const [landmarker, setLandmarker] = useState<FaceLandmarker | null>(null);
@@ -58,17 +59,18 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
   const [activeFilter, setActiveFilter] = useState<Filters>(Filters.XRAY);
 
   // CALLBACKS
+  // TODO: FaceLandmarker is also a drei component, we can use it directly
   async function handleVideoLoad(
     event: React.SyntheticEvent<HTMLVideoElement, Event>,
   ) {
     const video = event.currentTarget;
     if (video.readyState !== 4) return;
     if (isSceneLoaded) return;
-    // FIXME: add as npm package
+    // FIXME: add as public asset?
     const vision = await FilesetResolver.forVisionTasks(
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm",
     );
-    // FIXME: add as npm package
+    // FIXME: add as public asset?
     const faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
       baseOptions: {
         modelAssetPath:
@@ -91,19 +93,25 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
       const video = webcamRef.current?.video;
       if (!video || video.readyState < 4) return;
 
-      setVideoDimension({
-        width: video.videoWidth,
-        height: video.videoHeight,
-      });
+      if (!videoDimension?.height || !videoDimension?.width) {
+        setVideoDimension({
+          width: video.videoWidth,
+          height: video.videoHeight,
+        });
+      }
+      // Throttle detection: only run if enough time has passed.
+      if (time - lastDetectionTimeRef.current < detectionInterval) return;
+      lastDetectionTimeRef.current = time;
 
+      // Run face detection.
       const result = landmarker.detectForVideo(video, time);
       setFaceResults(result);
     },
-    [landmarker],
+    [landmarker, videoDimension?.height, videoDimension?.width],
   );
 
-  // Use the custom hook based on setTimeout instead of requestAnimationFrame.
-  useIntervalAnimation(track, 16);
+  // Check if on performance side is better to use useFrame or an interval based loop
+  useAnimationFrame(track);
 
   return (
     <div className="relative h-full w-full flex-1 overflow-hidden bg-black">
@@ -121,6 +129,15 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
           className="absolute opacity-0"
           videoConstraints={{
             facingMode: "user",
+            width: {
+              max: 360,
+            },
+            height: {
+              max: 360,
+            },
+            frameRate: {
+              max: 30,
+            },
           }}
           onLoadedData={handleVideoLoad}
         />
@@ -133,7 +150,9 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
             }}
           >
             <Canvas
-              key={activeFilter} // In questo modo la canvas verrà ricreata ad ogni cambio filtro
+              frameloop="demand"
+              // Change the key to reset the canvas this prevent cleanup issues
+              key={activeFilter}
               ref={canvasRef}
               camera={{
                 position: [0, 0, 1], // Move the camera back so the plane fits
@@ -143,6 +162,9 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
                 aspect: videoDimension.width / videoDimension.height,
               }}
               gl={{
+                // FIXME: preserveDrawingBuffer is needed for the screenshot
+                // but it's not recommended for performance
+                // How can we workaround this?
                 preserveDrawingBuffer: true,
                 antialias: false,
               }}
@@ -190,14 +212,13 @@ const VideoMesh: React.FC<{ video: HTMLVideoElement }> = ({ video }) => {
     return texture;
   }, [video]);
 
-  // Crea geometry e material manualmente per poi poter fare il cleanup.
   const geometry = useMemo(() => new THREE.PlaneGeometry(1, 1), []);
   const material = useMemo(
     () => new THREE.MeshBasicMaterial({ map: videoTexture }),
     [videoTexture],
   );
 
-  // Cleanup: rilascia texture, geometry e material quando il componente si smonta.
+  // Cleanup
   useEffect(() => {
     return () => {
       videoTexture.dispose();

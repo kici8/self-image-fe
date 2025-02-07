@@ -23,7 +23,7 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const cameraButtonSVGVariants = cva(
-  "absolute left-0 top-0 h-full w-full group-disabled:opacity-40",
+  "absolute left-0 top-0 block h-full w-full group-disabled:opacity-40",
   {
     variants: {
       loading: {
@@ -162,32 +162,35 @@ const ExperiencePage: React.FC = () => {
         isSceneLoaded={isSceneLoaded}
         setIsSceneLoaded={setIsSceneLoaded}
       />
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 transform">
-        <button
-          disabled={isProcessingSelfie || !isSceneLoaded}
-          onClick={handleTakeSelfie}
-          className="group relative h-20 w-20 bg-transparent text-white"
-          aria-label="Scatta selfie"
+      <button
+        disabled={isProcessingSelfie || !isSceneLoaded}
+        onClick={handleTakeSelfie}
+        className="group absolute bottom-4 left-1/2 h-20 w-20 -translate-x-1/2 transform rounded-full bg-black/10 text-white shadow-xl"
+        aria-label="Scatta selfie"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          className={cn(cameraButtonSVGVariants({ loading: !isSceneLoaded }))}
         >
-          <svg
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            className={cn(cameraButtonSVGVariants({ loading: !isSceneLoaded }))}
-          >
-            <circle
-              cx="12"
-              cy="12"
-              fill="none"
-              r="10"
-              strokeWidth="1"
-              stroke="currentColor"
-              strokeDasharray={!isSceneLoaded ? "42 64" : "64 64"}
-              strokeLinecap="round"
-            />
-          </svg>
-          <span className="absolute left-1/2 top-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-white transition-all group-hover:scale-75 group-active:scale-50 group-disabled:scale-50 group-disabled:cursor-not-allowed group-disabled:opacity-40" />
-        </button>
-      </div>
+          <defs>
+            <clipPath id="innerStrokeClip">
+              <circle cx="12" cy="12" r="12" />
+            </clipPath>
+          </defs>
+          <circle
+            cx="12"
+            cy="12"
+            fill="none"
+            r="12"
+            strokeWidth="4"
+            stroke="currentColor"
+            strokeDasharray={!isSceneLoaded ? "52 76" : "76 76"}
+            clipPath="url(#innerStrokeClip)"
+          />
+        </svg>
+        <span className="absolute left-1/2 top-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-white transition-all group-hover:scale-75 group-active:scale-50 group-disabled:scale-50 group-disabled:cursor-not-allowed group-disabled:opacity-40" />
+      </button>
 
       {modalOpen && (
         <Dialog

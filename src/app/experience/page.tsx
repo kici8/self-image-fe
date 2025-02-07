@@ -16,6 +16,7 @@ import {
 import {
   DownloadIcon,
   LoaderCircleIcon,
+  Share2Icon,
   Undo2Icon,
   UploadIcon,
 } from "lucide-react";
@@ -111,12 +112,49 @@ const ExperiencePage: React.FC = () => {
     });
   }
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!screenshotUrl) return;
-    const link = document.createElement("a");
-    link.href = screenshotUrl;
-    link.download = `selfie-${Date.now()}.jpeg`;
-    link.click();
+    try {
+      const link = document.createElement("a");
+      link.href = screenshotUrl;
+      link.download = `selfie-${Date.now()}.jpeg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error(
+        "Errore: non è stato possibile scaricare l'immagine",
+        error,
+      );
+    }
+  };
+
+  const handleShare = async () => {
+    if (!screenshotUrl) return;
+
+    try {
+      const response = await fetch(screenshotUrl);
+      const blob = await response.blob();
+      const file = new File([blob], `selfie-${Date.now()}.jpeg`, {
+        type: "image/jpeg",
+        lastModified: Date.now(),
+      });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: "Self image",
+          text: "",
+          files: [file],
+        });
+      } else {
+        console.warn("Share non è supportato in questo browser.");
+      }
+    } catch (error) {
+      console.error(
+        "Errore: non è stato possibile condividere l'immagine",
+        error,
+      );
+    }
   };
 
   const handleSubmit = async () => {
@@ -207,15 +245,30 @@ const ExperiencePage: React.FC = () => {
               <DialogTitle>Carica Selfie</DialogTitle>
             </DialogHeader>
             <div className="relative">
-              <Button
-                disabled={!screenshotUrl}
-                onClick={handleDownload}
-                variant="ghost"
-                size="icon"
-                className="absolute right-2 top-2 rounded-full bg-secondary/40"
-              >
-                <DownloadIcon />
-              </Button>
+              <div className="absolute right-2 top-2 flex items-center gap-2">
+                <Button
+                  disabled={!screenshotUrl}
+                  onClick={handleDownload}
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full bg-secondary/40"
+                >
+                  <DownloadIcon />
+                </Button>
+                {navigator.canShare &&
+                  navigator.canShare({ files: [new File([], "")] }) && (
+                    <Button
+                      disabled={!screenshotUrl}
+                      onClick={handleShare}
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-secondary/40"
+                    >
+                      <Share2Icon />
+                    </Button>
+                  )}
+              </div>
+
               {screenshotUrl ? (
                 <Image
                   src={screenshotUrl}

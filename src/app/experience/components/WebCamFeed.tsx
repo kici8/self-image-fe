@@ -177,10 +177,10 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({
                 aspect: videoDimension.width / videoDimension.height,
               }}
               gl={{
-                // FIXME: preserveDrawingBuffer is needed for the screenshot
+                // TODO: preserveDrawingBuffer is needed for the screenshot
                 // but it's not recommended for performance
-                // How can we workaround this?
-                preserveDrawingBuffer: false,
+                // However, I don't see any performance difference with it
+                preserveDrawingBuffer: true,
                 antialias: false,
               }}
               onCreated={({ gl, camera, scene }) => {

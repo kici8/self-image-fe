@@ -103,3 +103,19 @@ export const closeRoom = async (
   });
   return response.data;
 };
+
+type joinRoomPayload = {
+  room_code: string;
+  nickname: string;
+};
+
+type joinRoomResponse = {
+  player_id: string;
+};
+
+export const joinRoom = async (
+  payload: joinRoomPayload,
+): Promise<joinRoomResponse> => {
+  const response = await AxiosInstance.post("/api/room/join", payload);
+  return response.data;
+};

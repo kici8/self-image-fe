@@ -19,6 +19,7 @@ import CodeAnimation from "./CodeAnimation";
 import ConnectionIndicator from "./ConnectionIndicator";
 import ImageGrid from "./ImageGrid";
 
+// FIXME: Layout breaks on socket error
 export default function Room({ code }: { code: string }) {
   // Hooks
   const router = useRouter();

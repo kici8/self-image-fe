@@ -72,8 +72,7 @@ export default function Home() {
               type="error"
               title="Errore: impossibile creare la stanza"
               messages={[
-                "Il Codice Host potrebbe essere non valido",
-                "Oppure potrebbe esserci un disservizio momentaneo",
+                "Potrebbe esserci un disservizio momentaneo, riprova più tardi o contatta l'assistenza.",
               ]}
             />
           </div>

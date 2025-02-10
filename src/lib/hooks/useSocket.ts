@@ -3,12 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { toast } from "./use-toast";
-import { staticClusters, staticImages } from "../referenceElements";
+
 import {
   TypeGridImage,
   typeGridType,
 } from "@/app/room/[code]/components/ImageGrid";
 import { Cluster } from "@/app/room/[code]/components/ClusterListItem";
+import { staticImages } from "../staticElements/clusterImages";
+import { staticClusters } from "../staticElements/clusters";
 
 type PlayerConnectedResponse = {
   player_id: string;

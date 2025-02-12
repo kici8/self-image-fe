@@ -1,52 +1,56 @@
 "use client";
-import { useEffect, useState } from "react";
-import Link from "next/link";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
-
-import {
-  CardSwipeDirection,
-  IsDragOffBoundary,
-  useGameContext,
-} from "../../store/gameContext";
 import { easeOutExpo } from "@/lib/ease";
-import GameCard from "./GameCard";
+import { AnimatePresence, motion } from "framer-motion";
+import { X } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { useGame } from "../../store/gameContext";
 import GameActionBtn from "./GameActionBtn";
+import GameCard, { CardSwipeDirection } from "./GameCard";
 
+/**
+ * Initial driven properties used for animating the card and action buttons.
+ */
 const initialDrivenProps = {
   cardWrapperX: 0,
   buttonScaleBadAnswer: 1,
   buttonScaleGoodAnswer: 1,
 };
 
+/**
+ * GameCards component acts as the main container for the card view.
+ * It renders a card and associated action buttons for swiping (e.g., like or dislike).
+ */
 const GameCards = () => {
-  const [game, setGame] = useGameContext();
+  const {
+    applySwipeEffect,
+    seenFragments,
+    clusterValues,
+    roundNumber,
+    maxNumberOfRounds,
+    fragmentSpawned,
+    unlockedFilters,
+    unlockedImages,
+  } = useGame();
 
-  const { cards } = game;
-
-  const [direction, setDirection] = useState<CardSwipeDirection | "">("");
+  // Local state for handling swipe direction and drag events.
+  const [direction, setDirection] = useState<CardSwipeDirection>(null);
   const [isDragOffBoundary, setIsDragOffBoundary] =
-    useState<IsDragOffBoundary>(null);
+    useState<CardSwipeDirection>(null);
   const [cardDrivenProps, setCardDrivenProps] = useState(initialDrivenProps);
   const [isDragging, setIsDragging] = useState(false);
+
+  /**
+   * Handle action button click to set swipe direction.
+   * @param btn - The direction ("left" or "right") selected.
+   */
 
   const handleActionBtnOnClick = (btn: CardSwipeDirection) => {
     setDirection(btn);
   };
 
-  // FIXME: wow, this looks awful
-  useEffect(() => {
-    if (["left", "right"].includes(direction)) {
-      setGame({
-        ...game,
-        cards: game.cards.slice(0, -1),
-      });
-    }
-
-    setDirection("");
-  }, [direction]);
-
+  // Variants for Framer Motion animations controlling card transitions.
   const cardVariants = {
     current: {
       opacity: 1,
@@ -80,6 +84,7 @@ const GameCards = () => {
         isDragging ? "cursor-grabbing" : ""
       }`}
     >
+      {/* Close button to navigate back */}
       <Link
         href="/"
         id="close"
@@ -97,36 +102,36 @@ const GameCards = () => {
           className="relative z-10 mb-[20px] aspect-[100/150] w-full max-w-xs"
         >
           <AnimatePresence>
-            {cards.map((card, i) => {
-              const isLast = i === cards.length - 1;
-              const isUpcoming = i === cards.length - 2;
-              return (
+            {Array(maxNumberOfRounds)
+              .keys()
+              .map((round) => (
                 <motion.div
-                  key={`card-${i}`}
-                  id={`card-${card.id}`}
-                  className={`relative`}
+                  key={round + 1}
+                  className="relative"
                   variants={cardVariants}
                   initial="remainings"
-                  animate={
-                    isLast ? "current" : isUpcoming ? "upcoming" : "remainings"
-                  }
+                  animate={round + 1 === roundNumber ? "current" : "upcoming"}
                   exit="exit"
                 >
+                  {/* Render the top card using fragmentSpawned array */}
                   <GameCard
-                    data={card}
-                    id={card.id}
+                    id={0}
+                    data={fragmentSpawned.find(
+                      (f) => f.roundNumber === round + 1,
+                    )}
                     setCardDrivenProps={setCardDrivenProps}
                     setIsDragging={setIsDragging}
                     isDragging={isDragging}
-                    isLast={isLast}
+                    isLast={false}
                     setIsDragOffBoundary={setIsDragOffBoundary}
                     setDirection={setDirection}
                   />
                 </motion.div>
-              );
-            })}
+              ))}
           </AnimatePresence>
         </div>
+
+        {/* Swipe action buttons */}
         <div
           id="actions"
           className="relative z-10 flex w-full items-center justify-center gap-4"

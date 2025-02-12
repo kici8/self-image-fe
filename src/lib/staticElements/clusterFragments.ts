@@ -1,6 +1,6 @@
 // This data is generated with the script generateFragments.ps1 in the root of the project and then paste here
 
-type ClusterFragment = {
+export type ClusterFragment = {
   id: string;
   cluster_id: string;
   image_id: string;
@@ -9,7 +9,7 @@ type ClusterFragment = {
 
 type ClusterFragmentList = ClusterFragment[];
 
-export const clusterFragments: ClusterFragmentList = [
+export const staticClusterFragments: ClusterFragmentList = [
   {
     id: "a.1.1",
     cluster_id: "A",

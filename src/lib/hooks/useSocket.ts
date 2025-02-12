@@ -9,7 +9,7 @@ import {
   typeGridType,
 } from "@/app/room/[code]/components/ImageGrid";
 import { Cluster } from "@/app/room/[code]/components/ClusterListItem";
-import { staticImages } from "../staticElements/clusterImages";
+import { staticClusterImages } from "../staticElements/clusterImages";
 import { staticClusters } from "../staticElements/clusters";
 
 type PlayerConnectedResponse = {
@@ -75,9 +75,9 @@ function getMappedImages(
   sessionId: string | null,
   unlockedImages: string[],
 ): TypeGridImage[] {
-  return staticImages.map((image) => ({
+  return staticClusterImages.map((image) => ({
     ...image,
-    index: staticImages.indexOf(image),
+    index: staticClusterImages.indexOf(image),
     unlocked: unlockedImages.includes(image.id) || false,
     type: typeGridType.image,
     session_id: sessionId,
@@ -168,7 +168,7 @@ export const useSocket = () => {
           title: undefined,
           year: undefined,
           session_id: roomData?.session_id || null,
-          index: Math.floor(Math.random() * staticImages.length),
+          index: Math.floor(Math.random() * staticClusterImages.length),
           unlocked: true,
           type: typeGridType.selfie,
         };

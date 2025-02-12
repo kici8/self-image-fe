@@ -11,7 +11,7 @@ export type ClusterImage = {
   filter_id: string | undefined;
 };
 
-export const staticImages: ClusterImage[] = [
+export const staticClusterImages: ClusterImage[] = [
   {
     id: "a.1",
     src: "/cluster-images/a.1.jpg",

@@ -148,14 +148,18 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
           : pickRandom(availableFragments);
     }
 
+    console.log("Spawned Fragment ❓❓", fragmentSpawned);
+    console.log("Selected Fragment 🌟🌟", selectedFragment, roundNumber);
+
+    // FIXME: this is not working
     setFragmentSpawned((prev) => [
       ...prev,
       {
         ...selectedFragment,
-        roundNumber: roundNumber,
+        roundNumber: roundNumber + 1,
       },
     ]);
-    console.log(`Spawned Fragment: ${selectedFragment.url}`);
+    console.log("Spawned Fragment 🔴🔴", fragmentSpawned);
   }
 
   // Apply swipe effect: update cluster values and unlock conditions based on player's swipe action

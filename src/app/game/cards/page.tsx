@@ -7,7 +7,6 @@ export default function CardsPage() {
   return (
     <div>
       <GameProvider>
-        <div>results</div>
         <GameCards />
       </GameProvider>
     </div>

@@ -6,7 +6,7 @@ $stream = New-Object System.IO.StreamWriter($outputFile, $false)
 
 # Scrive le definizioni e l'apertura dell'array
 $stream.WriteLine("// I dati in questo file vengono generati automaticamente con lo script generateFragments.ps1")
-$stream.WriteLine("type ClusterFragment = {")
+$stream.WriteLine("export type ClusterFragment = {")
 $stream.WriteLine("  id: string;")
 $stream.WriteLine("  cluster_id: string;")
 $stream.WriteLine("  image_id: string;")
@@ -15,20 +15,21 @@ $stream.WriteLine("};")
 $stream.WriteLine("")
 $stream.WriteLine("type ClusterFragmentList = ClusterFragment[];")
 $stream.WriteLine("")
-$stream.WriteLine("export const clusterFragments: ClusterFragmentList = [")
+$stream.WriteLine("export const staticClusterFragments: ClusterFragmentList = [")
 
 $folders = @(
-  "public/cluster-images/fragments\A",
-  "public/cluster-images/fragments\B",
-  "public/cluster-images/fragments\C",
-  "public/cluster-images/fragments\D",
-  "public/cluster-images/fragments\E",
-  "public/cluster-images/fragments\F"
+  "public/cluster-images/fragments/A",
+  "public/cluster-images/fragments/B",
+  "public/cluster-images/fragments/C",
+  "public/cluster-images/fragments/D",
+  "public/cluster-images/fragments/E",
+  "public/cluster-images/fragments/F"
 )
 
 foreach ($folder in $folders) {
   $currentFolder = Join-Path -Path $basePath -ChildPath $folder
-  $clusterId = $folder
+  $pathParts = $folder -split "/"
+  $clusterId = $pathParts[$pathParts.Length - 1]
 
   $files = Get-ChildItem -Path $currentFolder -Filter *.png
   foreach ($file in $files) {

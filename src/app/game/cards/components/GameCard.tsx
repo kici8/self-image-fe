@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Dispatch, SetStateAction } from "react";
+import { useState, Dispatch, SetStateAction, useEffect } from "react";
 import Image from "next/image";
 import {
   motion,
@@ -14,7 +14,7 @@ import { SpawnedFragment } from "../../store/gameContext";
  * Props for the GameCard component.
  */
 type GameCardProps = {
-  // Optional unique ID for the card component
+  // Unique ID for the card component
   id: number;
   // The fragment data to display in the card.
   data: SpawnedFragment | undefined;
@@ -95,7 +95,7 @@ const GameCard = ({
       {/* Card visual with image */}
       <motion.div
         id={`cardDrivenWrapper-${id}`}
-        className="pointer-events-none absolute aspect-[100/150] w-full origin-bottom select-none rounded-lg bg-white p-8 text-center text-black shadow-card"
+        className="pointer-events-none absolute aspect-[88/107] w-full origin-bottom select-none rounded-lg bg-white p-4 shadow-card"
         style={{
           y: drivenY,
           rotate: drivenRotation,
@@ -104,7 +104,7 @@ const GameCard = ({
       >
         <div
           id="illustration"
-          className="relative mx-auto aspect-square w-full max-w-[250px] rounded-full"
+          className="relative aspect-square w-full bg-neutral-300"
         >
           {data && data.url ? (
             <Image

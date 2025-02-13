@@ -10,6 +10,14 @@ import IconClusterE from "@/components/icons/IconClusterE";
 import IconClusterESolid from "@/components/icons/IconClusterESolid";
 import IconClusterF from "@/components/icons/IconClusterF";
 import IconClusterFSolid from "@/components/icons/IconClusterFSolid";
+import {
+  CircleOffIcon,
+  EyeClosedIcon,
+  EyeIcon,
+  Layers2Icon,
+  PaletteIcon,
+  VenetianMaskIcon,
+} from "lucide-react";
 
 export const staticClusters = [
   {
@@ -17,35 +25,41 @@ export const staticClusters = [
     name: "Nascondersi",
     hiddenIcon: <IconClusterB />,
     icon: <IconClusterBSolid />,
+    descriptiveIcon: <EyeClosedIcon />,
   },
   {
     id: "A",
     name: "Disegnarsi",
     hiddenIcon: <IconClusterA />,
     icon: <IconClusterASolid />,
+    descriptiveIcon: <PaletteIcon />,
   },
   {
     id: "C",
     name: "Presentarsi",
     hiddenIcon: <IconClusterC />,
     icon: <IconClusterCSolid />,
+    descriptiveIcon: <EyeIcon />,
   },
   {
     id: "D",
     name: "Mascherarsi",
     hiddenIcon: <IconClusterD />,
     icon: <IconClusterDSolid />,
+    descriptiveIcon: <VenetianMaskIcon />,
   },
   {
     id: "E",
     name: "(S)comporsi",
     hiddenIcon: <IconClusterE />,
     icon: <IconClusterESolid />,
+    descriptiveIcon: <Layers2Icon />,
   },
   {
     id: "F",
     name: "Sottrarsi",
     hiddenIcon: <IconClusterF />,
     icon: <IconClusterFSolid />,
+    descriptiveIcon: <CircleOffIcon />,
   },
 ];

@@ -1,6 +1,8 @@
 "use client";
 
 import { easeOutExpo } from "@/lib/ease";
+import { staticClusterImages } from "@/lib/staticElements/clusterImages";
+import { staticClusters } from "@/lib/staticElements/clusters";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useGame } from "../../store/gameContext";
@@ -14,6 +16,7 @@ const initialDrivenProps = {
   cardWrapperX: 0,
   buttonScaleBadAnswer: 1,
   buttonScaleGoodAnswer: 1,
+  clusterValueIndicatorOpacity: 0,
 };
 
 /**
@@ -23,19 +26,20 @@ const initialDrivenProps = {
 const GameCards = () => {
   const {
     applySwipeEffect,
-    seenFragments,
     clusterValues,
     roundNumber,
     maxNumberOfRounds,
-    fragmentSpawned,
+    activeSpawnedFragment,
+    fragmentsSpawned,
+    isGameOver,
     unlockedFilters,
     unlockedImages,
   } = useGame();
 
+  const baseCards = [...Array(maxNumberOfRounds).keys()].reverse();
+
   // States
   const [direction, setDirection] = useState<CardSwipeDirection>(null);
-  const [isDragOffBoundary, setIsDragOffBoundary] =
-    useState<CardSwipeDirection>(null);
   const [cardDrivenProps, setCardDrivenProps] = useState(initialDrivenProps);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -47,7 +51,7 @@ const GameCards = () => {
   // Effects
   useEffect(() => {
     if (direction) {
-      const swipedFragment = fragmentSpawned.find(
+      const swipedFragment = fragmentsSpawned.find(
         (f) => f.roundNumber === roundNumber,
       );
       if (swipedFragment) {
@@ -56,7 +60,7 @@ const GameCards = () => {
     }
 
     setDirection(null);
-  }, [applySwipeEffect, direction, fragmentSpawned, roundNumber]);
+  }, [applySwipeEffect, direction, fragmentsSpawned, roundNumber]);
 
   // Variants for Framer Motion animations controlling card transitions.
   const cardVariants = {
@@ -72,7 +76,7 @@ const GameCards = () => {
       scale: 0.9,
       transition: { duration: 0.3, ease: easeOutExpo, delay: 0 },
     },
-    remainings: {
+    remaining: {
       opacity: 0,
       y: 20,
       scale: 0.9,
@@ -86,19 +90,67 @@ const GameCards = () => {
     },
   };
 
+  if (isGameOver) {
+    return (
+      <div className="flex h-svh w-svw items-center justify-center">
+        <div className="text-center text-2xl font-bold">
+          Game Over! You have unlocked {unlockedImages.size} images and{" "}
+          {unlockedFilters.size} filters.
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex h-svh w-svw flex-col items-center justify-center overflow-hidden p-4">
-      <div className="flex items-center justify-center gap-4">{}</div>
+    <div className="flex h-svh w-svw flex-col items-center justify-center gap-8 overflow-hidden p-4">
+      <div className="flex items-center justify-center gap-2">
+        {staticClusters
+          .sort((a, b) => a.id.localeCompare(b.id))
+          .map((cluster) => {
+            // animate the y position based on the cluster value
+            // 40 is equal to value 0, 0 is equal to value 1
+            // cluster value is between 0 and 1
+            // so make a proportional calculation to get the y position
+            const yPosition = 40 * (1 - clusterValues[cluster.id]);
+            const image = staticClusterImages.find(
+              (image) => image.id === activeSpawnedFragment.image_id,
+            );
+            const fragmentClusterValue = image?.clusterValues.find(
+              (cv) => cv.clusterId === cluster.id,
+            )?.value;
+            return (
+              <div key={cluster.id} className="relative">
+                <div className="relative flex h-[40px] w-[40px] items-center justify-center overflow-hidden rounded-full bg-self-blue-300/20">
+                  <motion.div
+                    className="absolute z-10 h-[40px] w-[40px] bg-self-blue-400"
+                    style={{
+                      y: yPosition,
+                    }}
+                  />
+                  <div className="z-20 h-6 w-6">{cluster.descriptiveIcon}</div>
+                </div>
+                <motion.div
+                  className="absolute -bottom-4 left-1/2 h-2 w-2 -translate-x-1/2 transform rounded-full bg-self-blue-200"
+                  style={{
+                    // show if the spawned fragment in this round has some values for this cluster
+                    opacity: fragmentClusterValue
+                      ? cardDrivenProps.clusterValueIndicatorOpacity
+                      : 0,
+                  }}
+                />
+              </div>
+            );
+          })}
+      </div>
       <div
         id="cardsWrapper"
-        className="relative mb-10 aspect-[88/107] w-full max-w-xs"
+        className="relative aspect-[88/107] w-full max-w-xs"
       >
         <AnimatePresence>
-          {[...Array(maxNumberOfRounds).keys()]
-            .reverse()
+          {baseCards
             .filter((round) => round + 1 >= roundNumber)
             .map((round) => {
-              const fragment = fragmentSpawned.find(
+              const fragment = fragmentsSpawned.find(
                 (f) => f.roundNumber === round + 1,
               );
 
@@ -111,13 +163,13 @@ const GameCards = () => {
                     pointerEvents: round + 1 === roundNumber ? "auto" : "none",
                     display: round + 1 >= roundNumber ? "block" : "none",
                   }}
-                  initial="remainings"
+                  initial="remaining"
                   animate={
                     round + 1 === roundNumber
                       ? "current"
                       : round === roundNumber
                         ? "upcoming"
-                        : "remainings"
+                        : "remaining"
                   }
                   exit="exit"
                 >
@@ -129,7 +181,6 @@ const GameCards = () => {
                     setIsDragging={setIsDragging}
                     isDragging={isDragging}
                     isLast={false}
-                    setIsDragOffBoundary={setIsDragOffBoundary}
                     setDirection={setDirection}
                   />
                 </motion.div>
@@ -141,20 +192,18 @@ const GameCards = () => {
       {/* Swipe action buttons */}
       <div
         id="actions"
-        className="z-10 flex w-full items-center justify-center gap-4"
+        className="z-10 mt-2 flex w-full items-center justify-center gap-4"
       >
         <GameActionBtn
           direction="left"
           ariaLabel="swipe left"
           scale={cardDrivenProps.buttonScaleBadAnswer}
-          isDragOffBoundary={isDragOffBoundary}
           onClick={() => handleActionBtnOnClick("left")}
         />
         <GameActionBtn
           direction="right"
           ariaLabel="swipe right"
           scale={cardDrivenProps.buttonScaleGoodAnswer}
-          isDragOffBoundary={isDragOffBoundary}
           onClick={() => handleActionBtnOnClick("right")}
         />
       </div>

@@ -1,5 +1,6 @@
+"use client";
+
 import { motion } from "framer-motion";
-import { IsDragOffBoundary } from "../../store/gameContext";
 import { MinusIcon, PlusIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -20,23 +21,17 @@ type Props = {
   ariaLabel: string;
   scale: number;
   direction: "left" | "right";
-  isDragOffBoundary: IsDragOffBoundary;
   onClick: () => void;
 };
 
-const GameActionBtn = ({
-  scale,
-  direction,
-  isDragOffBoundary = null,
-  onClick,
-}: Props) => {
+const GameActionBtn = ({ scale, direction, onClick }: Props) => {
   const Icon = actionPropsMatrix[direction!].icon;
 
   return (
     <motion.button onClick={onClick} whileTap={{ scale: 0.9 }}>
       <motion.div
         className={cn(
-          "flex h-[60px] w-[60px] items-center justify-center rounded-full shadow",
+          "flex h-[48px] w-[48px] items-center justify-center rounded-full shadow",
           actionPropsMatrix[direction].bgColorClass,
         )}
         style={{ scale: scale }}

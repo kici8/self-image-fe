@@ -6,6 +6,11 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+img {
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
 @layer base {
   :root {
   /* --color-purple-50: hsl(237.4 56.1% 92%);

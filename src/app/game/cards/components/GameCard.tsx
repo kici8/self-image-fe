@@ -60,8 +60,8 @@ const GameCard = ({
   const outputX = [-200, 0, 200];
   const outputY = [50, 0, 50];
   const outputRotate = [-40, 0, 40];
-  const outputActionScaleBadAnswer = [1.5, 1, 0.3];
-  const outputActionScaleRightAnswer = [0.3, 1, 1.5];
+  const outputActionScaleBadAnswer = [1.5, 1, 0.75];
+  const outputActionScaleRightAnswer = [0.75, 1, 1.5];
 
   // Derived motion values for card and action button animations.
   const drivenX = useTransform(x, inputX, outputX);
@@ -77,7 +77,11 @@ const GameCard = ({
     inputX,
     outputActionScaleRightAnswer,
   );
-  const drivenActionClusterValueIndicator = useTransform(x, inputX, [1, 0, 1]);
+  const drivenActionClusterValueIndicator = useTransform(
+    x,
+    [-48, 0, 48],
+    [1, 0, 1],
+  );
 
   // Update external card properties when motion value changes.
   useMotionValueEvent(x, "change", (latest) => {
@@ -95,7 +99,7 @@ const GameCard = ({
       {/* Card visual with image */}
       <motion.div
         id={`cardDrivenWrapper-${id}`}
-        className="pointer-events-none absolute aspect-[88/107] w-full origin-bottom select-none rounded-lg bg-white p-2 shadow-card"
+        className="pointer-events-none absolute z-20 aspect-[88/107] w-full origin-bottom select-none rounded-md bg-white p-2 shadow-card"
         style={{
           y: drivenY,
           rotate: drivenRotation,
@@ -104,22 +108,24 @@ const GameCard = ({
       >
         <div
           id="illustration"
-          className="relative aspect-square w-full bg-neutral-300"
+          className="relative aspect-square w-full bg-stone-400"
         >
+          {/* FIXME: use image as background for avoid dragging the image */}
           {data && data.url ? (
             <Image
               priority
-              className={`absolute object-cover object-center ${
-                imgLoadingComplete ? "opacity-100" : "opacity-0"
-              } duration-500 ease-out`}
+              draggable={false}
+              className={`drag-none pointer-events-none h-full w-full object-contain object-center transition-opacity duration-700 ease-out`}
+              style={{
+                opacity: imgLoadingComplete ? 1 : 0,
+              }}
               src={data.url}
               fill
-              sizes={`(max-width: 768px) 100vw, 250px`}
               alt=""
               onLoad={() => setImgLoadingComplete(true)}
             />
           ) : (
-            <div className="h-full w-full rounded-full bg-gray-100" />
+            <div className="h-full w-full animate-pulse bg-white" />
           )}
         </div>
       </motion.div>

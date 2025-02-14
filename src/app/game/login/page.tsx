@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { joinRoom } from "@/lib/api";
 import { LoaderCircleIcon, LogInIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { useState } from "react";
 
 export default function Example() {
@@ -38,80 +39,102 @@ export default function Example() {
   };
 
   return (
-    <>
-      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+    <div className="flex h-full w-full overflow-auto">
+      <div className="flex w-full flex-col items-center px-4 py-8">
+        <motion.div
+          className="w-full"
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
           <Logo className="mx-auto h-14 w-auto" />
           <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight">
             Unisciti alla stanza
           </h2>
-        </div>
+        </motion.div>
 
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="nickname" className="block text-sm/6 font-medium">
-                Nome
-              </label>
-              <div className="mt-2">
-                <Input
-                  disabled={isLoading}
-                  id="nickname"
-                  name="nickname"
-                  type="text"
-                  required
-                  autoComplete="username"
-                  placeholder="Inserisci il tuo nome"
-                  className="block w-full"
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between">
+        <div className="mt-10 w-full">
+          <motion.div
+            transition={{ duration: 0.75, ease: "easeOut", delay: 0.25 }}
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+          >
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              <div>
                 <label
-                  htmlFor="room_code"
+                  htmlFor="nickname"
                   className="block text-sm/6 font-medium"
                 >
-                  Codice stanza
+                  Nome
                 </label>
+                <div className="mt-2">
+                  <Input
+                    disabled={isLoading}
+                    id="nickname"
+                    name="nickname"
+                    type="text"
+                    required
+                    autoComplete="username"
+                    placeholder="Inserisci il tuo nome"
+                    className="block w-full"
+                  />
+                </div>
               </div>
-              <div className="mt-2">
-                <Input
-                  disabled={isLoading}
-                  id="room_code"
-                  name="room_code"
-                  type="text"
-                  required
-                  placeholder="Inserisci il codice a 6 cifre"
-                  className="block w-full"
-                />
-              </div>
-            </div>
 
-            <div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                Unisciti alla stanza
-                {isLoading ? (
-                  <LoaderCircleIcon className="animate-spin" />
-                ) : (
-                  <LogInIcon />
-                )}
-              </Button>
-            </div>
-          </form>
+              <div>
+                <div className="flex items-center justify-between">
+                  <label
+                    htmlFor="room_code"
+                    className="block text-sm/6 font-medium"
+                  >
+                    Codice stanza
+                  </label>
+                </div>
+                <div className="mt-2">
+                  <Input
+                    disabled={isLoading}
+                    id="room_code"
+                    name="room_code"
+                    type="text"
+                    required
+                    placeholder="Inserisci il codice a 6 cifre"
+                    className="block w-full"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  Unisciti alla stanza
+                  {isLoading ? (
+                    <LoaderCircleIcon className="animate-spin" />
+                  ) : (
+                    <LogInIcon />
+                  )}
+                </Button>
+              </div>
+            </form>
+          </motion.div>
 
           {/* 
           TODO: aggiungere informativa privacy 
           */}
-          <p className="mt-10 text-center text-sm/6">
+          <motion.p
+            transition={{ duration: 0.5, ease: "easeOut", delay: 0.5 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="mt-10 text-center text-sm/6"
+          >
             <a
               href="#"
               className="font-semibold text-self-blue-300 hover:text-self-blue-200"
             >
               Leggi l&apos;informativa sulla privacy
             </a>
-          </p>
+          </motion.p>
 
           {error && (
             <div className="mx-auto mt-4 max-w-md">
@@ -126,6 +149,6 @@ export default function Example() {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }

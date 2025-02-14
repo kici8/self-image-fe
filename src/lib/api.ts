@@ -16,7 +16,7 @@ type RoomResults = {
   sessions: Session[];
 };
 
-type Interaction = {
+export type Interaction = {
   cluster_id: string;
   image_id: string;
   fragment_id: string;
@@ -117,5 +117,27 @@ export const joinRoom = async (
   payload: joinRoomPayload,
 ): Promise<joinRoomResponse> => {
   const response = await AxiosInstance.post("/api/room/join", payload);
+  return response.data;
+};
+
+type sendSessionReportPayload = {
+  player_id: string;
+  interactions: Interaction[];
+  scores: Cluster[];
+  unlocked_images: string[];
+  unlocked_filters: string[];
+};
+
+type sendSessionReportResponse = {
+  status: string;
+};
+
+export const sendSessionReport = async (
+  payload: sendSessionReportPayload,
+): Promise<sendSessionReportResponse> => {
+  const response = await AxiosInstance.post(
+    "/api/room/session-report",
+    payload,
+  );
   return response.data;
 };

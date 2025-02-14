@@ -121,6 +121,8 @@ const GameCard = ({
               }}
               src={data.url}
               fill
+              fetchPriority="high"
+              sizes="(max-width: 384px) 33vw, 33vw"
               alt=""
               onLoad={() => setImgLoadingComplete(true)}
             />

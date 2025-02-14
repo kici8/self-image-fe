@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { staticClusterImages } from "@/lib/staticElements/clusterImages";
+import { staticClusterImages } from "@/lib/ourData/clusterImages";
 import { LayoutGroup, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -124,10 +124,10 @@ export default function UnlockedImages({
                       Hai sbloccato un&apos;immagine!
                     </h2>
                     <p className="text-md text-center text-primary-foreground">
-                      {lastUnlockedImage?.title}
+                      {lastUnlockedImage?.title || "Senza titolo"}
                     </p>
                     <p className="text-center text-sm text-self-blue-500/80">
-                      {lastUnlockedImage?.author}
+                      {lastUnlockedImage?.author || "Autore sconosciuto"}
                     </p>
                     <Button className="mt-8" onClick={() => setIsOpen(false)}>
                       Continua

@@ -3,22 +3,20 @@
 import {
   ClusterFragment,
   staticClusterFragments,
-} from "@/lib/staticElements/clusterFragments";
-import {
-  ClusterImage,
-  staticClusterImages,
-} from "@/lib/staticElements/clusterImages";
-import { staticClusters } from "@/lib/staticElements/clusters";
+} from "@/lib/ourData/clusterFragments";
+import { ClusterImage, staticClusterImages } from "@/lib/ourData/clusterImages";
+import { staticClusters } from "@/lib/ourData/clusters";
 import { pickRandom } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 import React, { createContext, useContext, useState } from "react";
 
 // Define data types for clusters, images, and fragments;
-type SeenClusterFragments = ClusterFragment & {
-  liked: boolean;
-};
-
 export type SpawnedFragment = ClusterFragment & {
   roundNumber: number;
+};
+
+export type SeenClusterFragments = SpawnedFragment & {
+  liked: boolean;
 };
 
 type ClusterValues = Record<string, number>;
@@ -30,7 +28,9 @@ type GameContextType = {
   fragmentsSpawned: SpawnedFragment[];
   roundNumber: number;
   maxNumberOfRounds: number;
-  applySwipeEffect: (fragment: ClusterFragment, liked: boolean) => void;
+  numberOfFragmentToUnlockImg: number;
+  applySwipeEffect: (fragment: SpawnedFragment, liked: boolean) => void;
+  resetGame: () => void;
   seenFragments: SeenClusterFragments[];
   unlockedImages: Set<string>;
   unlockedFilters: Set<string>;
@@ -44,6 +44,9 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  // Hooks
+  const router = useRouter();
+
   // Static data is imported from static elements
   const clusters = staticClusters;
   const clusterImages = staticClusterImages;
@@ -52,7 +55,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
     clusters.map((cluster) => [cluster.id, 0.4]),
   );
   const maxNumberOfRounds = 24; // Maximum number of images allowed
-  const maxAcceptedFragments = 3; // Number of liked fragments required to unlock an image
+  const numberOfFragmentToUnlockImg = 3; // Number of liked fragments required to unlock an image
   const firstSpawnedFragment: SpawnedFragment = {
     ...pickRandom(clusterFragments),
     roundNumber: 1,
@@ -131,7 +134,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
     // FIXME: check if this filter is working
     // filter fragments to only include fragments that haven't been seen yet
     const availableFragments = clusterFragments.filter(
-      (frag) => !seenFragments.some((seenFrag) => seenFrag.id === frag.id),
+      (frag) =>
+        !seenFragments.some(
+          (seenFrag) => seenFrag.fragment_id === frag.fragment_id,
+        ),
     );
 
     // Filter fragments to only include ones from the selected image
@@ -168,7 +174,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   // Apply swipe effect: update cluster values and unlock conditions based on player's swipe action
-  function applySwipeEffect(fragment: ClusterFragment, liked: boolean) {
+  function applySwipeEffect(fragment: SpawnedFragment, liked: boolean) {
     // Find the image associated with the fragment
     const swipedImage = clusterImages.find(
       (img) => img.id === fragment.image_id,
@@ -176,7 +182,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
 
     if (!swipedImage) {
       // FIXME: This should never happen but handle it just in case
-      console.error(`Image not found for fragment: ${fragment.id}`);
+      console.error(`Image not found for fragment: ${fragment.fragment_id}`);
       // TODO: this can't be just a return, it should be a throw and the game must go on
       return;
     }
@@ -199,7 +205,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const newSeenFragments: SeenClusterFragments[] = [
       ...seenFragments,
-      { ...fragment, liked: liked },
+      { ...fragment, liked: liked, roundNumber: fragment.roundNumber },
     ];
     console.log(`Seen Fragments:`, newSeenFragments);
 
@@ -210,7 +216,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
         (frag) => frag.image_id === fragment.image_id && frag.liked,
       );
 
-      if (likedFragmentsForImage.length >= maxAcceptedFragments) {
+      if (likedFragmentsForImage.length >= numberOfFragmentToUnlockImg) {
         // TODO: show in the UI that the image is unlocked
         console.log(`Unlocked Image 🖼️🖼️🖼️: ${swipedImage.id}`);
         setUnlockedImages((prev) => new Set([...prev, swipedImage.id]));
@@ -234,9 +240,26 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
       // TODO: save the game report to the server
       console.log("Game Over 🎉🎉🎉");
       setIsGameOver(true);
+      router.push("/game/report");
     } else {
       spawnFragment();
     }
+  }
+
+  function resetGame() {
+    const resetFirstSpawnedFragment: SpawnedFragment = {
+      ...pickRandom(clusterFragments),
+      roundNumber: 1,
+    };
+
+    setClusterValues(initialClusterValues);
+    setFragmentsSpawned([resetFirstSpawnedFragment]);
+    setActiveSpawnedFragment(resetFirstSpawnedFragment);
+    setSeenFragments([]);
+    setUnlockedImages(new Set());
+    setUnlockedFilters(new Set());
+    setRoundNumber(1);
+    setIsGameOver(false);
   }
 
   // Provide all game state and functions to consumer components using the GameContext
@@ -249,7 +272,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
         fragmentsSpawned,
         roundNumber,
         maxNumberOfRounds,
+        numberOfFragmentToUnlockImg,
         applySwipeEffect,
+        resetGame,
         unlockedImages,
         unlockedFilters,
         isGameOver,

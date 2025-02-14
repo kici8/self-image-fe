@@ -9,8 +9,8 @@ import {
   typeGridType,
 } from "@/app/room/[code]/components/ImageGrid";
 import { Cluster } from "@/app/room/[code]/components/ClusterListItem";
-import { staticClusterImages } from "../staticElements/clusterImages";
-import { staticClusters } from "../staticElements/clusters";
+import { staticClusterImages } from "../ourData/clusterImages";
+import { staticClusters } from "../ourData/clusters";
 
 type PlayerConnectedResponse = {
   player_id: string;

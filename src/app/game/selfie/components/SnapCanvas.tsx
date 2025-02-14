@@ -30,7 +30,7 @@ function SnapCanvas() {
   // Hooks
   const { session, lenses } = useCameraKit();
   const canvasContainerRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<MediaStreamTrack>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
   const router = useRouter();
   const { resetGame } = useGame();
 
@@ -45,17 +45,29 @@ function SnapCanvas() {
   const [isSceneLoaded, setIsSceneLoaded] = useState(false);
 
   // Callbacks
+  const stopExistingStream = () => {
+    if (mediaStreamRef.current) {
+      console.log(
+        "Stopping existing stream...",
+        mediaStreamRef.current.getTracks(),
+      );
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
+      console.log("Stream stopped???", mediaStreamRef.current);
+    }
+  };
+
   // START CAMERA KIT
   const startCameraKit = useCallback(async () => {
+    stopExistingStream();
     // Lazy-load the camera-kit module on the client.
     const { createMediaStreamSource, Transform2D } = await import(
       "@snap/camera-kit"
     );
-    const mediaStream = await navigator.mediaDevices.getUserMedia({
+    mediaStreamRef.current = await navigator.mediaDevices.getUserMedia({
       video: true,
     });
-    trackRef.current = mediaStream.getVideoTracks()[0];
-    const source = createMediaStreamSource(mediaStream, {
+    const source = createMediaStreamSource(mediaStreamRef.current, {
       transform: Transform2D.MirrorX,
     });
     session.setSource(source);
@@ -171,10 +183,7 @@ function SnapCanvas() {
   useEffect(() => {
     startCameraKit();
     return () => {
-      if (trackRef.current) {
-        console.log("FIXME: Stopping camera track...");
-        trackRef.current.stop();
-      }
+      stopExistingStream();
     };
   }, [startCameraKit]);
 

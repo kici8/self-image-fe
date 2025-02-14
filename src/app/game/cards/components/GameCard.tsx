@@ -131,7 +131,7 @@ const GameCard = ({
               src={data.url}
               fill
               fetchPriority="high"
-              sizes="(max-width: 384px) 33vw, 33vw"
+              sizes="(max-width: 320px) 320px, 320px"
               alt=""
               onLoad={() => {
                 console.log("Image loaded");
@@ -146,7 +146,7 @@ const GameCard = ({
       <motion.div
         id={`cardDriverWrapper-${id}`}
         className={`absolute aspect-[100/150] w-full ${!isDragging ? "hover:cursor-grab" : ""}`}
-        drag={imgLoadingComplete ? "x" : "y"}
+        drag="x"
         dragSnapToOrigin
         dragElastic={isMobile ? 0.2 : 0.06}
         dragConstraints={{ left: 0, right: 0 }}

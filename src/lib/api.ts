@@ -141,3 +141,14 @@ export const sendSessionReport = async (
   );
   return response.data;
 };
+
+export const uploadSelfie = async (
+  payload: FormData,
+): Promise<{ status: string }> => {
+  const response = await AxiosInstance.post(`/api/room/selfie`, payload, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};

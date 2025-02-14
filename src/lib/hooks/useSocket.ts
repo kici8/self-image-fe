@@ -158,7 +158,7 @@ export const useSocket = () => {
             selfie.session_id === roomData?.session_id,
         );
 
-        const newSelfie = {
+        const newSelfie: TypeGridImage = {
           id: data.selfie_id,
           author: undefined,
           author_id: data.player_id,
@@ -171,6 +171,9 @@ export const useSocket = () => {
           index: Math.floor(Math.random() * staticClusterImages.length),
           unlocked: true,
           type: typeGridType.selfie,
+          cluster_id: null,
+          clusterValues: null,
+          filter_id: null,
         };
 
         // If the selfie already exists, update it

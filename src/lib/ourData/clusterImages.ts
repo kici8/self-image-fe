@@ -6,9 +6,13 @@ export type ClusterImage = {
   author: string | undefined;
   author_id?: string;
   year: string | undefined;
-  cluster_id: string;
-  clusterValues: { clusterId: string; value: number }[];
-  filter_id: string | undefined;
+  cluster_id: string | null;
+  // cluster points associated with the cluster images
+  clusterValues: { clusterId: string; value: number }[] | null;
+  // filter associated with the cluster images
+  filter_id: string | undefined | null;
+  // TODO: move out from this type: filters applied to the selfie
+  filters: string[] | null;
 };
 
 export const staticClusterImages: ClusterImage[] = [
@@ -27,6 +31,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -8 },
     ],
     filter_id: "filter_a.1",
+    filters: null,
   },
   {
     id: "a.2",
@@ -43,6 +48,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -8 },
     ],
     filter_id: "filter_a.3",
+    filters: null,
   },
   {
     id: "a.3",
@@ -59,6 +65,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -8 },
     ],
     filter_id: "filter_a.2",
+    filters: null,
   },
   {
     id: "a.4",
@@ -75,6 +82,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -8 },
     ],
     filter_id: "filter_a.2",
+    filters: null,
   },
   {
     id: "a.5",
@@ -91,6 +99,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -8 },
     ],
     filter_id: "filter_a.3",
+    filters: null,
   },
   {
     id: "a.6",
@@ -107,6 +116,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -8 },
     ],
     filter_id: "filter_a.1",
+    filters: null,
   },
   {
     id: "a.7",
@@ -123,6 +133,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -8 },
     ],
     filter_id: "filter_a.1",
+    filters: null,
   },
   {
     id: "a.8",
@@ -139,6 +150,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -8 },
     ],
     filter_id: "filter_a.3",
+    filters: null,
   },
   {
     id: "a.9",
@@ -155,6 +167,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -8 },
     ],
     filter_id: "filter_a.2",
+    filters: null,
   },
   {
     id: "a.10",
@@ -171,6 +184,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -8 },
     ],
     filter_id: "filter_a.3",
+    filters: null,
   },
   {
     id: "b.1",
@@ -187,6 +201,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -6 },
     ],
     filter_id: "filter_b.1",
+    filters: null,
   },
   {
     id: "b.2",
@@ -203,6 +218,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -6 },
     ],
     filter_id: "filter_b.1",
+    filters: null,
   },
   {
     id: "b.3",
@@ -219,6 +235,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -6 },
     ],
     filter_id: "filter_b.2",
+    filters: null,
   },
   {
     id: "b.4",
@@ -235,6 +252,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -6 },
     ],
     filter_id: "filter_b.2",
+    filters: null,
   },
   {
     id: "b.5",
@@ -251,6 +269,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -6 },
     ],
     filter_id: "filter_b.3",
+    filters: null,
   },
   {
     id: "b.6",
@@ -267,6 +286,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -6 },
     ],
     filter_id: "filter_b.3",
+    filters: null,
   },
   {
     id: "b.7",
@@ -283,6 +303,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -6 },
     ],
     filter_id: "filter_b.3",
+    filters: null,
   },
   {
     id: "b.8",
@@ -299,6 +320,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -6 },
     ],
     filter_id: "filter_b.2",
+    filters: null,
   },
   {
     id: "b.9",
@@ -316,6 +338,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -6 },
     ],
     filter_id: "filter_b.3",
+    filters: null,
   },
   {
     id: "c.1",
@@ -332,6 +355,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -8 },
     ],
     filter_id: "filter_c.3",
+    filters: null,
   },
   {
     id: "c.2",
@@ -348,6 +372,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -8 },
     ],
     filter_id: "filter_c.3",
+    filters: null,
   },
   {
     id: "c.3",
@@ -364,6 +389,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -8 },
     ],
     filter_id: undefined,
+    filters: null,
   },
   {
     id: "c.4",
@@ -380,6 +406,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -8 },
     ],
     filter_id: "filter_c.1",
+    filters: null,
   },
   {
     id: "c.5",
@@ -396,6 +423,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -8 },
     ],
     filter_id: undefined,
+    filters: null,
   },
   {
     id: "c.6",
@@ -412,6 +440,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -8 },
     ],
     filter_id: "filter_c.3",
+    filters: null,
   },
   {
     id: "c.7",
@@ -428,6 +457,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -8 },
     ],
     filter_id: "filter_c.3",
+    filters: null,
   },
   {
     id: "c.8",
@@ -444,6 +474,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -8 },
     ],
     filter_id: undefined,
+    filters: null,
   },
   {
     id: "c.9",
@@ -460,6 +491,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -8 },
     ],
     filter_id: "filter_c.1",
+    filters: null,
   },
   {
     id: "c.10",
@@ -476,6 +508,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "F", value: -8 },
     ],
     filter_id: "filter_c.1",
+    filters: null,
   },
   {
     id: "d.1",
@@ -492,6 +525,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -6 },
     ],
     filter_id: "filter_d.2",
+    filters: null,
   },
   {
     id: "d.2",
@@ -508,6 +542,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -6 },
     ],
     filter_id: "filter_d.1",
+    filters: null,
   },
   {
     id: "d.3",
@@ -524,6 +559,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -6 },
     ],
     filter_id: "filter_d.2",
+    filters: null,
   },
   {
     id: "d.4",
@@ -540,6 +576,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -6 },
     ],
     filter_id: "filter_d.2",
+    filters: null,
   },
   {
     id: "d.5",
@@ -556,6 +593,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -6 },
     ],
     filter_id: "filter_d.1",
+    filters: null,
   },
   {
     id: "d.6",
@@ -572,6 +610,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -6 },
     ],
     filter_id: "filter_d.2",
+    filters: null,
   },
   {
     id: "d.7",
@@ -588,6 +627,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -6 },
     ],
     filter_id: "filter_d.3",
+    filters: null,
   },
   {
     id: "d.8",
@@ -604,6 +644,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -6 },
     ],
     filter_id: "filter_d.1",
+    filters: null,
   },
   {
     id: "d.9",
@@ -620,6 +661,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -6 },
     ],
     filter_id: "filter_d.4",
+    filters: null,
   },
   {
     id: "d.10",
@@ -636,6 +678,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "E", value: -6 },
     ],
     filter_id: "filter_d.3",
+    filters: null,
   },
   {
     id: "e.1",
@@ -652,6 +695,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
     ],
     filter_id: "filter_e.2",
+    filters: null,
   },
   {
     id: "e.2",
@@ -668,6 +712,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
     ],
     filter_id: "filter_e.1",
+    filters: null,
   },
   {
     id: "e.3",
@@ -684,6 +729,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
     ],
     filter_id: "filter_e.2",
+    filters: null,
   },
   {
     id: "e.4",
@@ -700,6 +746,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
     ],
     filter_id: "filter_e.1",
+    filters: null,
   },
   {
     id: "e.5",
@@ -716,6 +763,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
     ],
     filter_id: "filter_e.3",
+    filters: null,
   },
   {
     id: "e.6",
@@ -732,6 +780,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
     ],
     filter_id: "filter_e.3",
+    filters: null,
   },
   {
     id: "e.7",
@@ -748,6 +797,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
     ],
     filter_id: "filter_e.2",
+    filters: null,
   },
   {
     // TODO: invertita con numero 9 rispetto a documento?
@@ -765,6 +815,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
     ],
     filter_id: "filter_e.3",
+    filters: null,
   },
   {
     id: "e.9",
@@ -781,6 +832,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
     ],
     filter_id: "filter_e.1",
+    filters: null,
   },
   {
     id: "f.1",
@@ -797,6 +849,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -8 },
     ],
     filter_id: "filter_f.3",
+    filters: null,
   },
   {
     id: "f.2",
@@ -813,6 +866,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -8 },
     ],
     filter_id: "filter_f.1",
+    filters: null,
   },
   {
     id: "f.3",
@@ -829,6 +883,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -8 },
     ],
     filter_id: "filter_f.2",
+    filters: null,
   },
   {
     id: "f.4",
@@ -845,6 +900,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -8 },
     ],
     filter_id: "filter_f.1",
+    filters: null,
   },
   {
     id: "f.5",
@@ -861,6 +917,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -8 },
     ],
     filter_id: "filter_f.3",
+    filters: null,
   },
   {
     id: "f.6",
@@ -877,6 +934,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -8 },
     ],
     filter_id: "filter_f.3",
+    filters: null,
   },
   {
     id: "f.7",
@@ -893,6 +951,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -8 },
     ],
     filter_id: "filter_f.2",
+    filters: null,
   },
   {
     id: "f.8",
@@ -909,6 +968,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -8 },
     ],
     filter_id: "filter_f.2",
+    filters: null,
   },
   {
     id: "f.9",
@@ -925,6 +985,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -8 },
     ],
     filter_id: "filter_f.1",
+    filters: null,
   },
   {
     id: "f.10",
@@ -941,5 +1002,6 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -8 },
     ],
     filter_id: "filter_f.4",
+    filters: null,
   },
 ];

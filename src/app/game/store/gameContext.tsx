@@ -190,7 +190,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
     // Update cluster values for the image based on swipe result
     const updatedValues = { ...clusterValues };
 
-    swipedImage.clusterValues.forEach(({ clusterId, value }) => {
+    swipedImage.clusterValues?.forEach(({ clusterId, value }) => {
       // Calculate new value based on swipe (liked adds the value, rejected subtracts it)
       // FIXME: discuss this with the team
       // The range of values is between 0 and 1

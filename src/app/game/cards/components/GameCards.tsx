@@ -109,7 +109,7 @@ const GameCards = () => {
             const image = staticClusterImages.find(
               (image) => image.id === activeSpawnedFragment.image_id,
             );
-            const fragmentClusterValue = image?.clusterValues.find(
+            const fragmentClusterValue = image?.clusterValues?.find(
               (cv) => cv.clusterId === cluster.id,
             )?.value;
             return (

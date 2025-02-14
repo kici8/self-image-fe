@@ -1,29 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useCameraKit } from "@/lib/hooks/useCameraKit";
-import { cva } from "class-variance-authority";
-import { cn } from "@/lib/utils";
-import { canvasToBlob } from "./utils";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import {
-  DownloadIcon,
-  LoaderCircleIcon,
-  Share2Icon,
-  Undo2Icon,
-  UploadIcon,
-} from "lucide-react";
-import Image from "next/image";
 import { uploadSelfie } from "@/lib/api";
+import { useCameraKit } from "@/lib/hooks/useCameraKit";
+import { cn } from "@/lib/utils";
+import { cva } from "class-variance-authority";
 import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useGame } from "../../store/gameContext";
+import SelfieDialog from "./SelfieDialog";
+import { canvasToBlob } from "./utils";
 
 // If we don't want the watermark we have to move the snapchat app to production
 // https://developers.snap.com/camera-kit/app-review/design-guide
@@ -45,6 +30,7 @@ function SnapCanvas() {
   // Hooks
   const { session, lenses } = useCameraKit();
   const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<MediaStreamTrack>(null);
   const router = useRouter();
   const { resetGame } = useGame();
 
@@ -68,12 +54,10 @@ function SnapCanvas() {
     const mediaStream = await navigator.mediaDevices.getUserMedia({
       video: true,
     });
+    trackRef.current = mediaStream.getVideoTracks()[0];
     const source = createMediaStreamSource(mediaStream, {
       transform: Transform2D.MirrorX,
     });
-    console.log("source", source);
-    console.log("session", session);
-    console.log("lenses", lenses);
     session.setSource(source);
     session.applyLens(lenses[0]);
     session.play("live");
@@ -186,6 +170,12 @@ function SnapCanvas() {
   // Effects
   useEffect(() => {
     startCameraKit();
+    return () => {
+      if (trackRef.current) {
+        console.log("FIXME: Stopping camera track...");
+        trackRef.current.stop();
+      }
+    };
   }, [startCameraKit]);
 
   useEffect(() => {
@@ -235,76 +225,16 @@ function SnapCanvas() {
         <span className="absolute left-1/2 top-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-white transition-all group-hover:scale-75 group-active:scale-50 group-disabled:scale-50 group-disabled:cursor-not-allowed group-disabled:opacity-40" />
       </button>
       {modalOpen && (
-        <Dialog
-          open={modalOpen}
-          onOpenChange={(open) =>
-            open ? setModalOpen(open) : closeScreenshotModal()
-          }
-        >
-          <DialogContent
-            className="sm:max-w-[425px]"
-            aria-describedby={undefined}
-          >
-            <DialogHeader>
-              <DialogTitle>Carica Selfie</DialogTitle>
-            </DialogHeader>
-            <div className="relative">
-              <div className="absolute right-2 top-2 flex items-center gap-2">
-                <Button
-                  disabled={!screenshotUrl}
-                  onClick={handleDownload}
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full bg-secondary/40"
-                >
-                  <DownloadIcon />
-                </Button>
-                {navigator.canShare &&
-                  navigator.canShare({ files: [new File([], "")] }) && (
-                    <Button
-                      disabled={!screenshotUrl}
-                      onClick={handleShare}
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full bg-secondary/40"
-                    >
-                      <Share2Icon />
-                    </Button>
-                  )}
-              </div>
-
-              {screenshotUrl ? (
-                <Image
-                  src={screenshotUrl}
-                  alt="Screenshot preview"
-                  className="mb-4 max-h-[60vh] w-full object-contain"
-                  width={500}
-                  height={500}
-                  unoptimized
-                />
-              ) : (
-                <div className="mb-4 h-[60vh] w-full animate-pulse rounded bg-gray-300" />
-              )}
-            </div>
-            <DialogFooter className="flex flex-col gap-2 sm:flex-row">
-              <Button onClick={closeScreenshotModal} variant="outline">
-                Scatta ancora
-                <Undo2Icon />
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                disabled={uploading || !screenshotUrl}
-              >
-                Carica selfie
-                {uploading ? (
-                  <LoaderCircleIcon className="animate-spin" />
-                ) : (
-                  <UploadIcon />
-                )}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <SelfieDialog
+          modalOpen={modalOpen}
+          setModalOpen={setModalOpen}
+          closeScreenshotModal={closeScreenshotModal}
+          screenshotUrl={screenshotUrl}
+          handleDownload={handleDownload}
+          handleShare={handleShare}
+          handleSubmit={handleSubmit}
+          uploading={uploading}
+        />
       )}
     </div>
   );

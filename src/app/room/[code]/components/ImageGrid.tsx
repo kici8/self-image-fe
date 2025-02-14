@@ -20,15 +20,15 @@ import {
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import { useState } from "react";
-import { TypeImage } from "../../../../lib/referenceElements";
 import ImageDialog from "./ImageDialog";
+import { ClusterImage } from "@/lib/ourData/clusterImages";
 
 export enum typeGridType {
   image = "IMAGE",
   selfie = "SELFIE",
 }
 
-export type TypeGridImage = TypeImage & {
+export type TypeGridImage = ClusterImage & {
   index: number;
   unlocked: boolean;
   type: typeGridType;

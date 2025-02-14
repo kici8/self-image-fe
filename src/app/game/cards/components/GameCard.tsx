@@ -106,11 +106,20 @@ const GameCard = ({
           x: drivenX,
         }}
       >
-        <div
+        <motion.div
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 0.2 }}
+          exit={{ opacity: 1 }}
+          transition={{
+            duration: 1,
+            repeat: imgLoadingComplete ? Infinity : 1,
+            repeatType: "reverse",
+          }}
           id="illustration"
           className="relative aspect-square w-full bg-stone-400"
         >
           {/* FIXME: use image as background for avoid dragging the image */}
+
           {data && data.url ? (
             <Image
               priority
@@ -124,24 +133,27 @@ const GameCard = ({
               fetchPriority="high"
               sizes="(max-width: 384px) 33vw, 33vw"
               alt=""
-              onLoad={() => setImgLoadingComplete(true)}
+              onLoad={() => {
+                console.log("Image loaded");
+                setImgLoadingComplete(true);
+              }}
             />
-          ) : (
-            <div className="h-full w-full animate-pulse bg-white" />
-          )}
-        </div>
+          ) : null}
+        </motion.div>
       </motion.div>
 
       {/* Draggable overlay to capture swipe gestures */}
       <motion.div
         id={`cardDriverWrapper-${id}`}
         className={`absolute aspect-[100/150] w-full ${!isDragging ? "hover:cursor-grab" : ""}`}
-        drag="x"
+        drag={imgLoadingComplete ? "x" : "y"}
         dragSnapToOrigin
         dragElastic={isMobile ? 0.2 : 0.06}
         dragConstraints={{ left: 0, right: 0 }}
         dragTransition={{ bounceStiffness: 1000, bounceDamping: 50 }}
-        onDragStart={() => setIsDragging(true)}
+        onDragStart={() => {
+          setIsDragging(true);
+        }}
         onDragEnd={(_, info) => {
           setIsDragging(false);
           const isOffBoundary =

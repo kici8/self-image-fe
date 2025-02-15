@@ -29,6 +29,7 @@ const cameraButtonSVGVariants = cva(
 function SnapCanvas() {
   // Hooks
   const { session, lenses } = useCameraKit();
+  const isMounted = useRef(false);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const router = useRouter();
@@ -182,7 +183,11 @@ function SnapCanvas() {
 
   // Effects
   useEffect(() => {
-    startCameraKit();
+    if (!isMounted.current) {
+      isMounted.current = true;
+      startCameraKit();
+    }
+
     return () => {
       stopExistingStream();
     };

@@ -95,7 +95,7 @@ export default function Room({ code }: { code: string }) {
           description: "La stanza è stata chiusa correttamente.",
           variant: "default",
         });
-        router.push("/");
+        router.push("/room");
       }
     } catch (err) {
       if (err instanceof Error) {
@@ -165,7 +165,7 @@ export default function Room({ code }: { code: string }) {
           partecipare.
         </p>
       </div>
-      <Button className="mt-4 w-full" onClick={() => router.push("/")}>
+      <Button className="mt-4 w-full" onClick={() => router.push("/room")}>
         Torna alla home
       </Button>
     </div>
@@ -181,7 +181,7 @@ export default function Room({ code }: { code: string }) {
           una nuova.
         </p>
       </div>
-      <Button className="mt-4 w-full" onClick={() => router.push("/")}>
+      <Button className="mt-4 w-full" onClick={() => router.push("/room")}>
         Torna alla home
       </Button>
     </div>

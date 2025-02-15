@@ -3,9 +3,13 @@
 import { motion } from "framer-motion";
 import AchieveBackground from "@/components/AchieveBackground";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { useExitGameDialog } from "../store/ExitGameDialogContext";
+import { useRouter } from "next/navigation";
 
 export default function GameCompleted() {
+  const router = useRouter();
+  const { setIsOpen } = useExitGameDialog();
+
   return (
     <div className="relative flex h-full flex-col items-center justify-center overflow-hidden">
       <AchieveBackground className="absolute z-0 min-h-full min-w-full text-self-blue-300/20" />
@@ -21,9 +25,18 @@ export default function GameCompleted() {
         <p className="mb-8 text-center text-lg">
           Hai completato l&apos;esperienza, grazie per aver partecipato.
         </p>
-        <Link href="/game/cards">
-          <Button>Gioca Ancora</Button>
-        </Link>
+        <div className="flex flex-col gap-4">
+          <Button className="flex-1" onClick={() => router.push("/game/cards")}>
+            Gioca Ancora
+          </Button>
+          <Button
+            variant="outline"
+            className="flex-1"
+            onClick={() => setIsOpen(true)}
+          >
+            Esci
+          </Button>
+        </div>
       </motion.div>
     </div>
   );

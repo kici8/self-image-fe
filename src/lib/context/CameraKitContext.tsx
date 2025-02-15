@@ -46,9 +46,7 @@ export const CameraKit: React.FC<{ children: React.ReactNode }> = ({
     initializeCameraKit();
   }, []);
 
-  return !session ? (
-    <div>Initializing Camera Kit...</div>
-  ) : (
+  return !session ? null : (
     <CameraKitContext.Provider value={{ session, lenses }}>
       {children}
     </CameraKitContext.Provider>

@@ -11,6 +11,7 @@ import { Interaction, sendSessionReport } from "@/lib/api";
 import { ArrowRightIcon, LoaderCircleIcon, Undo2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useGame } from "../store/gameContext";
+import { useExitGameDialog } from "../store/ExitGameDialogContext";
 
 export default function GameReport() {
   // Hooks
@@ -23,6 +24,7 @@ export default function GameReport() {
     resetGame,
   } = useGame();
   const router = useRouter();
+  const { setIsOpen } = useExitGameDialog();
 
   // States
   const [retryIsLoading, setRetryIsLoading] = useState(false);
@@ -205,11 +207,14 @@ export default function GameReport() {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.5, ease: "easeOut", delay: 0.5 }}
-        className="sticky bottom-6 left-0 w-full px-4"
+        className="sticky bottom-6 left-0 flex w-full gap-2 px-4"
       >
+        <Button variant="destructive" onClick={() => setIsOpen(true)}>
+          Esci
+        </Button>
         {unlockedFiltersArray.length > 0 ? (
           <Button className="w-full" onClick={handleContinue}>
-            Continua · Scatta selfie
+            Continua al selfie
             {continueIsLoading ? (
               <LoaderCircleIcon className="animate-spin" />
             ) : (

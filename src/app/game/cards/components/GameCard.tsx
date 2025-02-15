@@ -122,7 +122,6 @@ const GameCard = ({
 
           {data && data.url ? (
             <Image
-              priority
               draggable={false}
               className={`drag-none pointer-events-none h-full w-full object-contain object-center transition-opacity duration-700 ease-out`}
               style={{
@@ -130,11 +129,9 @@ const GameCard = ({
               }}
               src={data.url}
               fill
-              fetchPriority="high"
-              sizes="(max-width: 320px) 320px, 320px"
+              sizes="(max-width: 384px) 33vw, 33vw"
               alt=""
               onLoad={() => {
-                console.log("Image loaded");
                 setImgLoadingComplete(true);
               }}
             />

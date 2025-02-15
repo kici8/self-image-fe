@@ -149,8 +149,17 @@ export default function GameReport() {
             Immagini sbloccate: {filteredUnlockedImages.length}
           </h3>
           <p className="text-sm">
-            Hai consevato almeno {numberOfFragmentToUnlockImg} frammenti delle
-            immagini sbloccate
+            {filteredUnlockedImages.length > 0 ? (
+              <>
+                Hai consevato almeno {numberOfFragmentToUnlockImg} frammenti
+                delle immagini sbloccate
+              </>
+            ) : (
+              <>
+                Prova a conservare almeno {numberOfFragmentToUnlockImg}{" "}
+                frammenti della stessa immagine per sbloccarla
+              </>
+            )}
           </p>
           {filteredUnlockedImages.length > 0 ? (
             <div className="mt-2 flex flex-col gap-4">
@@ -177,13 +186,7 @@ export default function GameReport() {
                 </div>
               ))}
             </div>
-          ) : (
-            <div>
-              <p className="py-4 text-center text-sm text-self-blue-100/60">
-                Nessuna immagine sbloccata
-              </p>
-            </div>
-          )}
+          ) : null}
         </div>
 
         <div className="flex flex-col gap-2">

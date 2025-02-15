@@ -1,3 +1,4 @@
+import AchieveBackground from "@/components/AchieveBackground";
 import { Button } from "@/components/ui/button";
 import { staticClusterImages } from "@/lib/ourData/clusterImages";
 import { LayoutGroup, motion } from "framer-motion";
@@ -70,7 +71,12 @@ export default function UnlockedImages({
               <div
                 className="fixed left-0 top-0 z-30 h-full w-full bg-self-blue-950/80"
                 onClick={() => setIsOpen(false)}
-              />
+              >
+                <div className="absolute left-1/2 top-1/2 aspect-square min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 transform">
+                  <AchieveBackground className="absolute z-0 min-h-full min-w-full object-center text-self-blue-300/10" />
+                </div>
+              </div>
+
               <motion.div
                 layoutId="unlockedImage"
                 initial={{ opacity: 0, scale: 0.8 }}

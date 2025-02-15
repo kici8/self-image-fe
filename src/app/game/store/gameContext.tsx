@@ -148,7 +148,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
     let selectedFragment: ClusterFragment;
 
     // First try picking a fragment from the selected image
-    // TODO: check this
     if (availableFragmentsForSelectedImage.length > 0) {
       selectedFragment = pickRandom(availableFragmentsForSelectedImage);
     } else {
@@ -181,7 +180,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
     );
 
     if (!swipedImage) {
-      // FIXME: This should never happen but handle it just in case
+      // This should never happen but handle it just in case
       console.error(`Image not found for fragment: ${fragment.fragment_id}`);
       // TODO: this can't be just a return, it should be a throw and the game must go on
       return;
@@ -217,11 +216,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
       );
 
       if (likedFragmentsForImage.length >= numberOfFragmentToUnlockImg) {
-        // TODO: show in the UI that the image is unlocked
         console.log(`Unlocked Image 🖼️🖼️🖼️: ${swipedImage.id}`);
         setUnlockedImages((prev) => new Set([...prev, swipedImage.id]));
         if (swipedImage.filter_id && swipedImage.filter_id !== undefined) {
-          // TODO: show in the UI that the filter is unlocked
+          // TODO: show in the UI that the filter is unlocked?
           console.log(`Unlocked Filter 🎭🎭🎭: ${swipedImage.filter_id}`);
           setUnlockedFilters(
             (prev) => new Set([...prev, swipedImage.filter_id!]),
@@ -236,8 +234,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
     setRoundNumber((prev) => prev + 1);
     // If the maximum number of images has been reached, end the game
     if (roundNumber >= maxNumberOfRounds) {
-      // TODO: show in the UI that the game is over and move to the next screen
-      // TODO: save the game report to the server
+      // TODO: if an image is unlocked in the last round, show and block the router push
+      // maybe we have to move the router push out of the applySwipeEffect function
       console.log("Game Over 🎉🎉🎉");
       setIsGameOver(true);
       router.push("/game/report");

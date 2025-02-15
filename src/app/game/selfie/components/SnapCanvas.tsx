@@ -73,6 +73,7 @@ function SnapCanvas() {
     session.setSource(source);
     session.applyLens(lenses[0]);
     session.play("live");
+    setIsSceneLoaded(true);
   }, [session, lenses]);
 
   // CAPTURE SELFIE
@@ -158,7 +159,7 @@ function SnapCanvas() {
       if (res.status === "success") {
         console.log("Screenshot uploaded successfully!");
         resetGame();
-        router.push("/game/cards");
+        router.push("/game/completed");
       } else {
         console.error("Upload failed:", res.status);
       }
@@ -190,7 +191,6 @@ function SnapCanvas() {
   useEffect(() => {
     if (canvasContainerRef.current && session.output.live) {
       const liveCanvas = session.output.live;
-      setIsSceneLoaded(true);
       liveCanvas.style.width = "100%";
       liveCanvas.style.height = "100%";
       liveCanvas.style.display = "block";

@@ -70,6 +70,7 @@ function SnapCanvas() {
     });
     const source = createMediaStreamSource(mediaStreamRef.current, {
       transform: Transform2D.MirrorX,
+      cameraType: "user",
     });
     session.setSource(source);
     session.applyLens(lenses[0]);

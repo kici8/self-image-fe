@@ -19,11 +19,11 @@ echo "export const clusterFragments: ClusterFragmentList = [" >> "$OUTPUT_FILE"
 # Cicla per ogni cartella (A, B, C, D, E e F)
 for folder in public/cluster-images/fragments/{A,B,C,D,E,F}; do
   clusterId=$(basename "$folder")
-  # Per ogni file jpg nella cartella corrente
-  for filepath in "$folder"/*.png; do
+  # Per ogni file webp nella cartella corrente
+  for filepath in "$folder"/*.webp; do
     filename=$(basename "$filepath")
-    # Rimuove l'estensione .jpg per ottenere l'id (es: a.1.3)
-    id="${filename%.jpg}"
+    # Rimuove l'estensione .webp per ottenere l'id (es: a.1.3)
+    id="${filename%.webp}"
     # Estrae imageId prendendo le prime due parti dell'id separate dal punto
     IFS='.' read -r part1 part2 _ <<< "$id"
     imageId="${part1}.${part2}"

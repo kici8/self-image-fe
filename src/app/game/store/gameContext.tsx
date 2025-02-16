@@ -54,7 +54,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
   const initialClusterValues: ClusterValues = Object.fromEntries(
     clusters.map((cluster) => [cluster.id, 0.4]),
   );
-  const maxNumberOfRounds = 24; // Maximum number of images allowed
+  const maxNumberOfRounds = 20; // Maximum number of images allowed
   const numberOfFragmentToUnlockImg = 3; // Number of liked fragments required to unlock an image
   const firstSpawnedFragment: SpawnedFragment = {
     ...pickRandom(clusterFragments),
@@ -193,8 +193,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
       // Calculate new value based on swipe (liked adds the value, rejected subtracts it)
       // FIXME: discuss this with the team
       // The range of values is between 0 and 1
-      // The image points are divided by 80 so + 12 is equivalent to +0.15, -4 is equivalent to -0.05, -8 is equivalent to -0.1
-      // So in game of 20 rounds, the maximum value that can be added is 3 and the minimum is -2
+      // The image points are divided by 40 so + 12 is equivalent to +0.3, -4 is equivalent to -0.1, -8 is equivalent to -0.2
+      // So in game of 20 rounds, the maximum value that can be added is 6 and the minimum is -4
       const convertedValue = (value / 40) * (liked ? 1 : -1);
       const newValue = updatedValues[clusterId] + convertedValue;
       const clampedValue = Math.min(Math.max(newValue, 0), 1);

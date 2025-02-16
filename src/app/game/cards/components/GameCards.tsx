@@ -9,6 +9,8 @@ import { useGame } from "../../store/gameContext";
 import GameActionBtn from "./GameActionBtn";
 import GameCard, { CardSwipeDirection } from "./GameCard";
 import UnlockedImages from "./UnlockedImages";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 /**
  * Initial driven properties used for animating the card and action buttons.
@@ -33,7 +35,9 @@ const GameCards = () => {
     activeSpawnedFragment,
     fragmentsSpawned,
     unlockedImages,
+    isGameOver,
   } = useGame();
+  const router = useRouter();
 
   const baseCards = [...Array(maxNumberOfRounds).keys()].reverse();
 
@@ -136,71 +140,92 @@ const GameCards = () => {
             );
           })}
       </motion.div>
-      <div id="cardsWrapper" className="relative aspect-[88/107] w-full">
-        <AnimatePresence>
-          {baseCards
-            .filter((round) => round + 1 >= roundNumber)
-            .map((round) => {
-              const fragment = fragmentsSpawned.find(
-                (f) => f.roundNumber === round + 1,
-              );
+      {isGameOver ? (
+        <div>Hai completato il gioco!!</div>
+      ) : (
+        <div id="cardsWrapper" className="relative aspect-[88/107] w-full">
+          <AnimatePresence>
+            {baseCards
+              .filter((round) => round + 1 >= roundNumber)
+              .map((round) => {
+                const fragment = fragmentsSpawned.find(
+                  (f) => f.roundNumber === round + 1,
+                );
 
-              return (
-                <motion.div
-                  key={`card-${round + 1}`}
-                  className="relative"
-                  variants={cardVariants}
-                  style={{
-                    pointerEvents: round + 1 === roundNumber ? "auto" : "none",
-                    display: round + 1 >= roundNumber ? "block" : "none",
-                  }}
-                  initial="remaining"
-                  animate={
-                    round + 1 === roundNumber
-                      ? "current"
-                      : round === roundNumber
-                        ? "upcoming"
-                        : "remaining"
-                  }
-                  exit="exit"
-                >
-                  {/* Render the top card using fragmentSpawned array */}
-                  <GameCard
-                    id={round + 1}
-                    data={fragment}
-                    setCardDrivenProps={setCardDrivenProps}
-                    setIsDragging={setIsDragging}
-                    isDragging={isDragging}
-                    isLast={false}
-                    setDirection={setDirection}
-                  />
-                </motion.div>
-              );
-            })}
-        </AnimatePresence>
-      </div>
+                return (
+                  <motion.div
+                    key={`card-${round + 1}`}
+                    className="relative"
+                    variants={cardVariants}
+                    style={{
+                      pointerEvents:
+                        round + 1 === roundNumber ? "auto" : "none",
+                      display: round + 1 >= roundNumber ? "block" : "none",
+                    }}
+                    initial="remaining"
+                    animate={
+                      round + 1 === roundNumber
+                        ? "current"
+                        : round === roundNumber
+                          ? "upcoming"
+                          : "remaining"
+                    }
+                    exit="exit"
+                  >
+                    {/* Render the top card using fragmentSpawned array */}
+                    <GameCard
+                      id={round + 1}
+                      data={fragment}
+                      setCardDrivenProps={setCardDrivenProps}
+                      setIsDragging={setIsDragging}
+                      isDragging={isDragging}
+                      isLast={false}
+                      setDirection={setDirection}
+                    />
+                  </motion.div>
+                );
+              })}
+          </AnimatePresence>
+        </div>
+      )}
       <div className="relative left-0 flex min-h-12 w-full items-center justify-end px-2">
-        <motion.div
-          initial={{ opacity: 0, y: "-25%", x: "-50%" }}
-          animate={{ opacity: 1, y: "-50%", x: "-50%" }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut", delay: 0.5 }}
-          id="actions"
-          className="absolute left-1/2 top-1/2 flex items-center justify-center gap-2"
-        >
-          <GameActionBtn
-            direction="left"
-            ariaLabel="swipe left"
-            scale={cardDrivenProps.buttonScaleBadAnswer}
-            onClick={() => handleActionBtnOnClick("left")}
-          />
-          <GameActionBtn
-            direction="right"
-            ariaLabel="swipe right"
-            scale={cardDrivenProps.buttonScaleGoodAnswer}
-            onClick={() => handleActionBtnOnClick("right")}
-          />
-        </motion.div>
+        {isGameOver ? (
+          <motion.div
+            initial={{ opacity: 0, y: "-25%", x: "-50%" }}
+            animate={{ opacity: 1, y: "-50%", x: "-50%" }}
+            exit={{ opacity: 0, y: "-25%", x: "-50%" }}
+            transition={{ duration: 0.5, ease: "easeOut", delay: 0.5 }}
+            id="actions"
+            className="absolute left-1/2 top-1/2 flex items-center justify-center gap-2"
+          >
+            <Button onClick={() => router.push("/game/report")}>
+              Vedi Risultati
+            </Button>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: "-25%", x: "-50%" }}
+            animate={{ opacity: 1, y: "-50%", x: "-50%" }}
+            exit={{ opacity: 0, y: "-25%", x: "-50%" }}
+            transition={{ duration: 0.5, ease: "easeOut", delay: 0.5 }}
+            id="actions"
+            className="absolute left-1/2 top-1/2 flex items-center justify-center gap-2"
+          >
+            <GameActionBtn
+              direction="left"
+              ariaLabel="swipe left"
+              scale={cardDrivenProps.buttonScaleBadAnswer}
+              onClick={() => handleActionBtnOnClick("left")}
+            />
+            <GameActionBtn
+              direction="right"
+              ariaLabel="swipe right"
+              scale={cardDrivenProps.buttonScaleGoodAnswer}
+              onClick={() => handleActionBtnOnClick("right")}
+            />
+          </motion.div>
+        )}
+
         <motion.div
           className="h-12 w-12"
           initial={{ opacity: 0 }}

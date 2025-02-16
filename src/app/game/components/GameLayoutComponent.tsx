@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { ExitGameDialogProvider } from "../store/ExitGameDialogContext";
 import { GameProvider } from "../store/gameContext";
 import ExitGameDialog from "./ExitGameDialog";
@@ -9,6 +10,19 @@ export default function GameLayoutComponent({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      // Standard way of triggering the browser dialog.
+      e.preventDefault();
+      e.returnValue =
+        "Se ricalchi la pagina perderai i progressi fatti, sei sicuro di voler uscire?";
+      return e.returnValue;
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
+
   return (
     <GameProvider>
       <ExitGameDialogProvider>

@@ -230,7 +230,6 @@ export default function Room({ code }: { code: string }) {
             id={cluster.id}
             name={cluster.name}
             icon={cluster.icon}
-            hiddenIcon={cluster.hiddenIcon}
             percentage={cluster.percentage}
           />
         ))}

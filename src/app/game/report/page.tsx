@@ -129,7 +129,7 @@ export default function GameReport() {
         <h2 className="text-center font-mono text-2xl font-bold">Risultati</h2>
         <div className="flex flex-col gap-4">
           <ClusterCard
-            icon={highestCluster.descriptiveIcon}
+            icon={highestCluster.icon}
             text={
               <p>
                 Prevalenza del settore: <strong>{highestCluster.name}</strong>
@@ -137,7 +137,7 @@ export default function GameReport() {
             }
           />
           <ClusterCard
-            icon={secondHighestCluster.descriptiveIcon}
+            icon={secondHighestCluster.icon}
             text={
               <p>
                 Con tratti di: <strong>{secondHighestCluster.name}</strong>

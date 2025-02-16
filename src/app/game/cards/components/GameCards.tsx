@@ -125,7 +125,7 @@ const GameCards = () => {
                       y: yPosition,
                     }}
                   />
-                  <div className="z-20 h-6 w-6">{cluster.descriptiveIcon}</div>
+                  <div className="z-20 h-6 w-6">{cluster.icon}</div>
                 </div>
                 <motion.div
                   className="absolute -bottom-4 left-1/2 h-2 w-2 -translate-x-1/2 transform rounded-full bg-self-blue-100"

@@ -1,33 +1,17 @@
 import { Progress } from "@/components/ui/progress";
-import { cn } from "@/lib/utils";
-import { cva } from "class-variance-authority";
-import React, { JSX, useState } from "react";
+import { JSX, useState } from "react";
 
 export type Cluster = {
   id: string;
   name: string;
   icon: JSX.Element;
-  hiddenIcon: JSX.Element;
   percentage: number;
 };
 
 type ClusterListItemProps = Cluster;
 
-const IconVariants = cva(
-  "absolute left-0 top-0 h-full w-full transition-opacity",
-  {
-    variants: {
-      show: {
-        true: ["opacity-100"],
-        false: ["opacity-0"],
-      },
-    },
-  },
-);
-
 export default function ClusterListItem({
   icon,
-  hiddenIcon,
   id,
   name,
   percentage,
@@ -41,20 +25,7 @@ export default function ClusterListItem({
       onClick={() => setShowName(!showName)}
     >
       <div className="relative mr-2 h-8 w-8 flex-shrink-0 flex-grow-0">
-        {React.cloneElement(icon, {
-          className: cn(
-            IconVariants({
-              show: showName,
-            }),
-          ),
-        })}{" "}
-        {React.cloneElement(hiddenIcon, {
-          className: cn(
-            IconVariants({
-              show: !showName,
-            }),
-          ),
-        })}
+        {icon}
       </div>
       <div className="-mt-1 flex-grow">
         <div className="flex items-center">

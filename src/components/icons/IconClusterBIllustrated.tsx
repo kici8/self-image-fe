@@ -1,0 +1,24 @@
+import { cn } from "@/lib/utils";
+import * as React from "react";
+
+const IconClusterBIllustrated = React.forwardRef<
+  SVGSVGElement,
+  React.ComponentPropsWithoutRef<"svg">
+>(({ className, ...props }, ref) => (
+  <svg
+    width="100%"
+    height="100%"
+    viewBox="0 0 634 634"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    ref={ref}
+    className={cn("fill-current", className)}
+    {...props}
+  >
+    <path d="M205.52,529.965L152.033,529.965L218.59,263.737L179.589,263.737L164.376,316.983L109,316.983L128.393,249.109C134.923,226.251 155.816,210.491 179.589,210.491L258.973,210.491L333.769,247.889L379.433,227.311L475,61L562,530L205.5,530L205.52,529.965ZM337.071,301.033C327.801,301.608 318.439,299.756 309.957,295.514L305.963,293.517L291.727,350.464L304.479,357.751L337.071,301.033ZM277.951,403.917L243.369,384.157L207.993,525.662L277.951,403.917ZM340,169.934C340,191.989 322.121,209.869 300.066,209.869C278.011,209.869 260.132,191.989 260.132,169.934C260.132,147.879 278.011,130 300.066,130C322.121,130 340,147.879 340,169.934Z" />
+  </svg>
+));
+
+IconClusterBIllustrated.displayName = "IconClusterBIllustrated";
+
+export default IconClusterBIllustrated;

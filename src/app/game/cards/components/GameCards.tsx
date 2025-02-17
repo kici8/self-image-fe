@@ -74,17 +74,19 @@ const GameCards = () => {
       transition: { duration: 0.3, ease: easeOutExpo },
     },
     upcoming: {
-      opacity: 0.5,
+      opacity: 0.8,
       y: 72,
       scale: 0.88,
       transition: { duration: 0.3, ease: easeOutExpo, delay: 0 },
     },
     remaining: {
       opacity: 0,
-      y: 20,
-      scale: 0.9,
+      y: 72,
+      scale: 0.88,
+      transition: { duration: 0.3, ease: easeOutExpo, delay: 0 },
     },
     exit: {
+      display: "none",
       opacity: 0,
       x: direction === "left" ? -300 : 300,
       y: 40,

@@ -143,9 +143,14 @@ const GameCards = () => {
           })}
       </motion.div>
       {isGameOver ? (
-        <div>Hai completato il gioco!!</div>
+        <div className="text text-sm font-semibold text-muted-foreground">
+          Hai completato il gioco!
+        </div>
       ) : (
-        <div id="cardsWrapper" className="relative aspect-[88/107] w-full">
+        <div
+          id="cardsWrapper"
+          className="relative aspect-[88/107] w-full max-w-sm"
+        >
           <AnimatePresence>
             {baseCards
               .filter((round) => round + 1 >= roundNumber)

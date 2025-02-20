@@ -178,7 +178,7 @@ export default function GameReport() {
                     fetchPriority="high"
                   />
                   <div className="flex flex-1 flex-col gap-y-0.5 pt-2">
-                    <p className="text-xs text-self-blue-100/60">
+                    <p className="text-xs text-muted-foreground">
                       {image.author || "Autore sconosciuto"}
                     </p>
                     <p className="text-sm">
@@ -244,7 +244,7 @@ const ClusterCard = ({
   text: JSX.Element;
 }) => {
   return (
-    <div className="flex items-center gap-4 border-b border-self-blue-300/40 pb-4">
+    <div className="flex items-center gap-4 border-b pb-4">
       <div className="flex-1 font-mono">{text}</div>
       <div className="flex-0 h-10 w-10">{icon}</div>
     </div>

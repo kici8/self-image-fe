@@ -26,8 +26,8 @@ export default function GameLayoutComponent({
   return (
     <GameProvider>
       <ExitGameDialogProvider>
-        <div className="flex h-svh w-svw items-center justify-center gap-8 overflow-hidden bg-self-blue-900 md:py-2">
-          <div className="flex h-full w-full flex-col rounded-xl md:max-h-[840px] md:max-w-sm md:border md:border-self-blue-300/40 md:bg-self-blue-300/10 md:shadow-xl md:shadow-self-blue-400/10">
+        <div className="flex h-svh w-svw items-center justify-center gap-8 overflow-hidden bg-background md:py-2">
+          <div className="flex h-full w-full flex-col rounded-xl md:max-h-[840px] md:max-w-sm md:border md:bg-self-blue-300/10 md:shadow-xl md:shadow-self-blue-400/10">
             {children}
           </div>
           <ExitGameDialog />

@@ -26,7 +26,7 @@ export default function UnlockedImages({
   }, [lastUnlockedImage]);
 
   return (
-    <div className="relative z-30 h-12 w-12 rounded-md border border-dashed border-self-blue-300/40 bg-self-blue-900/80">
+    <div className="relative z-30 h-12 w-12 rounded-md border border-dashed bg-background/40">
       {visibleUnlockedImages.map((imageId, index) => {
         const image = staticClusterImages.find((image) => image.id === imageId);
         if (!image || image.id === lastUnlockedImage?.id) return null;
@@ -42,7 +42,6 @@ export default function UnlockedImages({
               overflow: "hidden",
               borderRadius: 8,
               padding: 2,
-              backgroundColor: "#ffffff",
               rotate: index === 0 ? 0 : -18,
               position: "absolute",
             }}
@@ -79,6 +78,7 @@ export default function UnlockedImages({
 
               <motion.div
                 layoutId="unlockedImage"
+                className="bg-card"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{
                   opacity: 1,
@@ -98,7 +98,6 @@ export default function UnlockedImages({
                   flexDirection: "column",
                   overflow: "hidden",
                   borderRadius: 8,
-                  backgroundColor: "#ffffff",
                 }}
               >
                 <motion.div
@@ -108,7 +107,6 @@ export default function UnlockedImages({
                     backgroundImage: `url(${lastUnlockedImage?.src})`,
                     width: 280,
                     height: 220,
-                    backgroundColor: "#a3a7eb",
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                     backgroundOrigin: "center",
@@ -123,19 +121,20 @@ export default function UnlockedImages({
                       display: "flex",
                       flexDirection: "column",
                       justifyContent: "space-between",
-                      gap: 4,
+                      gap: 16,
                     }}
                   >
-                    <h2 className="text-md mb-4 text-center font-semibold text-self-blue-500">
-                      Hai sbloccato un&apos;immagine!
+                    <h2 className="text-center text-xl font-semibold text-primary">
+                      Immagine sbloccata
                     </h2>
-                    <p className="text-md text-center text-primary-foreground">
+                    <p className="text-md text-center text-muted-foreground">
+                      <span className="font-semibold text-card-foreground">
+                        {lastUnlockedImage?.author || "Autore sconosciuto"}:{" "}
+                      </span>
                       {lastUnlockedImage?.title || "Senza titolo"}
                     </p>
-                    <p className="text-center text-sm text-self-blue-500/80">
-                      {lastUnlockedImage?.author || "Autore sconosciuto"}
-                    </p>
-                    <Button className="mt-8" onClick={() => setIsOpen(false)}>
+
+                    <Button className="mt-4" onClick={() => setIsOpen(false)}>
                       Continua
                     </Button>
                   </motion.div>
@@ -145,6 +144,7 @@ export default function UnlockedImages({
           ) : (
             <motion.div
               layoutId="unlockedImage"
+              className="bg-card"
               style={{
                 position: "relative",
                 zIndex: 40,
@@ -155,7 +155,6 @@ export default function UnlockedImages({
                 overflow: "hidden",
                 borderRadius: 8,
                 padding: 2,
-                backgroundColor: "#ffffff",
                 rotate: 12,
               }}
               onClick={() => setIsOpen(true)}

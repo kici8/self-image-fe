@@ -99,7 +99,7 @@ const GameCard = ({
       {/* Card visual with image */}
       <motion.div
         id={`cardDrivenWrapper-${id}`}
-        className="pointer-events-none absolute z-20 aspect-[88/107] w-full origin-bottom select-none rounded-md bg-white p-2 shadow-card"
+        className="pointer-events-none absolute z-20 aspect-[88/107] w-full origin-bottom select-none rounded-md bg-white p-2 shadow-lg"
         style={{
           y: drivenY,
           rotate: drivenRotation,

@@ -10,6 +10,7 @@ import { LoaderCircleIcon, LogInIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import GameLayoutComponent from "./game/components/GameLayoutComponent";
+import Link from "next/link";
 
 export default function Example() {
   const router = useRouter();
@@ -130,12 +131,13 @@ export default function Example() {
               exit={{ opacity: 0 }}
               className="mt-10 text-center text-sm/6"
             >
-              <a
-                href="#"
+              <Link
+                href="/privacy.pdf"
+                download
                 className="font-semibold text-self-blue-300 hover:text-self-blue-200"
               >
                 Leggi l&apos;informativa sulla privacy
-              </a>
+              </Link>
             </motion.p>
 
             {error && (

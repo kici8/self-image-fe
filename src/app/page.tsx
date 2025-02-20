@@ -7,13 +7,15 @@ import { Input } from "@/components/ui/input";
 import { joinRoom } from "@/lib/api";
 import { motion } from "framer-motion";
 import { LoaderCircleIcon, LogInIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import GameLayoutComponent from "./game/components/GameLayoutComponent";
 import Link from "next/link";
 
-export default function Example() {
+function Form() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const roomCodeParam = searchParams.get("room_code");
 
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,6 +43,73 @@ export default function Example() {
   };
 
   return (
+    <form className="space-y-6" onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="nickname" className="block text-sm/6 font-medium">
+          Nome
+        </label>
+        <div className="mt-2">
+          <Input
+            disabled={isLoading}
+            id="nickname"
+            name="nickname"
+            type="text"
+            required
+            autoComplete="username"
+            placeholder="Marco"
+            className="block w-full"
+          />
+        </div>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between">
+          <label htmlFor="room_code" className="block text-sm/6 font-medium">
+            Codice stanza
+          </label>
+        </div>
+        <div className="mt-2">
+          <Input
+            defaultValue={roomCodeParam || undefined}
+            disabled={isLoading}
+            id="room_code"
+            name="room_code"
+            type="text"
+            required
+            placeholder="ABC123"
+            className="block w-full font-mono"
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          Unisciti alla stanza
+          {isLoading ? (
+            <LoaderCircleIcon className="animate-spin" />
+          ) : (
+            <LogInIcon />
+          )}
+        </Button>
+
+        {error && (
+          <div className="mx-auto mt-4 max-w-md">
+            <Alert
+              type="error"
+              title="Errore: impossibile unirsi alla stanza"
+              messages={[
+                "Controlla il codice della stanza o riprova più tardi",
+              ]}
+            />
+          </div>
+        )}
+      </div>
+    </form>
+  );
+}
+
+export default function GameLogin() {
+  return (
     <GameLayoutComponent>
       <div className="mx-auto flex h-full w-full max-w-sm overflow-auto">
         <div className="flex w-full flex-col items-center px-4 py-8">
@@ -64,66 +133,11 @@ export default function Example() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
             >
-              <form className="space-y-6" onSubmit={handleSubmit}>
-                <div>
-                  <label
-                    htmlFor="nickname"
-                    className="block text-sm/6 font-medium"
-                  >
-                    Nome
-                  </label>
-                  <div className="mt-2">
-                    <Input
-                      disabled={isLoading}
-                      id="nickname"
-                      name="nickname"
-                      type="text"
-                      required
-                      autoComplete="username"
-                      placeholder="Inserisci il tuo nome"
-                      className="block w-full"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between">
-                    <label
-                      htmlFor="room_code"
-                      className="block text-sm/6 font-medium"
-                    >
-                      Codice stanza
-                    </label>
-                  </div>
-                  <div className="mt-2">
-                    <Input
-                      disabled={isLoading}
-                      id="room_code"
-                      name="room_code"
-                      type="text"
-                      required
-                      placeholder="Inserisci il codice a 6 cifre"
-                      className="block w-full"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    Unisciti alla stanza
-                    {isLoading ? (
-                      <LoaderCircleIcon className="animate-spin" />
-                    ) : (
-                      <LogInIcon />
-                    )}
-                  </Button>
-                </div>
-              </form>
+              <Suspense fallback={null}>
+                <Form />
+              </Suspense>
             </motion.div>
 
-            {/* 
-          TODO: aggiungere informativa privacy 
-          */}
             <motion.p
               transition={{ duration: 0.5, ease: "easeOut", delay: 0.5 }}
               initial={{ opacity: 0 }}
@@ -139,18 +153,6 @@ export default function Example() {
                 Leggi l&apos;informativa sulla privacy
               </Link>
             </motion.p>
-
-            {error && (
-              <div className="mx-auto mt-4 max-w-md">
-                <Alert
-                  type="error"
-                  title="Errore: impossibile unirsi alla stanza"
-                  messages={[
-                    "Controlla il codice della stanza o riprova più tardi",
-                  ]}
-                />
-              </div>
-            )}
           </div>
         </div>
       </div>

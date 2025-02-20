@@ -118,7 +118,7 @@ export default function GameReport() {
   };
 
   return (
-    <div className="relative h-full w-full overflow-auto">
+    <div className="relative mx-auto h-full w-full max-w-sm overflow-auto">
       <motion.div
         transition={{ duration: 0.5, ease: "easeOut" }}
         initial={{ opacity: 0, y: 18 }}

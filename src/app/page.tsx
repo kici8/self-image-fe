@@ -41,7 +41,7 @@ export default function Example() {
 
   return (
     <GameLayoutComponent>
-      <div className="flex h-full w-full overflow-auto">
+      <div className="mx-auto flex h-full w-full max-w-sm overflow-auto">
         <div className="flex w-full flex-col items-center px-4 py-8">
           <motion.div
             className="w-full"

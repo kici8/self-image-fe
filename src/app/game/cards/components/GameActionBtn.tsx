@@ -1,19 +1,19 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { MinusIcon, PlusIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { CheckIcon, XIcon } from "lucide-react";
 
 const actionPropsMatrix = {
   left: {
     ariaLabel: "Swipe Left",
     bgColorClass: "bg-destructive",
-    icon: <MinusIcon className="h-6 w-6 duration-100 ease-out" />,
+    icon: <XIcon className="h-6 w-6 duration-100 ease-out" />,
   },
   right: {
     ariaLabel: "Swipe Right",
     bgColorClass: "bg-green-400",
-    icon: <PlusIcon className="h-6 w-6 duration-100 ease-out" />,
+    icon: <CheckIcon className="h-6 w-6 duration-100 ease-out" />,
   },
 };
 

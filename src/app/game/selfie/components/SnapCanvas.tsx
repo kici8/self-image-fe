@@ -74,7 +74,14 @@ function SnapCanvas() {
       cameraType: "user",
     });
     session.setSource(source);
+
     session.applyLens(lenses[0]);
+    // Example: Apply lens by ID
+    // session.applyLens(
+    //   lenses.find(
+    //     (lens) => lens.id === "d0f4cd02-94d5-4131-91bb-2f4c52a26167",
+    //   ) || lenses[0],
+    // );
     // EXAMPLE: Apply lens filters with unlocked filters in launchParams
     // session.applyLens(lenses[0], {
     //   launchParams: {

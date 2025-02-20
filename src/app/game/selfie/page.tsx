@@ -9,7 +9,7 @@ const SnapCanvas = dynamic(() => import("./components/SnapCanvas"), {
 
 export default function GameSelfie() {
   return (
-    <div className="flex h-full w-full flex-col items-center justify-between py-2">
+    <div className="flex h-full w-full flex-col items-center justify-between overflow-hidden bg-black md:rounded-xl">
       <CameraKit>
         <SnapCanvas />
       </CameraKit>

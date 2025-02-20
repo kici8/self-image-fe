@@ -96,7 +96,7 @@ const GameCards = () => {
   };
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-between py-8">
+    <div className="flex h-full w-full flex-col items-center justify-between px-4 py-8">
       <motion.div
         className="flex items-center justify-center gap-2"
         initial={{ opacity: 0, y: -16 }}

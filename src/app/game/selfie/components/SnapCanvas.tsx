@@ -9,6 +9,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useGame } from "../../store/gameContext";
 import SelfieDialog from "./SelfieDialog";
 import { canvasToBlob } from "./utils";
+import SnapchatLogo from "@/components/icons/SnapchatLogo";
 
 // If we don't want the watermark we have to move the snapchat app to production
 // https://developers.snap.com/camera-kit/app-review/design-guide
@@ -74,6 +75,12 @@ function SnapCanvas() {
     });
     session.setSource(source);
     session.applyLens(lenses[0]);
+    // EXAMPLE: Apply lens filters with unlocked filters in launchParams
+    // session.applyLens(lenses[0], {
+    //   launchParams: {
+    //     unlocked_filters: ["filter_a.2", "filter_b.1"],
+    //   },
+    // });
     session.play("live");
     setIsSceneLoaded(true);
   }, [session, lenses]);
@@ -210,6 +217,14 @@ function SnapCanvas() {
   return (
     <div className="relative h-full w-full">
       <div ref={canvasContainerRef} />
+
+      <div className="absolute left-0 top-0 flex w-full items-center justify-center bg-gradient-to-b from-black to-transparent pb-16 pt-5 opacity-50">
+        <div className="flex items-center justify-center gap-1 text-white">
+          <span className="text-xs">Powered by</span>
+          <SnapchatLogo className="h-4 w-4" />
+        </div>
+      </div>
+
       <button
         disabled={isProcessingSelfie || !isSceneLoaded}
         onClick={captureSelfie}

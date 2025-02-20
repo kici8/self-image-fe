@@ -41,9 +41,10 @@ export default function UnlockedImages({
               justifyContent: "center",
               overflow: "hidden",
               borderRadius: 8,
-              padding: 2,
-              rotate: index === 0 ? 0 : -18,
+              rotate: index === 0 ? -4 : -18,
               position: "absolute",
+              left: 0,
+              top: 0,
             }}
             onClick={() => setIsOpen(true)}
           >
@@ -51,9 +52,8 @@ export default function UnlockedImages({
               id="image"
               style={{
                 backgroundImage: `url(${image?.src})`,
-                width: 44,
-                height: 44,
-                borderRadius: 6,
+                height: 48,
+                width: 48,
                 backgroundSize: "cover",
                 backgroundOrigin: "center",
                 backgroundPosition: "center",
@@ -154,7 +154,7 @@ export default function UnlockedImages({
                 justifyContent: "center",
                 overflow: "hidden",
                 borderRadius: 8,
-                padding: 2,
+                padding: 0,
                 rotate: 12,
               }}
               onClick={() => setIsOpen(true)}
@@ -164,9 +164,8 @@ export default function UnlockedImages({
                 layout
                 style={{
                   backgroundImage: `url(${lastUnlockedImage?.src})`,
-                  width: 44,
-                  height: 44,
-                  borderRadius: 6,
+                  width: 48,
+                  height: 48,
                   backgroundSize: "cover",
                   backgroundOrigin: "center",
                   backgroundPosition: "center",

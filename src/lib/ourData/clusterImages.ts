@@ -10,7 +10,7 @@ export type ClusterImage = {
   // cluster points associated with the cluster images
   clusterValues: { clusterId: string; value: number }[] | null;
   // filter associated with the cluster images
-  filter_id: string | undefined | null;
+  filter_id: string | null;
   // TODO: move out from this type: filters applied to the selfie
   filters: string[] | null;
 };

@@ -4,6 +4,7 @@ import SnapchatLogo from "@/components/icons/SnapchatLogo";
 import { uploadSelfie } from "@/lib/api";
 import { useCameraKit } from "@/lib/hooks/useCameraKit";
 import { cn } from "@/lib/utils";
+import { Lens } from "@snap/camera-kit";
 import { cva } from "class-variance-authority";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -11,7 +12,6 @@ import { useGame } from "../../store/gameContext";
 import LensCarousel from "./LensCarousel";
 import SelfieDialog from "./SelfieDialog";
 import { canvasToBlob } from "./utils";
-import { Lens } from "@snap/camera-kit";
 
 // If we don't want the watermark we have to move the snapchat app to production
 // https://developers.snap.com/camera-kit/app-review/design-guide
@@ -44,6 +44,17 @@ export default function SnapCanvas() {
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const router = useRouter();
   const { resetGame, unlockedFilters } = useGame();
+
+  // FIXME: remove mocked unlocked filters
+  // const unlockedFilters = useMemo(
+  //   () =>
+  //     new Set([
+  //       "e7bfb231-a523-43a8-825d-0b6fdc5c6da9",
+  //       "1983e53c-1723-4032-b56b-ae9d1d9a0e58",
+  //       "bb0e84bc-4ec9-4844-a785-0789376dae4e",
+  //     ]),
+  //   [],
+  // );
 
   // Local storage
   const userId = localStorage.getItem("player_id");

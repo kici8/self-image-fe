@@ -10,6 +10,9 @@ type LensCarouselProps = {
   session: CameraKitSession;
 };
 
+const getReverseIndex = (index: number, numberOfLenses: number) =>
+  numberOfLenses - 1 - index;
+
 const LensCarousel = ({ lenses, handleShoot, session }: LensCarouselProps) => {
   // size: The width (and height) of each carousel item.
 
@@ -25,7 +28,6 @@ const LensCarousel = ({ lenses, handleShoot, session }: LensCarouselProps) => {
   const [isDragging, setIsDragging] = useState(false);
 
   // Utils
-  const getReverseIndex = (index: number) => lenses.length - 1 - index;
 
   const animateToIndex = (index: number) => {
     // Get the x value for the closest index
@@ -33,12 +35,12 @@ const LensCarousel = ({ lenses, handleShoot, session }: LensCarouselProps) => {
     // animate to the closest index
     animate(x, closestX, {
       type: "spring",
-      stiffness: 700,
+      stiffness: 500,
       damping: 30,
     });
     // update the ui
     setActiveIndex(index);
-    const realIndex = getReverseIndex(index);
+    const realIndex = getReverseIndex(index, lenses.length);
     session.applyLens(lenses[realIndex]);
   };
 
@@ -92,10 +94,9 @@ const LensCarousel = ({ lenses, handleShoot, session }: LensCarouselProps) => {
           style={{ x }}
           className="flex items-center"
         >
-          {lenses.reverse().map((lens, index) => {
+          {lenses.map((lens, index) => {
             // Determine if the current item is the one selected (in inverted order)
-
-            const lensIndex = getReverseIndex(index);
+            const lensIndex = getReverseIndex(index, lenses.length);
             const isSelected = lensIndex === activeIndex;
             return (
               <motion.div

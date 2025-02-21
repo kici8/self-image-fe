@@ -1,3 +1,5 @@
+"use client";
+
 import AchieveBackground from "@/components/AchieveBackground";
 import { Button } from "@/components/ui/button";
 import { staticClusterImages } from "@/lib/ourData/clusterImages";

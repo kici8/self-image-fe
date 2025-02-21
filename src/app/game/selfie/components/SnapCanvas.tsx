@@ -1,5 +1,6 @@
 "use client";
 
+import SnapchatLogo from "@/components/icons/SnapchatLogo";
 import { uploadSelfie } from "@/lib/api";
 import { useCameraKit } from "@/lib/hooks/useCameraKit";
 import { cn } from "@/lib/utils";
@@ -7,9 +8,10 @@ import { cva } from "class-variance-authority";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useGame } from "../../store/gameContext";
+import LensCarousel from "./LensCarousel";
 import SelfieDialog from "./SelfieDialog";
 import { canvasToBlob } from "./utils";
-import SnapchatLogo from "@/components/icons/SnapchatLogo";
+import { Lens } from "@snap/camera-kit";
 
 // If we don't want the watermark we have to move the snapchat app to production
 // https://developers.snap.com/camera-kit/app-review/design-guide
@@ -27,14 +29,21 @@ const cameraButtonSVGVariants = cva(
   },
 );
 
-function SnapCanvas() {
+function getUnlockedLenses(lenses: Lens[], unlockedFilters: Set<string>) {
+  const unlockedLenses = lenses.filter((lens) =>
+    Array.from(unlockedFilters).includes(lens.id),
+  );
+  return unlockedLenses;
+}
+
+export default function SnapCanvas() {
   // Hooks
   const { session, lenses } = useCameraKit();
   const isMounted = useRef(false);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const router = useRouter();
-  const { resetGame } = useGame();
+  const { resetGame, unlockedFilters } = useGame();
 
   // Local storage
   const userId = localStorage.getItem("player_id");
@@ -74,14 +83,11 @@ function SnapCanvas() {
       cameraType: "user",
     });
     session.setSource(source);
-
-    session.applyLens(lenses[0]);
-    // Example: Apply lens by ID
-    // session.applyLens(
-    //   lenses.find(
-    //     (lens) => lens.id === "d0f4cd02-94d5-4131-91bb-2f4c52a26167",
-    //   ) || lenses[0],
-    // );
+    const unlockedLenses = getUnlockedLenses(lenses, unlockedFilters);
+    if (unlockedLenses.length > 0) {
+      session.applyLens(unlockedLenses[0]);
+    }
+    // session.applyLens(lenses[0]);
     // EXAMPLE: Apply lens filters with unlocked filters in launchParams
     // session.applyLens(lenses[0], {
     //   launchParams: {
@@ -90,11 +96,12 @@ function SnapCanvas() {
     // });
     session.play("live");
     setIsSceneLoaded(true);
-  }, [session, lenses]);
+  }, [session, lenses, unlockedFilters]);
 
   // CAPTURE SELFIE
   const captureSelfie = async () => {
     setIsProcessingSelfie(true);
+    if (isProcessingSelfie || !isSceneLoaded) return;
     if (!session?.output?.live) {
       setIsProcessingSelfie(false);
       return;
@@ -225,42 +232,47 @@ function SnapCanvas() {
     <div className="relative h-full w-full">
       <div ref={canvasContainerRef} />
 
-      <div className="absolute left-0 top-0 flex w-full items-center justify-center bg-gradient-to-b from-black to-transparent pb-16 pt-5 opacity-50">
+      <div className="absolute left-0 top-0 flex w-full items-center justify-center bg-gradient-to-b from-black to-transparent pb-16 pt-6 opacity-50">
         <div className="flex items-center justify-center gap-1 text-white">
           <span className="text-xs">Powered by</span>
           <SnapchatLogo className="h-4 w-4" />
         </div>
       </div>
 
-      <button
-        disabled={isProcessingSelfie || !isSceneLoaded}
-        onClick={captureSelfie}
-        className="group absolute bottom-4 left-1/2 h-20 w-20 -translate-x-1/2 transform rounded-full bg-black/10 text-white shadow-xl"
-        aria-label="Scatta selfie"
-      >
-        <svg
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          className={cn(cameraButtonSVGVariants({ loading: !isSceneLoaded }))}
-        >
-          <defs>
-            <clipPath id="innerStrokeClip">
-              <circle cx="12" cy="12" r="12" />
-            </clipPath>
-          </defs>
-          <circle
-            cx="12"
-            cy="12"
-            fill="none"
-            r="12"
-            strokeWidth="4"
-            stroke="currentColor"
-            strokeDasharray={!isSceneLoaded ? "52 76" : "76 76"}
-            clipPath="url(#innerStrokeClip)"
-          />
-        </svg>
-        <span className="absolute left-1/2 top-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-white transition-all group-hover:scale-75 group-active:scale-50 group-disabled:scale-50 group-disabled:cursor-not-allowed group-disabled:opacity-40" />
-      </button>
+      <div className="absolute bottom-0 left-0 h-36 w-full overflow-hidden">
+        {/* FAKE SHOOT BUTTON (Loading indicator) */}
+        <div className="group absolute left-1/2 top-1/2 z-10 h-20 w-20 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-black/10 text-white shadow-xl">
+          <svg
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            className={cn(cameraButtonSVGVariants({ loading: !isSceneLoaded }))}
+          >
+            <defs>
+              <clipPath id="innerStrokeClip">
+                <circle cx="12" cy="12" r="12" />
+              </clipPath>
+            </defs>
+            <circle
+              cx="12"
+              cy="12"
+              fill="none"
+              r="12"
+              strokeWidth="3.2"
+              stroke="currentColor"
+              strokeDasharray={!isSceneLoaded ? "52 76" : "76 76"}
+              clipPath="url(#innerStrokeClip)"
+            />
+          </svg>
+        </div>
+
+        {/* CAROUSEL OF LENSES with shoot button TODO: filter lenses  */}
+        <LensCarousel
+          handleShoot={captureSelfie}
+          lenses={getUnlockedLenses(lenses, unlockedFilters)}
+          session={session}
+        />
+      </div>
+
       {modalOpen && (
         <SelfieDialog
           modalOpen={modalOpen}
@@ -276,5 +288,3 @@ function SnapCanvas() {
     </div>
   );
 }
-
-export default SnapCanvas;

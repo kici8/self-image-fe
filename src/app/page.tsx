@@ -15,7 +15,7 @@ import Link from "next/link";
 function Form() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const roomCodeParam = searchParams.get("room_code");
+  const roomCodeParam = searchParams.get("c");
 
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);

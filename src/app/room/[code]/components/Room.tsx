@@ -290,7 +290,7 @@ export default function Room({ code }: { code: string }) {
                 window.location.origin &&
                 code && (
                   <QRCodeSVG
-                    value={`${window.location.origin}/?room_code=${code}`}
+                    value={`${window.location.origin}/?c=${code}`}
                     marginSize={1}
                     size={96}
                     bgColor="#fff"

@@ -10,7 +10,7 @@ export type ClusterImage = {
   // cluster points associated with the cluster images
   clusterValues: { clusterId: string; value: number }[] | null;
   // filter associated with the cluster images
-  filter_id: string | undefined | null;
+  filter_id: string | null;
   // TODO: move out from this type: filters applied to the selfie
   filters: string[] | null;
 };
@@ -30,7 +30,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
       { clusterId: "E", value: -8 },
     ],
-    filter_id: "filter_a.1",
+    filter_id: "2b9d4c4b-d1e6-44a7-9e00-1fbf321a6433",
     filters: null,
   },
   {
@@ -47,7 +47,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
       { clusterId: "E", value: -8 },
     ],
-    filter_id: "filter_a.3",
+    filter_id: "1983e53c-1723-4032-b56b-ae9d1d9a0e58",
     filters: null,
   },
   {
@@ -64,7 +64,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
       { clusterId: "E", value: -8 },
     ],
-    filter_id: "filter_a.2",
+    filter_id: "ce4da446-960a-4f6a-9121-5e89b632aa22",
     filters: null,
   },
   {
@@ -81,7 +81,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
       { clusterId: "E", value: -8 },
     ],
-    filter_id: "filter_a.2",
+    filter_id: "ce4da446-960a-4f6a-9121-5e89b632aa22",
     filters: null,
   },
   {
@@ -98,7 +98,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
       { clusterId: "E", value: -8 },
     ],
-    filter_id: "filter_a.3",
+    filter_id: "1983e53c-1723-4032-b56b-ae9d1d9a0e58",
     filters: null,
   },
   {
@@ -115,7 +115,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
       { clusterId: "E", value: -8 },
     ],
-    filter_id: "filter_a.1",
+    filter_id: "2b9d4c4b-d1e6-44a7-9e00-1fbf321a6433",
     filters: null,
   },
   {
@@ -132,7 +132,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
       { clusterId: "E", value: -8 },
     ],
-    filter_id: "filter_a.1",
+    filter_id: "2b9d4c4b-d1e6-44a7-9e00-1fbf321a6433",
     filters: null,
   },
   {
@@ -149,7 +149,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
       { clusterId: "E", value: -8 },
     ],
-    filter_id: "filter_a.3",
+    filter_id: "d39979fd-6fee-40f6-a94c-9883a40b57b5",
     filters: null,
   },
   {
@@ -166,7 +166,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
       { clusterId: "E", value: -8 },
     ],
-    filter_id: "filter_a.2",
+    filter_id: "ce4da446-960a-4f6a-9121-5e89b632aa22",
     filters: null,
   },
   {
@@ -183,7 +183,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "D", value: -4 },
       { clusterId: "E", value: -8 },
     ],
-    filter_id: "filter_a.3",
+    filter_id: "1983e53c-1723-4032-b56b-ae9d1d9a0e58",
     filters: null,
   },
   {
@@ -200,7 +200,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -6 },
       { clusterId: "F", value: -6 },
     ],
-    filter_id: "filter_b.1",
+    filter_id: "e7bfb231-a523-43a8-825d-0b6fdc5c6da9",
     filters: null,
   },
   {
@@ -217,7 +217,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -6 },
       { clusterId: "F", value: -6 },
     ],
-    filter_id: "filter_b.1",
+    filter_id: "e7bfb231-a523-43a8-825d-0b6fdc5c6da9",
     filters: null,
   },
   {
@@ -234,7 +234,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -6 },
       { clusterId: "F", value: -6 },
     ],
-    filter_id: "filter_b.2",
+    filter_id: "bb0e84bc-4ec9-4844-a785-0789376dae4e",
     filters: null,
   },
   {
@@ -251,7 +251,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -6 },
       { clusterId: "F", value: -6 },
     ],
-    filter_id: "filter_b.2",
+    filter_id: "bb0e84bc-4ec9-4844-a785-0789376dae4e",
     filters: null,
   },
   {
@@ -268,7 +268,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -6 },
       { clusterId: "F", value: -6 },
     ],
-    filter_id: "filter_b.3",
+    filter_id: "e7bfb231-a523-43a8-825d-0b6fdc5c6da9",
     filters: null,
   },
   {
@@ -285,7 +285,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -6 },
       { clusterId: "F", value: -6 },
     ],
-    filter_id: "filter_b.3",
+    filter_id: "e7bfb231-a523-43a8-825d-0b6fdc5c6da9",
     filters: null,
   },
   {
@@ -302,7 +302,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -6 },
       { clusterId: "F", value: -6 },
     ],
-    filter_id: "filter_b.3",
+    filter_id: "e7bfb231-a523-43a8-825d-0b6fdc5c6da9",
     filters: null,
   },
   {
@@ -319,7 +319,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -6 },
       { clusterId: "F", value: -6 },
     ],
-    filter_id: "filter_b.2",
+    filter_id: "bb0e84bc-4ec9-4844-a785-0789376dae4e",
     filters: null,
   },
   {
@@ -337,7 +337,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "C", value: -6 },
       { clusterId: "F", value: -6 },
     ],
-    filter_id: "filter_b.3",
+    filter_id: "e7bfb231-a523-43a8-825d-0b6fdc5c6da9",
     filters: null,
   },
   {
@@ -354,7 +354,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "F", value: -8 },
     ],
-    filter_id: "filter_c.3",
+    filter_id: "4694b888-8705-4f73-b89e-d62272f99da4",
     filters: null,
   },
   {
@@ -371,7 +371,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "F", value: -8 },
     ],
-    filter_id: "filter_c.3",
+    filter_id: "4694b888-8705-4f73-b89e-d62272f99da4",
     filters: null,
   },
   {
@@ -388,7 +388,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "F", value: -8 },
     ],
-    filter_id: undefined,
+    filter_id: "fe4334db-e314-4fee-af13-7ff656db2f26",
     filters: null,
   },
   {
@@ -405,7 +405,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "F", value: -8 },
     ],
-    filter_id: "filter_c.1",
+    filter_id: "fe4334db-e314-4fee-af13-7ff656db2f26",
     filters: null,
   },
   {
@@ -422,7 +422,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "F", value: -8 },
     ],
-    filter_id: undefined,
+    filter_id: "fe4334db-e314-4fee-af13-7ff656db2f26",
     filters: null,
   },
   {
@@ -439,7 +439,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "F", value: -8 },
     ],
-    filter_id: "filter_c.3",
+    filter_id: "4694b888-8705-4f73-b89e-d62272f99da4",
     filters: null,
   },
   {
@@ -456,7 +456,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "F", value: -8 },
     ],
-    filter_id: "filter_c.3",
+    filter_id: "d3365532-496c-423f-8388-a96d62b4ef88",
     filters: null,
   },
   {
@@ -473,7 +473,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "F", value: -8 },
     ],
-    filter_id: undefined,
+    filter_id: "fe4334db-e314-4fee-af13-7ff656db2f26",
     filters: null,
   },
   {
@@ -490,7 +490,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "F", value: -8 },
     ],
-    filter_id: "filter_c.1",
+    filter_id: "fe4334db-e314-4fee-af13-7ff656db2f26",
     filters: null,
   },
   {
@@ -507,7 +507,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "F", value: -8 },
     ],
-    filter_id: "filter_c.1",
+    filter_id: "fe4334db-e314-4fee-af13-7ff656db2f26",
     filters: null,
   },
   {
@@ -524,7 +524,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -6 },
       { clusterId: "E", value: -6 },
     ],
-    filter_id: "filter_d.2",
+    filter_id: "0824fcdd-4e0e-4375-b4ee-124f0ca46c74",
     filters: null,
   },
   {
@@ -541,7 +541,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -6 },
       { clusterId: "E", value: -6 },
     ],
-    filter_id: "filter_d.1",
+    filter_id: "0824fcdd-4e0e-4375-b4ee-124f0ca46c74",
     filters: null,
   },
   {
@@ -558,7 +558,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -6 },
       { clusterId: "E", value: -6 },
     ],
-    filter_id: "filter_d.2",
+    filter_id: "0824fcdd-4e0e-4375-b4ee-124f0ca46c74",
     filters: null,
   },
   {
@@ -575,7 +575,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -6 },
       { clusterId: "E", value: -6 },
     ],
-    filter_id: "filter_d.2",
+    filter_id: "0824fcdd-4e0e-4375-b4ee-124f0ca46c74",
     filters: null,
   },
   {
@@ -592,7 +592,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -6 },
       { clusterId: "E", value: -6 },
     ],
-    filter_id: "filter_d.1",
+    filter_id: "0824fcdd-4e0e-4375-b4ee-124f0ca46c74",
     filters: null,
   },
   {
@@ -609,7 +609,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -6 },
       { clusterId: "E", value: -6 },
     ],
-    filter_id: "filter_d.2",
+    filter_id: "0824fcdd-4e0e-4375-b4ee-124f0ca46c74",
     filters: null,
   },
   {
@@ -626,7 +626,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -6 },
       { clusterId: "E", value: -6 },
     ],
-    filter_id: "filter_d.3",
+    filter_id: "0824fcdd-4e0e-4375-b4ee-124f0ca46c74",
     filters: null,
   },
   {
@@ -643,7 +643,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -6 },
       { clusterId: "E", value: -6 },
     ],
-    filter_id: "filter_d.1",
+    filter_id: "0824fcdd-4e0e-4375-b4ee-124f0ca46c74",
     filters: null,
   },
   {
@@ -660,7 +660,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -6 },
       { clusterId: "E", value: -6 },
     ],
-    filter_id: "filter_d.4",
+    filter_id: "8a39880e-0390-4c7a-a473-b0872d80ff8d",
     filters: null,
   },
   {
@@ -677,7 +677,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -6 },
       { clusterId: "E", value: -6 },
     ],
-    filter_id: "filter_d.3",
+    filter_id: "0824fcdd-4e0e-4375-b4ee-124f0ca46c74",
     filters: null,
   },
   {
@@ -694,7 +694,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -8 },
       { clusterId: "D", value: -4 },
     ],
-    filter_id: "filter_e.2",
+    filter_id: "8edfa603-0af6-4fea-8333-385bcf0abdc5",
     filters: null,
   },
   {
@@ -711,7 +711,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -8 },
       { clusterId: "D", value: -4 },
     ],
-    filter_id: "filter_e.1",
+    filter_id: "ed0f7f7e-e99b-4cca-8735-5dbe6059770d",
     filters: null,
   },
   {
@@ -728,7 +728,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -8 },
       { clusterId: "D", value: -4 },
     ],
-    filter_id: "filter_e.2",
+    filter_id: "ed0f7f7e-e99b-4cca-8735-5dbe6059770d",
     filters: null,
   },
   {
@@ -745,7 +745,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -8 },
       { clusterId: "D", value: -4 },
     ],
-    filter_id: "filter_e.1",
+    filter_id: "8edfa603-0af6-4fea-8333-385bcf0abdc5",
     filters: null,
   },
   {
@@ -762,7 +762,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -8 },
       { clusterId: "D", value: -4 },
     ],
-    filter_id: "filter_e.3",
+    filter_id: "0a59ce1c-681b-4410-85b2-b7bcee5c344f",
     filters: null,
   },
   {
@@ -779,7 +779,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -8 },
       { clusterId: "D", value: -4 },
     ],
-    filter_id: "filter_e.3",
+    filter_id: "0a59ce1c-681b-4410-85b2-b7bcee5c344f",
     filters: null,
   },
   {
@@ -796,7 +796,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -8 },
       { clusterId: "D", value: -4 },
     ],
-    filter_id: "filter_e.2",
+    filter_id: "8edfa603-0af6-4fea-8333-385bcf0abdc5",
     filters: null,
   },
   {
@@ -814,7 +814,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -8 },
       { clusterId: "D", value: -4 },
     ],
-    filter_id: "filter_e.3",
+    filter_id: "0a59ce1c-681b-4410-85b2-b7bcee5c344f",
     filters: null,
   },
   {
@@ -831,7 +831,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -8 },
       { clusterId: "D", value: -4 },
     ],
-    filter_id: "filter_e.1",
+    filter_id: "8edfa603-0af6-4fea-8333-385bcf0abdc5",
     filters: null,
   },
   {
@@ -848,7 +848,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "C", value: -8 },
     ],
-    filter_id: "filter_f.3",
+    filter_id: "011972d8-f70d-4ef5-b755-e01e20d74e7a",
     filters: null,
   },
   {
@@ -865,7 +865,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "C", value: -8 },
     ],
-    filter_id: "filter_f.1",
+    filter_id: "e6d9f048-7c57-4615-8696-8f263347bff9",
     filters: null,
   },
   {
@@ -882,7 +882,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "C", value: -8 },
     ],
-    filter_id: "filter_f.2",
+    filter_id: "1e4f9ea5-0e9a-4220-af3b-990abc6ad017",
     filters: null,
   },
   {
@@ -899,7 +899,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "C", value: -8 },
     ],
-    filter_id: "filter_f.1",
+    filter_id: "8b3fe5bb-2336-4cbe-a9cf-fa1605962466",
     filters: null,
   },
   {
@@ -916,7 +916,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "C", value: -8 },
     ],
-    filter_id: "filter_f.3",
+    filter_id: "011972d8-f70d-4ef5-b755-e01e20d74e7a",
     filters: null,
   },
   {
@@ -933,7 +933,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "C", value: -8 },
     ],
-    filter_id: "filter_f.3",
+    filter_id: "011972d8-f70d-4ef5-b755-e01e20d74e7a",
     filters: null,
   },
   {
@@ -950,7 +950,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "C", value: -8 },
     ],
-    filter_id: "filter_f.2",
+    filter_id: "c7d15f89-22d2-4ab1-a8e4-5427f7a50b5c",
     filters: null,
   },
   {
@@ -967,7 +967,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "C", value: -8 },
     ],
-    filter_id: "filter_f.2",
+    filter_id: "1e4f9ea5-0e9a-4220-af3b-990abc6ad017",
     filters: null,
   },
   {
@@ -984,7 +984,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "C", value: -8 },
     ],
-    filter_id: "filter_f.1",
+    filter_id: "e6d9f048-7c57-4615-8696-8f263347bff9",
     filters: null,
   },
   {
@@ -1001,7 +1001,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "B", value: -4 },
       { clusterId: "C", value: -8 },
     ],
-    filter_id: "filter_f.4",
+    filter_id: "221cfe93-4b8c-4427-a108-a83abce7c32b",
     filters: null,
   },
 ];

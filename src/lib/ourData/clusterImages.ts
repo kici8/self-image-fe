@@ -575,7 +575,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -6 },
       { clusterId: "E", value: -6 },
     ],
-    filter_id: "0824fcdd-4e0e-4375-b4ee-124f0ca46c74",
+    filter_id: "5f9c02a5-e9d6-4c5d-a5b1-d47950bd2439",
     filters: null,
   },
   {
@@ -626,7 +626,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -6 },
       { clusterId: "E", value: -6 },
     ],
-    filter_id: "0824fcdd-4e0e-4375-b4ee-124f0ca46c74",
+    filter_id: "5f9c02a5-e9d6-4c5d-a5b1-d47950bd2439",
     filters: null,
   },
   {
@@ -677,7 +677,7 @@ export const staticClusterImages: ClusterImage[] = [
       { clusterId: "A", value: -6 },
       { clusterId: "E", value: -6 },
     ],
-    filter_id: "0824fcdd-4e0e-4375-b4ee-124f0ca46c74",
+    filter_id: "5f9c02a5-e9d6-4c5d-a5b1-d47950bd2439",
     filters: null,
   },
   {

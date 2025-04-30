@@ -18,7 +18,9 @@ import ClusterListItem from "./ClusterListItem";
 import CodeAnimation from "./CodeAnimation";
 import ConnectionIndicator from "./ConnectionIndicator";
 import ImageGrid from "./ImageGrid";
+import { QRCodeSVG } from "qrcode.react";
 
+// FIXME: Layout breaks on socket error
 export default function Room({ code }: { code: string }) {
   // Hooks
   const router = useRouter();
@@ -94,7 +96,7 @@ export default function Room({ code }: { code: string }) {
           description: "La stanza è stata chiusa correttamente.",
           variant: "default",
         });
-        router.push("/");
+        router.push("/room");
       }
     } catch (err) {
       if (err instanceof Error) {
@@ -164,7 +166,7 @@ export default function Room({ code }: { code: string }) {
           partecipare.
         </p>
       </div>
-      <Button className="mt-4 w-full" onClick={() => router.push("/")}>
+      <Button className="mt-4 w-full" onClick={() => router.push("/room")}>
         Torna alla home
       </Button>
     </div>
@@ -180,7 +182,7 @@ export default function Room({ code }: { code: string }) {
           una nuova.
         </p>
       </div>
-      <Button className="mt-4 w-full" onClick={() => router.push("/")}>
+      <Button className="mt-4 w-full" onClick={() => router.push("/room")}>
         Torna alla home
       </Button>
     </div>
@@ -188,7 +190,13 @@ export default function Room({ code }: { code: string }) {
 
   const sectionDefault = (
     <>
-      <div className="h-6">
+      <div className="relative flex h-8 items-center">
+        <div className="absolute left-0 top-1/2 z-10 w-16 -translate-y-1/2 transform bg-gradient-to-r from-card from-0% via-card via-55% to-transparent to-100%">
+          <ConnectionIndicator
+            isRoomConnected={roomStatus === RoomStatus.open}
+            isSocketConnected={isSocketConnected}
+          />
+        </div>
         <Marquee>
           <p className="text-md"></p>
           {(roomData?.connected_players ?? []).length > 0 ? (
@@ -205,22 +213,21 @@ export default function Room({ code }: { code: string }) {
             - Per partecipare alla stanza inserisci il codice sopra -
           </span>
         </Marquee>
+        <div className="absolute right-0 top-1/2 z-10 h-full w-8 -translate-y-1/2 transform bg-gradient-to-l from-card to-transparent"></div>
       </div>
 
-      <div className="flex gap-2">
-        <Button
-          onClick={onNewSession}
-          disabled={isNewSessionLoading || areRoomActionsDisable}
-          className="flex-1"
-        >
-          Nuova sessione
-          {isNewSessionLoading ? (
-            <LoaderCircleIcon className="animate-spin" />
-          ) : (
-            <RefreshCwIcon />
-          )}
-        </Button>
-      </div>
+      <Button
+        className="mt-4"
+        onClick={onNewSession}
+        disabled={isNewSessionLoading || areRoomActionsDisable}
+      >
+        Nuova sessione
+        {isNewSessionLoading ? (
+          <LoaderCircleIcon className="animate-spin" />
+        ) : (
+          <RefreshCwIcon />
+        )}
+      </Button>
 
       <div className="-mx-3 flex flex-1 flex-col">
         {mappedClusters.map((cluster) => (
@@ -229,13 +236,12 @@ export default function Room({ code }: { code: string }) {
             id={cluster.id}
             name={cluster.name}
             icon={cluster.icon}
-            hiddenIcon={cluster.hiddenIcon}
             percentage={cluster.percentage}
           />
         ))}
       </div>
 
-      <div className="flex gap-4 rounded-lg">
+      <div className="flex gap-4">
         <Button
           variant="outline"
           className="flex-1"
@@ -275,16 +281,26 @@ export default function Room({ code }: { code: string }) {
         <ImageGrid images={allImages} />
       </div>
 
-      <div className="flex w-full flex-col gap-8 overflow-hidden border-b border-border bg-card p-6 pt-4 sm:h-svh sm:w-96 sm:border-b-0 sm:border-l">
+      <div className="flex w-full flex-col gap-6 overflow-y-hidden border-b border-border bg-card p-6 pt-4 sm:h-svh sm:w-96 sm:border-b-0 sm:border-l">
         <div className="flex flex-col gap-6 text-foreground">
-          <div className="flex-0 flex items-center">
-            <h2 className="flex-1 font-mono text-6xl font-bold leading-none">
+          <div className="flex-0 flex items-center gap-4">
+            <div className="flex h-24 w-24 items-center justify-center bg-white">
+              {typeof window !== "undefined" &&
+                window.location &&
+                window.location.origin &&
+                code && (
+                  <QRCodeSVG
+                    value={`${window.location.origin}/?c=${code}`}
+                    marginSize={1}
+                    size={96}
+                    bgColor="#fff"
+                    fgColor="#0D0D13"
+                  />
+                )}
+            </div>
+            <h2 className="flex-1 font-mono text-5xl font-bold leading-none">
               <CodeAnimation targetCode={code} />
             </h2>
-            <ConnectionIndicator
-              isRoomConnected={roomStatus === RoomStatus.open}
-              isSocketConnected={isSocketConnected}
-            />
           </div>
         </div>
         {content}

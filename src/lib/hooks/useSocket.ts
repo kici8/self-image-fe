@@ -3,12 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { toast } from "./use-toast";
-import { staticClusters, staticImages } from "../referenceElements";
+
 import {
   TypeGridImage,
   typeGridType,
 } from "@/app/room/[code]/components/ImageGrid";
 import { Cluster } from "@/app/room/[code]/components/ClusterListItem";
+import { staticClusterImages } from "../ourData/clusterImages";
+import { staticClusters } from "../ourData/clusters";
 
 type PlayerConnectedResponse = {
   player_id: string;
@@ -73,9 +75,9 @@ function getMappedImages(
   sessionId: string | null,
   unlockedImages: string[],
 ): TypeGridImage[] {
-  return staticImages.map((image) => ({
+  return staticClusterImages.map((image) => ({
     ...image,
-    index: staticImages.indexOf(image),
+    index: staticClusterImages.indexOf(image),
     unlocked: unlockedImages.includes(image.id) || false,
     type: typeGridType.image,
     session_id: sessionId,
@@ -156,7 +158,7 @@ export const useSocket = () => {
             selfie.session_id === roomData?.session_id,
         );
 
-        const newSelfie = {
+        const newSelfie: TypeGridImage = {
           id: data.selfie_id,
           author: undefined,
           author_id: data.player_id,
@@ -166,9 +168,12 @@ export const useSocket = () => {
           title: undefined,
           year: undefined,
           session_id: roomData?.session_id || null,
-          index: Math.floor(Math.random() * staticImages.length),
+          index: Math.floor(Math.random() * staticClusterImages.length),
           unlocked: true,
           type: typeGridType.selfie,
+          cluster_id: null,
+          clusterValues: null,
+          filter_id: null,
         };
 
         // If the selfie already exists, update it

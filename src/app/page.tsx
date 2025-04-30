@@ -3,18 +3,19 @@
 import Alert from "@/components/Alert";
 import Logo from "@/components/icons/logo";
 import { Button } from "@/components/ui/button";
-import { createRoom } from "@/lib/api";
-import { ArrowRightIcon, LoaderCircleIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { joinRoom } from "@/lib/api";
+import { motion } from "framer-motion";
+import { LoaderCircleIcon, LogInIcon } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
+import GameLayoutComponent from "./game/components/GameLayoutComponent";
+import Link from "next/link";
 
-// TODO: In this page, we will create a form to create a new room.
-// The form will have an input field for the host code.
-// On submit, we will send a request to the server to create a new room.
-// If the room is created successfully, we will redirect the user to the room page.
-
-export default function Home() {
+function Form() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const roomCodeParam = searchParams.get("c");
 
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,13 +25,17 @@ export default function Home() {
     setIsLoading(true);
 
     try {
-      const newRoom = await createRoom();
-      router.push(`/room/${newRoom.room_code}`);
+      const response = await joinRoom({
+        nickname: event.currentTarget.nickname.value,
+        room_code: event.currentTarget.room_code.value,
+      });
+      localStorage.setItem("player_id", response.player_id);
+      router.push(`/game/cards`);
     } catch (err) {
       if (err instanceof Error) {
-        setError(`Failed to create room: ${err.message}`);
+        setError(`Failed to join room: ${err.message}`);
       } else {
-        setError("Failed to create room: Unknown error");
+        setError("Failed to join room: Unknown error");
       }
     } finally {
       setIsLoading(false);
@@ -38,47 +43,119 @@ export default function Home() {
   };
 
   return (
-    <div className="background min-h-svh py-16 sm:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div>
-          <Logo className="mx-auto mb-8 w-40" />
+    <form className="space-y-6" onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="nickname" className="block text-sm/6 font-medium">
+          Nome
+        </label>
+        <div className="mt-2">
+          <Input
+            disabled={isLoading}
+            id="nickname"
+            name="nickname"
+            type="text"
+            required
+            autoComplete="username"
+            placeholder="Marco"
+            className="block w-full"
+          />
         </div>
-        <h2 className="mx-auto max-w-3xl text-center text-4xl font-semibold tracking-tight sm:text-5xl">
-          Crea una nuova stanza
-        </h2>
-        <p className="mx-auto mt-6 max-w-lg text-center text-lg">
-          Inizia una nuova esperienza creando una stanza. Il codice per accedere
-          alla stanza sarà generato automaticamente.
-        </p>
-        <form
-          className="mx-auto mt-20 flex max-w-md justify-center gap-x-4"
-          onSubmit={handleSubmit}
-        >
-          <label htmlFor="hostCode" className="sr-only">
-            Codice Host
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between">
+          <label htmlFor="room_code" className="block text-sm/6 font-medium">
+            Codice stanza
           </label>
-          <Button disabled={isLoading} type="submit">
-            Crea Stanza
-            {isLoading ? (
-              <LoaderCircleIcon className="animate-spin" />
-            ) : (
-              <ArrowRightIcon />
-            )}
-          </Button>
-        </form>
+        </div>
+        <div className="mt-2">
+          <Input
+            defaultValue={roomCodeParam || undefined}
+            disabled={isLoading}
+            id="room_code"
+            name="room_code"
+            type="text"
+            required
+            placeholder="ABC123"
+            className="block w-full font-mono"
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          Unisciti alla stanza
+          {isLoading ? (
+            <LoaderCircleIcon className="animate-spin" />
+          ) : (
+            <LogInIcon />
+          )}
+        </Button>
+
         {error && (
           <div className="mx-auto mt-4 max-w-md">
             <Alert
               type="error"
-              title="Errore: impossibile creare la stanza"
+              title="Errore: impossibile unirsi alla stanza"
               messages={[
-                "Il Codice Host potrebbe essere non valido",
-                "Oppure potrebbe esserci un disservizio momentaneo",
+                "Controlla il codice della stanza o riprova più tardi",
               ]}
             />
           </div>
         )}
       </div>
-    </div>
+    </form>
+  );
+}
+
+export default function GameLogin() {
+  return (
+    <GameLayoutComponent>
+      <div className="mx-auto flex h-full w-full max-w-sm overflow-auto">
+        <div className="flex w-full flex-col items-center px-4 py-8">
+          <motion.div
+            className="w-full"
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <Logo className="mx-auto h-14 w-auto" />
+            <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight">
+              Unisciti alla stanza
+            </h2>
+          </motion.div>
+
+          <div className="mt-10 w-full">
+            <motion.div
+              transition={{ duration: 0.75, ease: "easeOut", delay: 0.25 }}
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+            >
+              <Suspense fallback={null}>
+                <Form />
+              </Suspense>
+            </motion.div>
+
+            <motion.p
+              transition={{ duration: 0.5, ease: "easeOut", delay: 0.5 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="mt-10 text-center text-sm/6"
+            >
+              <Link
+                href="/privacy.pdf"
+                download
+                className="font-semibold text-self-blue-300 hover:text-self-blue-200"
+              >
+                Leggi l&apos;informativa sulla privacy
+              </Link>
+            </motion.p>
+          </div>
+        </div>
+      </div>
+    </GameLayoutComponent>
   );
 }

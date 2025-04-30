@@ -131,7 +131,7 @@ export default function ConnectionIndicator({
           )}
         </div>
       </HoverCardTrigger>
-      <HoverCardContent>
+      <HoverCardContent align="start">
         {status.icon}
         <h3 className="text-md font-semibold">{status.title}</h3>
         <p className="text-sm">{status.description}</p>

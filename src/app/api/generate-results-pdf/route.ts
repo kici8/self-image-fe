@@ -1,6 +1,7 @@
 // app/api/generate-pdf/route.ts
 import { exportRoomResults } from "@/lib/api";
-import { staticClusters, staticImages } from "@/lib/referenceElements";
+import { staticClusterImages } from "@/lib/ourData/clusterImages";
+import { staticClusters } from "@/lib/ourData/clusters";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import autoTable, { Styles } from "jspdf-autotable";
@@ -67,11 +68,14 @@ export async function GET(req: Request) {
     autoTable(doc, {
       startY: lastY,
       head: [[`Room Unlocked Images`, "Name", "Author"]],
-      body: (roomResults.unlocked_images ?? []).map((image) => [
-        image,
-        staticImages.find((img) => img.id === image)?.title || "Unknown",
-        staticImages.find((img) => img.id === image)?.author || "Unknown",
-      ]),
+      body: (roomResults.unlocked_images ?? []).map((image) => {
+        const foundImage = staticClusterImages.find((img) => img.id === image);
+        return [
+          image,
+          foundImage?.title || "Unknown",
+          foundImage?.author || "Unknown",
+        ];
+      }),
       headStyles: roomColor,
     });
 
@@ -116,11 +120,16 @@ export async function GET(req: Request) {
             "Author",
           ],
         ],
-        body: (participants[i].unlocked_images ?? []).map((image) => [
-          image,
-          staticImages.find((img) => img.id === image)?.title || "Unknown",
-          staticImages.find((img) => img.id === image)?.author || "Unknown",
-        ]),
+        body: (participants[i].unlocked_images ?? []).map((image) => {
+          const foundImage = staticClusterImages.find(
+            (img) => img.id === image,
+          );
+          return [
+            image,
+            foundImage?.title || "Unknown",
+            foundImage?.author || "Unknown",
+          ];
+        }),
         headStyles: i % 2 == 0 ? participantColorEven : participantColorOdd,
       });
 
@@ -176,7 +185,7 @@ export async function GET(req: Request) {
             ],
           ],
           body: participants[i].sessions[j].interactions.map((interaction) => {
-            const image = staticImages.find(
+            const image = staticClusterImages.find(
               (sImage) => sImage.id == interaction.image_id,
             );
             return [

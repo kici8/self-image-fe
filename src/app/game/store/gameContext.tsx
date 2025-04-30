@@ -1,0 +1,293 @@
+"use client";
+
+import {
+  ClusterFragment,
+  staticClusterFragments,
+} from "@/lib/ourData/clusterFragments";
+import { ClusterImage, staticClusterImages } from "@/lib/ourData/clusterImages";
+import { staticClusters } from "@/lib/ourData/clusters";
+import { pickRandom } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import React, { createContext, useContext, useState } from "react";
+
+// Define data types for clusters, images, and fragments;
+export type SpawnedFragment = ClusterFragment & {
+  roundNumber: number;
+};
+
+export type SeenClusterFragments = SpawnedFragment & {
+  liked: boolean;
+};
+
+type ClusterValues = Record<string, number>;
+
+// Define the shape of the game context state and methods
+type GameContextType = {
+  clusterValues: ClusterValues;
+  activeSpawnedFragment: SpawnedFragment;
+  fragmentsSpawned: SpawnedFragment[];
+  roundNumber: number;
+  maxNumberOfRounds: number;
+  numberOfFragmentToUnlockImg: number;
+  applySwipeEffect: (fragment: SpawnedFragment, liked: boolean) => void;
+  resetGame: () => void;
+  seenFragments: SeenClusterFragments[];
+  unlockedImages: Set<string>;
+  unlockedFilters: Set<string>;
+  isGameOver: boolean;
+};
+
+// Create the context with an undefined initial state
+const GameContext = createContext<GameContextType | undefined>(undefined);
+
+// Provider component to wrap parts of the app needing game state
+export const GameProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  // Hooks
+  const router = useRouter();
+
+  // Static data is imported from static elements
+  const clusters = staticClusters;
+  const clusterImages = staticClusterImages;
+  const clusterFragments = staticClusterFragments;
+  const initialClusterValues: ClusterValues = Object.fromEntries(
+    clusters.map((cluster) => [cluster.id, 0.4]),
+  );
+  const maxNumberOfRounds = 20; // Maximum number of images allowed
+  const numberOfFragmentToUnlockImg = 3; // Number of liked fragments required to unlock an image
+  const firstSpawnedFragment: SpawnedFragment = {
+    ...pickRandom(clusterFragments),
+    roundNumber: 1,
+  };
+
+  // Game states
+  const [roundNumber, setRoundNumber] = useState(1);
+  const [clusterValues, setClusterValues] =
+    useState<ClusterValues>(initialClusterValues);
+  const [fragmentsSpawned, setFragmentsSpawned] = useState<SpawnedFragment[]>([
+    firstSpawnedFragment,
+  ]);
+  const [activeSpawnedFragment, setActiveSpawnedFragment] =
+    useState<SpawnedFragment>(fragmentsSpawned[0]);
+  const [seenFragments, setSeenFragments] = useState<SeenClusterFragments[]>(
+    [],
+  );
+  const [unlockedImages, setUnlockedImages] = useState<Set<string>>(new Set());
+  const [unlockedFilters, setUnlockedFilters] = useState<Set<string>>(
+    new Set(),
+  );
+  const [isGameOver, setIsGameOver] = useState(false);
+
+  // Roulette Wheel Selection: Choose a cluster based on weighted values
+  function rouletteWheelClusterSelection(values: ClusterValues): string {
+    const entries = Object.entries(values);
+    const randomClusterIDForFallback = pickRandom(clusters).id;
+
+    // If no values are available, return a random cluster ID
+    if (entries.length === 0) {
+      return randomClusterIDForFallback;
+    }
+
+    // If all values are zero, return a random cluster ID
+    const total = entries.reduce((sum, [, value]) => sum + value, 0);
+    if (total === 0) {
+      return randomClusterIDForFallback;
+    }
+
+    // Otherwise, normalize the values
+    const normalizedValues = Object.fromEntries(
+      entries.map(([key, value]) => [key, value / total]),
+    ) as ClusterValues;
+
+    // Generate a random value and select a cluster based on the normalized values
+    const randomValue = Math.random();
+    let sum = 0;
+    for (const [clusterId, value] of Object.entries(normalizedValues)) {
+      sum += value;
+      if (randomValue <= sum) {
+        return clusterId;
+      }
+    }
+    return randomClusterIDForFallback;
+  }
+
+  // Spawn a new fragment ensuring it hasn't been seen before
+  function spawnFragment() {
+    // If maximum images reached, don't spawn more fragments
+
+    // Select a cluster based on current weighted values using roulette selection
+    const selectedClusterId = rouletteWheelClusterSelection(clusterValues);
+    // Get images available in this cluster
+    const imagesForSelectedCluster = clusterImages.filter(
+      (image) => image.cluster_id === selectedClusterId,
+    );
+
+    // If there are no images in the selected cluster, fallback to all available images
+    let selectedImage: ClusterImage;
+    if (imagesForSelectedCluster.length === 0) {
+      selectedImage = pickRandom(clusterImages);
+    } else {
+      selectedImage = pickRandom(imagesForSelectedCluster);
+    }
+
+    // FIXME: check if this filter is working
+    // filter fragments to only include fragments that haven't been seen yet
+    const availableFragments = clusterFragments.filter(
+      (frag) =>
+        !seenFragments.some(
+          (seenFrag) => seenFrag.fragment_id === frag.fragment_id,
+        ),
+    );
+
+    // Filter fragments to only include ones from the selected image
+    const availableFragmentsForSelectedImage = availableFragments.filter(
+      (fragment) => fragment.image_id == selectedImage.id,
+    );
+
+    let selectedFragment: ClusterFragment;
+
+    // First try picking a fragment from the selected image
+    if (availableFragmentsForSelectedImage.length > 0) {
+      selectedFragment = pickRandom(availableFragmentsForSelectedImage);
+    } else {
+      // Otherwise, filter fragments for the selected cluster
+      const availableFragmentsForSelectedCluster = availableFragments.filter(
+        (frag) => frag.cluster_id === selectedClusterId,
+      );
+
+      // If there are fragments for the cluster, pick one, otherwise pick from all available fragments
+      selectedFragment =
+        availableFragmentsForSelectedCluster.length > 0
+          ? pickRandom(availableFragmentsForSelectedCluster)
+          : pickRandom(availableFragments);
+    }
+
+    const newFragment: SpawnedFragment = {
+      ...selectedFragment,
+      roundNumber: roundNumber + 1,
+    };
+
+    setFragmentsSpawned((prev) => [...prev, newFragment]);
+    setActiveSpawnedFragment(newFragment);
+  }
+
+  // Apply swipe effect: update cluster values and unlock conditions based on player's swipe action
+  function applySwipeEffect(fragment: SpawnedFragment, liked: boolean) {
+    // Find the image associated with the fragment
+    const swipedImage = clusterImages.find(
+      (img) => img.id === fragment.image_id,
+    );
+
+    if (!swipedImage) {
+      // This should never happen but handle it just in case
+      console.error(`Image not found for fragment: ${fragment.fragment_id}`);
+      // TODO: this can't be just a return, it should be a throw and the game must go on
+      return;
+    }
+
+    // Update cluster values for the image based on swipe result
+    const updatedValues = { ...clusterValues };
+
+    swipedImage.clusterValues?.forEach(({ clusterId, value }) => {
+      // Calculate new value based on swipe (liked adds the value, rejected subtracts it)
+      // FIXME: discuss this with the team
+      // The range of values is between 0 and 1
+      // The image points are divided by 40 so + 12 is equivalent to +0.3, -4 is equivalent to -0.1, -8 is equivalent to -0.2
+      // So in game of 20 rounds, the maximum value that can be added is 6 and the minimum is -4
+      const convertedValue = (value / 40) * (liked ? 1 : -1);
+      const newValue = updatedValues[clusterId] + convertedValue;
+      const clampedValue = Math.min(Math.max(newValue, 0), 1);
+      // Clamp newValue between 0 and 1
+      updatedValues[clusterId] = clampedValue;
+    });
+
+    const newSeenFragments: SeenClusterFragments[] = [
+      ...seenFragments,
+      { ...fragment, liked: liked, roundNumber: fragment.roundNumber },
+    ];
+    console.log(`Seen Fragments:`, newSeenFragments);
+
+    if (liked) {
+      console.log(`Accepted Fragment: ${fragment.url}`);
+
+      const likedFragmentsForImage = newSeenFragments.filter(
+        (frag) => frag.image_id === fragment.image_id && frag.liked,
+      );
+
+      if (likedFragmentsForImage.length >= numberOfFragmentToUnlockImg) {
+        console.log(`Unlocked Image 🖼️🖼️🖼️: ${swipedImage.id}`);
+        setUnlockedImages((prev) => new Set([...prev, swipedImage.id]));
+        if (swipedImage.filter_id && swipedImage.filter_id !== undefined) {
+          // TODO: show in the UI that the filter is unlocked?
+          console.log(`Unlocked Filter 🎭🎭🎭: ${swipedImage.filter_id}`);
+          setUnlockedFilters(
+            (prev) => new Set([...prev, swipedImage.filter_id!]),
+          );
+        }
+      }
+    }
+
+    // Update game state
+    setClusterValues(updatedValues);
+    setSeenFragments((prev) => [...prev, { ...fragment, liked: liked }]);
+    setRoundNumber((prev) => prev + 1);
+    // If the maximum number of images has been reached, end the game
+    if (roundNumber >= maxNumberOfRounds) {
+      // TODO: if an image is unlocked in the last round, show and block the router push
+      // maybe we have to move the router push out of the applySwipeEffect function
+      console.log("Game Over 🎉🎉🎉");
+      setIsGameOver(true);
+      router.push("/game/report");
+    } else {
+      spawnFragment();
+    }
+  }
+
+  function resetGame() {
+    const resetFirstSpawnedFragment: SpawnedFragment = {
+      ...pickRandom(clusterFragments),
+      roundNumber: 1,
+    };
+
+    setClusterValues(initialClusterValues);
+    setFragmentsSpawned([resetFirstSpawnedFragment]);
+    setActiveSpawnedFragment(resetFirstSpawnedFragment);
+    setSeenFragments([]);
+    setUnlockedImages(new Set());
+    setUnlockedFilters(new Set());
+    setRoundNumber(1);
+    setIsGameOver(false);
+  }
+
+  // Provide all game state and functions to consumer components using the GameContext
+  return (
+    <GameContext.Provider
+      value={{
+        clusterValues,
+        seenFragments,
+        activeSpawnedFragment,
+        fragmentsSpawned,
+        roundNumber,
+        maxNumberOfRounds,
+        numberOfFragmentToUnlockImg,
+        applySwipeEffect,
+        resetGame,
+        unlockedImages,
+        unlockedFilters,
+        isGameOver,
+      }}
+    >
+      {children}
+    </GameContext.Provider>
+  );
+};
+
+// Custom hook to access game context in child components
+export const useGame = (): GameContextType => {
+  const context = useContext(GameContext);
+  if (!context) {
+    throw new Error("useGame must be used within a GameProvider");
+  }
+  return context;
+};
